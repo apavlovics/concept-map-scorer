@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<conceptmap>
+	<concepts>
+		<concept id="0">A</concept>
+		<concept id="1">B</concept>
+		<concept id="2">C</concept>
+		<concept id="3">D</concept>
+		<concept id="4">E</concept>
+	</concepts>
+	<relationships>
+		<relationship id="0" from="0" to="1">is</relationship>
+		<relationship id="1" from="0" to="2">almost is</relationship>
+		<relationship id="2" from="1" to="3">is not</relationship>
+	</relationships>
+</conceptmap>

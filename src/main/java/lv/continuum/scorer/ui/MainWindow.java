@@ -1,0 +1,363 @@
+package lv.continuum.scorer.ui;
+
+import lv.continuum.scorer.common.TranslationDictionary;
+import java.awt.EventQueue;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
+import lv.continuum.scorer.domain.ConceptMap;
+import lv.continuum.scorer.logic.ConceptMapScorer;
+
+/**
+ * @author Andrey Pavlovich
+ */
+public class MainWindow extends javax.swing.JFrame {
+    private JFileChooser chooser;
+    private FileFilterXml filter;
+
+    public MainWindow() {
+        initComponents();
+        this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        this.filter = new FileFilterXml();
+        chooser.setFileFilter(filter);
+    }
+
+    private String getSelectedFileName() {
+        int operation = this.chooser.showOpenDialog(this);
+        if (operation == JFileChooser.APPROVE_OPTION) return this.chooser.getSelectedFile().getAbsolutePath();
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        scoreScrollPane = new javax.swing.JScrollPane();
+        scoreTextArea = new javax.swing.JTextArea();
+        studentTextField = new javax.swing.JTextField();
+        teacherTextField = new javax.swing.JTextField();
+        studentButton = new javax.swing.JButton();
+        teacherButton = new javax.swing.JButton();
+        studentLabel = new javax.swing.JLabel();
+        teacherLabel = new javax.swing.JLabel();
+        scoreButton = new javax.swing.JButton();
+        elementsCheckBox = new javax.swing.JCheckBox();
+        closenessIndexesCheckBox = new javax.swing.JCheckBox();
+        importanceIndexesCheckBox = new javax.swing.JCheckBox();
+        propositionChainsCheckBox = new javax.swing.JCheckBox();
+        errorAnalysisCheckBox = new javax.swing.JCheckBox();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("title"));
+        setBounds(new java.awt.Rectangle(100, 100, 0, 0));
+        setResizable(false);
+
+        scoreTextArea.setColumns(20);
+        scoreTextArea.setEditable(false);
+        scoreTextArea.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        scoreTextArea.setLineWrap(true);
+        scoreTextArea.setRows(5);
+        scoreTextArea.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("default-text"));
+        scoreTextArea.setWrapStyleWord(true);
+        scoreTextArea.setDisabledTextColor(new java.awt.Color(140, 137, 126));
+        scoreTextArea.setEnabled(false);
+        scoreScrollPane.setViewportView(scoreTextArea);
+
+        studentTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textFieldsChanged(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                textFieldsChanged(evt);
+            }
+        });
+
+        teacherTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textFieldsChanged(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                textFieldsChanged(evt);
+            }
+        });
+
+        studentButton.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("browse"));
+        studentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                studentButtonActionPerformed(evt);
+            }
+        });
+
+        teacherButton.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("browse"));
+        teacherButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                teacherButtonActionPerformed(evt);
+            }
+        });
+
+        studentLabel.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("select-student-map"));
+
+        teacherLabel.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("select-teacher-map"));
+
+        scoreButton.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("score"));
+        scoreButton.setEnabled(false);
+        scoreButton.setMaximumSize(new java.awt.Dimension(83, 23));
+        scoreButton.setMinimumSize(new java.awt.Dimension(83, 23));
+        scoreButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scoreButtonActionPerformed(evt);
+            }
+        });
+
+        elementsCheckBox.setSelected(true);
+        elementsCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("method-element-count"));
+        elementsCheckBox.setEnabled(false);
+        elementsCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                checkBoxStateChanged(evt);
+            }
+        });
+
+        closenessIndexesCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("method-closeness-indexes"));
+        closenessIndexesCheckBox.setEnabled(false);
+        closenessIndexesCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                checkBoxStateChanged(evt);
+            }
+        });
+
+        importanceIndexesCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("method-importance-indexes"));
+        importanceIndexesCheckBox.setEnabled(false);
+        importanceIndexesCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                checkBoxStateChanged(evt);
+            }
+        });
+
+        propositionChainsCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("method-proposition-chains"));
+        propositionChainsCheckBox.setEnabled(false);
+        propositionChainsCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                checkBoxStateChanged(evt);
+            }
+        });
+
+        errorAnalysisCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("method-error-analysis"));
+        errorAnalysisCheckBox.setEnabled(false);
+        errorAnalysisCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                checkBoxStateChanged(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(scoreScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(studentLabel)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(studentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(studentButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(teacherLabel)
+                                        .addGap(183, 183, 183))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(teacherTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                                .addComponent(teacherButton)))
+                        .addGap(96, 96, 96))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(scoreButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(importanceIndexesCheckBox)
+                            .addComponent(closenessIndexesCheckBox)
+                            .addComponent(propositionChainsCheckBox)
+                            .addComponent(errorAnalysisCheckBox)
+                            .addComponent(elementsCheckBox))
+                        .addContainerGap())))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(studentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(studentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(studentButton))
+                .addGap(18, 18, 18)
+                .addComponent(teacherLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(teacherTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(teacherButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scoreButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(elementsCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(closenessIndexesCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(importanceIndexesCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(propositionChainsCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(errorAnalysisCheckBox)))
+                .addGap(18, 18, 18)
+                .addComponent(scoreScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void studentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_studentButtonActionPerformed
+        String fileName = this.getSelectedFileName();
+        if (fileName != null) {
+            this.studentTextField.setText(fileName);
+            this.textFieldsChanged(null);
+        }
+    }//GEN-LAST:event_studentButtonActionPerformed
+
+    private void scoreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoreButtonActionPerformed
+        try {
+            ConceptMap studentMap, teacherMap;
+            ConceptMapScorer scorer;
+            if (this.teacherTextField.getText().length() > 0 && this.studentTextField.getText().length() > 0) {
+                studentMap = new ConceptMap(this.studentTextField.getText());
+                teacherMap = new ConceptMap(this.teacherTextField.getText());
+                scorer = new ConceptMapScorer(studentMap, teacherMap);
+            } else if (this.studentTextField.getText().length() > 0) {
+                studentMap = new ConceptMap(this.studentTextField.getText());
+                scorer = new ConceptMapScorer(studentMap);
+            } else throw new UnsupportedOperationException(
+                    TranslationDictionary.getInstance().getTranslation("invalid-file")
+                    );
+
+            String resultString = new String();
+            if (this.elementsCheckBox.isSelected())
+                resultString += scorer.countConceptMapsElements() + "\n\n";
+            if (this.closenessIndexesCheckBox.isSelected())
+                resultString += scorer.compareConceptMapsUsingClosenessIndexes() + "\n\n";
+            if (this.importanceIndexesCheckBox.isSelected())
+                resultString += scorer.compareConceptMapsUsingImportanceIndexes() + "\n\n";
+            if (this.propositionChainsCheckBox.isSelected())
+                resultString += scorer.compareConceptMapsUsingPropositionChains() + "\n\n";
+            if (this.errorAnalysisCheckBox.isSelected())
+                resultString += scorer.compareConceptMapsUsingErrorAnalysis() + "\n\n";
+            resultString = resultString.substring(0, resultString.length() - 2);
+
+            this.scoreTextArea.setText(resultString);
+            this.scoreTextArea.setEnabled(true);
+            System.out.println("Scored concept map.");
+        } catch (UnsupportedOperationException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage(),
+                    TranslationDictionary.getInstance().getTranslation("error"),
+                    JOptionPane.ERROR_MESSAGE
+                    );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    TranslationDictionary.getInstance().getTranslation("invalid-file"),
+                    TranslationDictionary.getInstance().getTranslation("error"),
+                    JOptionPane.ERROR_MESSAGE
+                    );
+        }
+    }//GEN-LAST:event_scoreButtonActionPerformed
+
+    private void teacherButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teacherButtonActionPerformed
+        String fileName = this.getSelectedFileName();
+        if (fileName != null) {
+            this.teacherTextField.setText(fileName);
+            this.textFieldsChanged(null);
+        }
+    }//GEN-LAST:event_teacherButtonActionPerformed
+
+    private void textFieldsChanged(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldsChanged
+        boolean state = (this.teacherTextField.getText().length() > 0 && this.studentTextField.getText().length() > 0) ? true : false;
+        if ((state == true && !this.elementsCheckBox.isEnabled()) || (state == false && this.elementsCheckBox.isEnabled())) {
+            this.elementsCheckBox.setEnabled(state);
+            this.closenessIndexesCheckBox.setEnabled(state);
+            this.importanceIndexesCheckBox.setEnabled(state);
+            this.propositionChainsCheckBox.setEnabled(state);
+            this.errorAnalysisCheckBox.setEnabled(state);
+
+            this.elementsCheckBox.setSelected(true);
+            this.closenessIndexesCheckBox.setSelected(state);
+            this.importanceIndexesCheckBox.setSelected(state);
+            this.propositionChainsCheckBox.setSelected(state);
+            this.errorAnalysisCheckBox.setSelected(state);
+        }
+
+        if (this.studentTextField.getText().length() > 0
+                && (this.elementsCheckBox.isSelected() ||
+                    this.closenessIndexesCheckBox.isSelected() ||
+                    this.importanceIndexesCheckBox.isSelected() ||
+                    this.propositionChainsCheckBox.isSelected() ||
+                    this.errorAnalysisCheckBox.isSelected())) this.scoreButton.setEnabled(true);
+        else this.scoreButton.setEnabled(false);
+    }//GEN-LAST:event_textFieldsChanged
+
+    private void checkBoxStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_checkBoxStateChanged
+        this.textFieldsChanged(null);
+    }//GEN-LAST:event_checkBoxStateChanged
+
+    /**
+    * @param args The command line arguments
+    */
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (Exception e) {}
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                if (TranslationDictionary.getInstance() == null) {
+                    JOptionPane.showMessageDialog(
+                        null,
+                        TranslationDictionary.ERROR_TEXT,
+                        TranslationDictionary.ERROR,
+                        JOptionPane.ERROR_MESSAGE
+                        );
+                    System.exit(0);
+                }
+                new MainWindow().setVisible(true);
+            }
+        });
+        System.out.println("Created main application window.");
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox closenessIndexesCheckBox;
+    private javax.swing.JCheckBox elementsCheckBox;
+    private javax.swing.JCheckBox errorAnalysisCheckBox;
+    private javax.swing.JCheckBox importanceIndexesCheckBox;
+    private javax.swing.JCheckBox propositionChainsCheckBox;
+    private javax.swing.JButton scoreButton;
+    private javax.swing.JScrollPane scoreScrollPane;
+    private javax.swing.JTextArea scoreTextArea;
+    private javax.swing.JButton studentButton;
+    private javax.swing.JLabel studentLabel;
+    private javax.swing.JTextField studentTextField;
+    private javax.swing.JButton teacherButton;
+    private javax.swing.JLabel teacherLabel;
+    private javax.swing.JTextField teacherTextField;
+    // End of variables declaration//GEN-END:variables
+}
