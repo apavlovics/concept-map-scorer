@@ -1,51 +1,46 @@
 package lv.continuum.scorer.common;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-/**
- * @author Andrey Pavlovich
- */
 public class TranslationDictionary {
-    final public static String TRANSLATION_PROPERTIES_PATH = "properties/translation.properties";
-    final public static String ERROR = "Error";
-    final public static String TRANSLATION_ERROR = "Translation error";
-    final public static String ERROR_TEXT = "Translation properties cannot be initialised.";
 
-    private static Properties translationProperties;
-    private static TranslationDictionary instance = null;
+    private static final String PROPERTIES_PATH = "properties/translation.properties";
+    private static final Properties properties = new Properties();
 
-    protected TranslationDictionary() throws IOException {
-        translationProperties = new Properties();
-        FileInputStream fis = new FileInputStream(getClass().getClassLoader().getResource(TRANSLATION_PROPERTIES_PATH).getFile());
-        translationProperties.load(fis);
-        fis.close();
+    private static TranslationDictionary instance;
+
+    protected TranslationDictionary() {
+        try {
+            var file = getClass().getClassLoader().getResource(PROPERTIES_PATH).getFile();
+            try (var fis = new FileInputStream(file)) {
+                properties.load(fis);
+            }
+        } catch (IOException | NullPointerException e) {
+            throw new IllegalStateException("Translation properties cannot be initialised", e);
+        }
     }
 
     /**
-     * Provides access to the TranslationDictionary instance.
-     * @return the TranslationDictionary instance or null, if initialisation has failed
+     * Initializes and provides access to the {@link TranslationDictionary} singleton.
+     *
+     * @return the {@link TranslationDictionary} singleton.
+     * @throws IllegalStateException if initialization has failed.
      */
     public static TranslationDictionary getInstance() {
         if (instance == null) {
-            try {
-                instance = new TranslationDictionary();
-            } catch (Exception e) {
-                System.out.println(ERROR_TEXT);
-                return null;
-            }
+            instance = new TranslationDictionary();
         }
-    return instance;
+        return instance;
     }
 
+    // TODO Add @NotNull to key
     public String getTranslation(String key) {
-        String value;
-        value = translationProperties.getProperty(key);
-        if (value != null) return value;
-        value = translationProperties.getProperty("default");
-        if (value != null) return value;
-        return TRANSLATION_ERROR;
+        var value = properties.getProperty(key);
+        if (value == null) {
+            value = key;
+        }
+        return value;
     }
 }
