@@ -2,15 +2,13 @@ package lv.continuum.scorer.domain;
 
 import lv.continuum.scorer.common.Translations;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Concept {
 
     private static final Translations translations = Translations.getInstance();
-
-    // TODO Address thread safety concerns
-    private static final List<String> names = new ArrayList<>();
+    private static final List<String> names = new CopyOnWriteArrayList<>();
 
     private final int id;
     private final String name;

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -17,104 +18,103 @@ import lv.continuum.scorer.common.Translations;
  * @author Andrey Pavlovich
  */
 public class ConceptMap {
-    private List<Concept> concepts;
-    private List<Relationship> relationships;
 
-    final public static String INVALID_XML = Translations.getInstance().get("invalid-xml");
-    final public static String MAP_NO_CONCEPTS = Translations.getInstance().get("map-no-concepts");
-    final public static String MAP_DUPLICATE_CONCEPTS = Translations.getInstance().get("map-duplicate-concepts");
-    final public static String MAP_NO_RELATIONSHIPS = Translations.getInstance().get("map-no-relationships");
-    final public static String MAP_INVALID_RELATIONSHIP = Translations.getInstance().get("map-invalid-relationship");
+    private static final Translations translations = Translations.getInstance();
+
+    private static final String INVALID_XML = translations.get("invalid-xml");
+    private static final String MAP_NO_CONCEPTS = translations.get("map-no-concepts");
+    private static final String MAP_DUPLICATE_CONCEPTS = translations.get("map-duplicate-concepts");
+    private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
+    private static final String MAP_INVALID_RELATIONSHIP = translations.get("map-invalid-relationship");
+
+    private final List<Concept> concepts = new ArrayList<>();
+    private final List<Relationship> relationships = new ArrayList<>();
 
     public ConceptMap(String xml) throws Exception {
-            File file = new File(xml);
-            NodeList nodeList;
-            Node node;
+        var builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        var file = new File(xml);
+        var doc = builder.parse(file);
+        doc.getDocumentElement().normalize();
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-            doc.getDocumentElement().normalize();
+        if (doc.getDocumentElement().getNodeName().equals("conceptmap")) {
+            System.out.println("Started parsing standard XML file.");
 
-            if (doc.getDocumentElement().getNodeName().equals("conceptmap")) {
-                System.out.println("Started parsing standard xml file.");
-                nodeList = doc.getElementsByTagName("concept");
-                if (nodeList.getLength() == 0)
-                    throw new UnsupportedOperationException(String.format(MAP_NO_CONCEPTS, file.getName()));
-                this.concepts = new ArrayList();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    node = nodeList.item(i);
-                    if (this.containsConcept(node.getTextContent()))
+            var concepts = doc.getElementsByTagName("concept");
+            if (concepts.getLength() == 0) {
+                throw new UnsupportedOperationException(String.format(MAP_NO_CONCEPTS, file.getName()));
+            }
+            for (int i = 0; i < concepts.getLength(); i++) {
+                var item = concepts.item(i);
+                if (this.containsConcept(item.getTextContent())) {
+                    throw new UnsupportedOperationException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
+                }
+                this.concepts.add(new Concept(item.getTextContent()));
+            }
+
+            var relationships = doc.getElementsByTagName("relationship");
+            if (relationships.getLength() == 0) {
+                throw new UnsupportedOperationException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
+            }
+            for (int i = 0; i < relationships.getLength(); i++) {
+                var item = relationships.item(i);
+                var from = Integer.parseInt(item.getAttributes().getNamedItem("from").getNodeValue());
+                var to = Integer.parseInt(item.getAttributes().getNamedItem("to").getNodeValue());
+                var fromConcept = this.concepts.get(from).getId();
+                var toConcept = this.concepts.get(to).getId();
+                this.relationships.add(new Relationship(fromConcept, toConcept, item.getTextContent()));
+            }
+
+            System.out.println("Finished parsing standard XML file.");
+        } else if (doc.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
+            System.out.println("Started parsing IKAS XML file.");
+
+            var elements = doc.getElementsByTagName("element");
+            for (int i = 0; i < elements.getLength(); i++) {
+                var item = elements.item(i);
+                if (item.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
+                    if (containsConcept(item.getAttributes().getNamedItem("value").getNodeValue())) {
                         throw new UnsupportedOperationException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
-                    this.concepts.add(new Concept(node.getTextContent()));
-                }
-
-                nodeList = doc.getElementsByTagName("relationship");
-                if (nodeList.getLength() == 0)
-                    throw new UnsupportedOperationException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
-                int from, fromConcept;
-                int to, toConcept;
-                this.relationships = new ArrayList();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    node = nodeList.item(i);
-                    from = Integer.parseInt(node.getAttributes().getNamedItem("from").getNodeValue());
-                    to   = Integer.parseInt(node.getAttributes().getNamedItem("to").getNodeValue());
-                    fromConcept = this.concepts.get(from).getId();
-                    toConcept   = this.concepts.get(to).getId();
-                    this.relationships.add(new Relationship(fromConcept, toConcept, node.getTextContent()));
-                }
-                System.out.println("Finished parsing standard xml file.");
-            } else if(doc.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
-                System.out.println("Started parsing ikas xml file.");
-                nodeList = doc.getElementsByTagName("element");
-                this.concepts = new ArrayList();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    node = nodeList.item(i);
-                    if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
-                        if (this.containsConcept(node.getAttributes().getNamedItem("value").getNodeValue()))
-                            throw new UnsupportedOperationException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
-                        this.concepts.add(new Concept(node.getAttributes().getNamedItem("value").getNodeValue()));
                     }
+                    this.concepts.add(new Concept(item.getAttributes().getNamedItem("value").getNodeValue()));
                 }
-                if (this.conceptCount() == 0)
-                    throw new UnsupportedOperationException(String.format(MAP_NO_CONCEPTS, file.getName()));
+            }
+            if (this.conceptCount() == 0) {
+                throw new UnsupportedOperationException(String.format(MAP_NO_CONCEPTS, file.getName()));
+            }
 
-                Node elementNode;
-                NodeList elementNodeList;
-                String from, to, name;
-                int fromConcept, toConcept;
-                this.relationships = new ArrayList();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    node = nodeList.item(i);
-                    if (node.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
-                        from = null;
-                        to = null;
-                        fromConcept = -1;
-                        toConcept = -1;
-
-                        name = node.getAttributes().getNamedItem("value").getNodeValue();
-                        elementNodeList = ((Element) node).getElementsByTagName("element");
-                        for (int j = 0; j < elementNodeList.getLength(); j++) {
-                            elementNode = elementNodeList.item(j);
-                            if (elementNode.getAttributes().getNamedItem("name").getNodeValue().equals("source"))
-                                from = elementNode.getAttributes().getNamedItem("value").getNodeValue();
-                            if (elementNode.getAttributes().getNamedItem("name").getNodeValue().equals("target"))
-                                to = elementNode.getAttributes().getNamedItem("value").getNodeValue();
-                        }
-                        if (from == null || to == null)
-                            throw new UnsupportedOperationException(String.format(MAP_INVALID_RELATIONSHIP, file.getName()));
-
-                        for (Concept c : this.concepts) {
-                            if (c.getName().equals(from)) fromConcept = c.getId();
-                            if (c.getName().equals(to)) toConcept = c.getId();
-                        }
-                        this.relationships.add(new Relationship(fromConcept, toConcept, name));
+            for (int i = 0; i < elements.getLength(); i++) {
+                var item = elements.item(i);
+                if (item.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
+                    String from = null;
+                    String to = null;
+                    var name = item.getAttributes().getNamedItem("value").getNodeValue();
+                    var itemRelationships = ((Element) item).getElementsByTagName("element");
+                    for (int j = 0; j < itemRelationships.getLength(); j++) {
+                        var itemRelationship = itemRelationships.item(j);
+                        if (itemRelationship.getAttributes().getNamedItem("name").getNodeValue().equals("source"))
+                            from = itemRelationship.getAttributes().getNamedItem("value").getNodeValue();
+                        if (itemRelationship.getAttributes().getNamedItem("name").getNodeValue().equals("target"))
+                            to = itemRelationship.getAttributes().getNamedItem("value").getNodeValue();
                     }
+                    if (from == null || to == null) {
+                        throw new UnsupportedOperationException(String.format(MAP_INVALID_RELATIONSHIP, file.getName()));
+                    }
+
+                    var fromConcept = -1;
+                    var toConcept = -1;
+                    for (Concept c : this.concepts) {
+                        if (c.getName().equals(from)) fromConcept = c.getId();
+                        if (c.getName().equals(to)) toConcept = c.getId();
+                    }
+                    this.relationships.add(new Relationship(fromConcept, toConcept, name));
                 }
-                if (this.relationshipCount() == 0)
-                    throw new UnsupportedOperationException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
-                System.out.println("Finished parsing ikas xml file.");
-            } else throw new UnsupportedOperationException(String.format(INVALID_XML, file.getName()));
+            }
+            if (this.relationshipCount() == 0) {
+                throw new UnsupportedOperationException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
+            }
+
+            System.out.println("Finished parsing IKAS XML file.");
+        } else throw new UnsupportedOperationException(String.format(INVALID_XML, file.getName()));
     }
 
     final public int conceptCount() {
@@ -127,7 +127,7 @@ public class ConceptMap {
 
     public int levelCount() {
         int result = 0;
-        Map<Integer, List> incomingRelationships = this.incomingRelationships();
+        var incomingRelationships = incomingRelationships();
         if (incomingRelationships.containsValue(null)) {
             int sizeCheck = 0;
             List<Integer> currentConcepts = new ArrayList<Integer>();
@@ -135,13 +135,14 @@ public class ConceptMap {
             while (currentConcepts.size() < this.conceptCount()) {
                 sizeCheck = currentConcepts.size();
                 currentConcepts.removeAll(currentConcepts);
-                for (Map.Entry<Integer, List> ir : incomingRelationships.entrySet())
+                for (var ir : incomingRelationships.entrySet())
                     if (ir.getValue() == null) currentConcepts.add(ir.getKey());
                 if (currentConcepts.size() == sizeCheck) return 0;
-                for (Map.Entry<Integer, List> ir : incomingRelationships.entrySet()) {
+                for (var ir : incomingRelationships.entrySet()) {
                     if (ir.getValue() != null) {
                         currentRelationships = ir.getValue();
-                        for (Integer cc : currentConcepts) if (currentRelationships.contains(cc)) ir.setValue(null);
+                        for (Integer cc : currentConcepts)
+                            if (currentRelationships.contains(cc)) ir.setValue(null);
                     }
                 }
                 result++;
@@ -174,11 +175,11 @@ public class ConceptMap {
         int result = 0;
         boolean isCycle;
         List<Integer> currentConcepts = new ArrayList<Integer>();
-        List<Integer> subnetConcepts  = new ArrayList<Integer>();
+        List<Integer> subnetConcepts = new ArrayList<Integer>();
         List<Integer> currentOutgoingRelationships;
         List<Integer> currentIncomingRelationships;
-        Map<Integer, List> outgoingRelationships = this.outgoingRelationships();
-        Map<Integer, List> incomingRelationships = this.incomingRelationships();
+        var outgoingRelationships = this.outgoingRelationships();
+        var incomingRelationships = this.incomingRelationships();
 
         int currentId = this.getFirstConceptId();
         while (currentConcepts.size() < this.conceptCount()) {
@@ -195,7 +196,8 @@ public class ConceptMap {
                             for (Integer cir : currentIncomingRelationships)
                                 if (!currentConcepts.contains(cir) &&
                                         subnetConcepts.contains(cir) &&
-                                        subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor)) isCycle = true;
+                                        subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor))
+                                    isCycle = true;
                             if (isCycle) result++;
                         }
                     }
@@ -242,30 +244,32 @@ public class ConceptMap {
         return result;
     }
 
-    public Map<Integer, List> outgoingRelationships() {
-        Map<Integer, List> resultMap = new HashMap<Integer, List>();
-        List<Integer> i;
-        for (Concept c : this.concepts) resultMap.put(c.getId(), null);
-        for (Relationship r : this.relationships) {
-            i = resultMap.get(r.getFromConcept());
-            if (i == null) i = new ArrayList<Integer>();
-            if (!i.contains(r.getToConcept())) i.add(r.getToConcept());
-            resultMap.put(r.getFromConcept(), i);
+    public Map<Integer, List<Integer>> outgoingRelationships() {
+        var relationships = new HashMap<Integer, List<Integer>>();
+        for (Concept c : this.concepts) {
+            relationships.put(c.getId(), null);
         }
-        return resultMap;
+        for (Relationship r : this.relationships) {
+            var ids = relationships.get(r.getFromConcept());
+            if (ids == null) ids = new ArrayList<>();
+            if (!ids.contains(r.getToConcept())) ids.add(r.getToConcept());
+            relationships.put(r.getFromConcept(), ids);
+        }
+        return relationships;
     }
 
-    public Map<Integer, List> incomingRelationships() {
-        Map<Integer, List> resultMap = new HashMap<Integer, List>();
-        List<Integer> i;
-        for (Concept c : this.concepts) resultMap.put(c.getId(), null);
-        for (Relationship r : this.relationships) {
-            i = resultMap.get(r.getToConcept());
-            if (i == null) i = new ArrayList<Integer>();
-            if (!i.contains(r.getFromConcept())) i.add(r.getFromConcept());
-            resultMap.put(r.getToConcept(), i);
+    public Map<Integer, List<Integer>> incomingRelationships() {
+        var relationships = new HashMap<Integer, List<Integer>>();
+        for (Concept c : this.concepts) {
+            relationships.put(c.getId(), null);
         }
-        return resultMap;
+        for (Relationship r : this.relationships) {
+            var ids = relationships.get(r.getToConcept());
+            if (ids == null) ids = new ArrayList<>();
+            if (!ids.contains(r.getFromConcept())) ids.add(r.getFromConcept());
+            relationships.put(r.getToConcept(), ids);
+        }
+        return relationships;
     }
 
     public Map<Integer, List> allRelationships() {
@@ -294,8 +298,8 @@ public class ConceptMap {
         List<String> i;
         List<Integer> currentOutgoingConcepts = new ArrayList();
         List<Integer> currentIncomingConcepts = new ArrayList();
-        Map<Integer, List> outgoingRelationships = this.outgoingRelationships();
-        Map<Integer, List> incomingRelationships = this.incomingRelationships();
+        var outgoingRelationships = this.outgoingRelationships();
+        var incomingRelationships = this.incomingRelationships();
 
         for (Relationship r : this.relationships) {
             currentOutgoingConcepts.removeAll(currentOutgoingConcepts);
@@ -303,28 +307,30 @@ public class ConceptMap {
             currentOutgoingConcepts.add(r.getToConcept());
             currentIncomingConcepts.add(r.getFromConcept());
 
-            i = new ArrayList<String>();
-            keyPath = Integer.toString(r.getFromConcept()) + " " + Integer.toString(r.getToConcept());
+            i = new ArrayList<>();
+            keyPath = r.getFromConcept() + " " + r.getToConcept();
             i.add(keyPath);
 
             currentConcept = 0;
             while (currentConcept < currentOutgoingConcepts.size()) {
                 List<Integer> currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(currentConcept++));
-                if (currentOutgoingRelationships == null) currentOutgoingRelationships = new ArrayList<Integer>();
+                if (currentOutgoingRelationships == null)
+                    currentOutgoingRelationships = new ArrayList<>();
                 for (Integer cor : currentOutgoingRelationships) {
                     if (!currentOutgoingConcepts.contains(cor)) currentOutgoingConcepts.add(cor);
-                    valuePath = Integer.toString(r.getFromConcept()) + " " +  Integer.toString(cor);
+                    valuePath = r.getFromConcept() + " " + cor;
                     if (!i.contains(valuePath)) i.add(valuePath);
                 }
             }
             currentConcept = 0;
             while (currentConcept < currentIncomingConcepts.size()) {
                 List<Integer> currentIncomingRelationships = incomingRelationships.get(currentIncomingConcepts.get(currentConcept++));
-                if (currentIncomingRelationships == null) currentIncomingRelationships = new ArrayList<Integer>();
+                if (currentIncomingRelationships == null)
+                    currentIncomingRelationships = new ArrayList<>();
                 for (Integer cir : currentIncomingRelationships) {
                     if (!currentIncomingConcepts.contains(cir)) currentIncomingConcepts.add(cir);
                     for (Integer coc : currentOutgoingConcepts) {
-                        valuePath = Integer.toString(cir) + " " + Integer.toString(coc);
+                        valuePath = cir + " " + coc;
                         if (!i.contains(valuePath)) i.add(valuePath);
                     }
                 }
@@ -344,12 +350,12 @@ public class ConceptMap {
 
         List<Integer> currentConcepts = new ArrayList<Integer>();
         List<Integer> currentOutgoingRelationships;
-        Map<Integer, List> outgoingRelationships = this.outgoingRelationships();
-        Map<Integer, List> incomingRelationships = this.incomingRelationships();
+        var outgoingRelationships = this.outgoingRelationships();
+        var incomingRelationships = this.incomingRelationships();
 
         int currentConcept;
         int currentConceptIndex;
-        for (Map.Entry<Integer, List> ir : incomingRelationships.entrySet())
+        for (var ir : incomingRelationships.entrySet())
             if (ir.getValue() == null) {
                 currentConcepts.removeAll(currentConcepts);
                 currentConcepts.add(ir.getKey());
@@ -366,13 +372,12 @@ public class ConceptMap {
                                 path.add(currentConcept);
                                 path.add(cor);
                                 resultList.add(path);
-                            }
-                            else {
+                            } else {
                                 toAddResultList.removeAll(toAddResultList);
                                 for (ArrayList<Integer> rl : resultList)
                                     if (rl.indexOf(currentConcept) == rl.size() - 1) {
                                         if (!toRemoveResultList.contains(rl)) toRemoveResultList.add(rl);
-                                        newPath = (ArrayList)rl.clone();
+                                        newPath = (ArrayList) rl.clone();
                                         newPath.add(cor);
                                         toAddResultList.add(newPath);
                                     }

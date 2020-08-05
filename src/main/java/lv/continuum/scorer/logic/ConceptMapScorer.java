@@ -164,8 +164,8 @@ public class ConceptMapScorer {
         if (!this.similarConcepts())
             return Translations.getInstance().get("maps-different-concepts-error-analysis");
 
-        Map<Integer, List> studentOutgoingRelationships = this.studentMap.outgoingRelationships();
-        Map<Integer, List> teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
+        var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
+        var teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
 
         double resultIndex, w1, w2, weightedResultIndex;
         int totalRelationships = (int)Math.pow(studentOutgoingRelationships.keySet().size(), 2);
@@ -173,7 +173,7 @@ public class ConceptMapScorer {
         boolean relationshipFound;
 
         List<Integer> studentRelationships, teacherRelationships;
-        for (Map.Entry<Integer, List> sor : studentOutgoingRelationships.entrySet()) {
+        for (var sor : studentOutgoingRelationships.entrySet()) {
             if (sor.getValue() == null) sor.setValue(new ArrayList<Integer>());
             if (teacherOutgoingRelationships.get(sor.getKey()) == null) teacherOutgoingRelationships.put(sor.getKey(), new ArrayList<Integer>());
             studentRelationships = sor.getValue();
@@ -266,8 +266,8 @@ public class ConceptMapScorer {
 
     private boolean similarConcepts() {
         this.checkConceptMaps();
-        Map<Integer, List> studentOutgoingRelationships = this.studentMap.outgoingRelationships();
-        Map<Integer, List> teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
+        var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
+        var teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
 
         if (studentOutgoingRelationships.keySet().size() != teacherOutgoingRelationships.keySet().size()) return false;
         int initialSize = studentOutgoingRelationships.keySet().size();
