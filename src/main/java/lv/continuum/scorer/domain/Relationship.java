@@ -1,6 +1,6 @@
 package lv.continuum.scorer.domain;
 
-import lv.continuum.scorer.common.TranslationDictionary;
+import lv.continuum.scorer.common.Translations;
 
 /**
  * @author Andrey Pavlovich
@@ -12,7 +12,7 @@ public class Relationship {
     private int toConcept;
     private String name;
 
-    final public static String CONCEPT_NEGATIVE_ID = TranslationDictionary.getInstance().getTranslation("concept-negative-id");
+    final public static String CONCEPT_NEGATIVE_ID = Translations.getInstance().get("concept-negative-id");
 
     public Relationship(int fromConcept, int toConcept) {
         this.setId();

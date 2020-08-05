@@ -5,7 +5,7 @@ import lv.continuum.scorer.domain.*;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import lv.continuum.scorer.common.TranslationDictionary;
+import lv.continuum.scorer.common.Translations;
 
 /**
  * @author Andrey Pavlovich
@@ -14,9 +14,9 @@ public class ConceptMapScorer {
     private ConceptMap studentMap;
     private ConceptMap teacherMap;
 
-    final public static String NO_MAP = TranslationDictionary.getInstance().getTranslation("no-map");
-    final public static String NO_STUDENT_MAP = TranslationDictionary.getInstance().getTranslation("no-student-map");
-    final public static String NO_TEACHER_MAP = TranslationDictionary.getInstance().getTranslation("no-teacher-map");
+    final public static String NO_MAP = Translations.getInstance().get("no-map");
+    final public static String NO_STUDENT_MAP = Translations.getInstance().get("no-student-map");
+    final public static String NO_TEACHER_MAP = Translations.getInstance().get("no-teacher-map");
 
     public ConceptMapScorer(ConceptMap studentMap) {
         this.setStudentMap(studentMap);
@@ -38,12 +38,12 @@ public class ConceptMapScorer {
         else
             return this.countConceptMapElements(
                     this.studentMap,
-                    TranslationDictionary.getInstance().getTranslation("student-map-contains")
+                    Translations.getInstance().get("student-map-contains")
                     )
                 + "\n\n"
                 + this.countConceptMapElements(
                     this.teacherMap,
-                    TranslationDictionary.getInstance().getTranslation("teacher-map-contains")
+                    Translations.getInstance().get("teacher-map-contains")
                     );
     }
 
@@ -87,13 +87,13 @@ public class ConceptMapScorer {
         for (Map.Entry<Integer, List> par : teacherAllRelationships.entrySet()) closenessIndexes.add(0.0);
         for (Double ci : closenessIndexes) resultIndex += ci;
         resultIndex = resultIndex / closenessIndexes.size();
-        return String.format(TranslationDictionary.getInstance().getTranslation("maps-similarity-closeness-indexes"), resultIndex);
+        return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), resultIndex);
     }
 
     public String compareConceptMapsUsingImportanceIndexes() {
         this.checkConceptMaps();
         if (!this.similarConcepts())
-            return TranslationDictionary.getInstance().getTranslation("maps-different-concepts-importance-indexes");
+            return Translations.getInstance().get("maps-different-concepts-importance-indexes");
 
         double resultIndex = 0.0;
         int sumIntersection = 0, sumUnion = 0;
@@ -125,19 +125,19 @@ public class ConceptMapScorer {
         for (Map.Entry<String, List> sap : studentAllPaths.entrySet()) sumUnion += sap.getValue().size();
         for (Map.Entry<String, List> tap : teacherAllPaths.entrySet()) sumUnion += tap.getValue().size();
         resultIndex = (double)sumIntersection / (double)sumUnion;
-        return String.format(TranslationDictionary.getInstance().getTranslation("maps-similarity-importance-indexes"), resultIndex);
+        return String.format(Translations.getInstance().get("maps-similarity-importance-indexes"), resultIndex);
     }
 
     public String compareConceptMapsUsingPropositionChains() {
         this.checkConceptMaps();
         if (!this.similarConcepts())
-            return TranslationDictionary.getInstance().getTranslation("maps-different-concepts-proposition-chains");
+            return Translations.getInstance().get("maps-different-concepts-proposition-chains");
 
         double resultIndex = 0.0;
         List<ArrayList> studentLongestPaths = this.studentMap.longestPaths();
         List<ArrayList> teacherLongestPaths = this.teacherMap.longestPaths();
         if (studentLongestPaths == null || teacherLongestPaths == null)
-            return TranslationDictionary.getInstance().getTranslation("maps-cycles-proposition-chains");
+            return Translations.getInstance().get("maps-cycles-proposition-chains");
 
         int teacherMapScore = 0, studentMapScore = 0;
         double breakScore = 0.0;
@@ -156,13 +156,13 @@ public class ConceptMapScorer {
             breakScore += (double)approvedCurrentBreakScore / (double)(tlp.size() - 1);
         }
         resultIndex = (double)(studentMapScore - breakScore) / (double)teacherMapScore;
-        return String.format(TranslationDictionary.getInstance().getTranslation("maps-similarity-proposition-chains"), resultIndex);
+        return String.format(Translations.getInstance().get("maps-similarity-proposition-chains"), resultIndex);
     }
 
     public String compareConceptMapsUsingErrorAnalysis() {
         this.checkConceptMaps();
         if (!this.similarConcepts())
-            return TranslationDictionary.getInstance().getTranslation("maps-different-concepts-error-analysis");
+            return Translations.getInstance().get("maps-different-concepts-error-analysis");
 
         Map<Integer, List> studentOutgoingRelationships = this.studentMap.outgoingRelationships();
         Map<Integer, List> teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
@@ -204,62 +204,62 @@ public class ConceptMapScorer {
                 - w2 * (double)incorrectRelationships
                 - w1 * (double)missingRelationships) / (double)totalRelationships;
 
-        return String.format(TranslationDictionary.getInstance().getTranslation("maps-similarity-error-analysis"), resultIndex)
-                + String.format(TranslationDictionary.getInstance().getTranslation("maps-similarity-error-analysis-weighted"), weightedResultIndex);
+        return String.format(Translations.getInstance().get("maps-similarity-error-analysis"), resultIndex)
+                + String.format(Translations.getInstance().get("maps-similarity-error-analysis-weighted"), weightedResultIndex);
     }
 
     private String countConceptMapElements(ConceptMap map, String title) {
         if (map == null) throw new UnsupportedOperationException(NO_MAP);
 
-        String returnString = (title == null) ? TranslationDictionary.getInstance().getTranslation("map-contains") : title;
+        String returnString = (title == null) ? Translations.getInstance().get("map-contains") : title;
         int value;
         String format;
         value = map.conceptCount();
-        format = TranslationDictionary.getInstance().getTranslation("concepts");
-        if (value == 0) format = TranslationDictionary.getInstance().getTranslation("concepts-0");
-        if (value == 1) format = TranslationDictionary.getInstance().getTranslation("concepts-1");
+        format = Translations.getInstance().get("concepts");
+        if (value == 0) format = Translations.getInstance().get("concepts-0");
+        if (value == 1) format = Translations.getInstance().get("concepts-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.relationshipCount();
-        format = TranslationDictionary.getInstance().getTranslation("relationships");
-        if (value == 0) format = TranslationDictionary.getInstance().getTranslation("relationships-0");
-        if (value == 1) format = TranslationDictionary.getInstance().getTranslation("relationships-1");
+        format = Translations.getInstance().get("relationships");
+        if (value == 0) format = Translations.getInstance().get("relationships-0");
+        if (value == 1) format = Translations.getInstance().get("relationships-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.levelCount();
-        format = TranslationDictionary.getInstance().getTranslation("levels");
-        if (value == 0) format = TranslationDictionary.getInstance().getTranslation("levels-0");
-        if (value == 1) format = TranslationDictionary.getInstance().getTranslation("levels-1");
+        format = Translations.getInstance().get("levels");
+        if (value == 0) format = Translations.getInstance().get("levels-0");
+        if (value == 1) format = Translations.getInstance().get("levels-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.branchCount();
-        format = TranslationDictionary.getInstance().getTranslation("branches");
-        if (value == 0) format = TranslationDictionary.getInstance().getTranslation("branches-0");
-        if (value == 1) format = TranslationDictionary.getInstance().getTranslation("branches-1");
+        format = Translations.getInstance().get("branches");
+        if (value == 0) format = Translations.getInstance().get("branches-0");
+        if (value == 1) format = Translations.getInstance().get("branches-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.exampleCount();
-        format = TranslationDictionary.getInstance().getTranslation("examples");
-        if (value == 0) format = TranslationDictionary.getInstance().getTranslation("examples-0");
-        if (value == 1) format = TranslationDictionary.getInstance().getTranslation("examples-1");
+        format = Translations.getInstance().get("examples");
+        if (value == 0) format = Translations.getInstance().get("examples-0");
+        if (value == 1) format = Translations.getInstance().get("examples-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.cycleCount();
-        format = TranslationDictionary.getInstance().getTranslation("cycles");
-        if (value == 0) format = TranslationDictionary.getInstance().getTranslation("cycles-0");
-        if (value == 1) format = TranslationDictionary.getInstance().getTranslation("cycles-1");
+        format = Translations.getInstance().get("cycles");
+        if (value == 0) format = Translations.getInstance().get("cycles-0");
+        if (value == 1) format = Translations.getInstance().get("cycles-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.subnetCount();
-        format = TranslationDictionary.getInstance().getTranslation("subnets");
-        if (value == 0) format = TranslationDictionary.getInstance().getTranslation("subnets-0");
-        if (value == 1) format = TranslationDictionary.getInstance().getTranslation("subnets-1");
+        format = Translations.getInstance().get("subnets");
+        if (value == 0) format = Translations.getInstance().get("subnets-0");
+        if (value == 1) format = Translations.getInstance().get("subnets-1");
         returnString += String.format(format, value);
         return returnString;
     }

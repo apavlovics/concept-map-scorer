@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import lv.continuum.scorer.common.TranslationDictionary;
+import lv.continuum.scorer.common.Translations;
 
 /**
  * @author Andrey Pavlovich
@@ -20,11 +20,11 @@ public class ConceptMap {
     private List<Concept> concepts;
     private List<Relationship> relationships;
 
-    final public static String INVALID_XML = TranslationDictionary.getInstance().getTranslation("invalid-xml");
-    final public static String MAP_NO_CONCEPTS = TranslationDictionary.getInstance().getTranslation("map-no-concepts");
-    final public static String MAP_DUPLICATE_CONCEPTS = TranslationDictionary.getInstance().getTranslation("map-duplicate-concepts");
-    final public static String MAP_NO_RELATIONSHIPS = TranslationDictionary.getInstance().getTranslation("map-no-relationships");
-    final public static String MAP_INVALID_RELATIONSHIP = TranslationDictionary.getInstance().getTranslation("map-invalid-relationship");
+    final public static String INVALID_XML = Translations.getInstance().get("invalid-xml");
+    final public static String MAP_NO_CONCEPTS = Translations.getInstance().get("map-no-concepts");
+    final public static String MAP_DUPLICATE_CONCEPTS = Translations.getInstance().get("map-duplicate-concepts");
+    final public static String MAP_NO_RELATIONSHIPS = Translations.getInstance().get("map-no-relationships");
+    final public static String MAP_INVALID_RELATIONSHIP = Translations.getInstance().get("map-invalid-relationship");
 
     public ConceptMap(String xml) throws Exception {
             File file = new File(xml);

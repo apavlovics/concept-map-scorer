@@ -6,18 +6,17 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-public class TranslationDictionary {
+public class Translations {
 
     private static final String PROPERTIES_PATH = "translations/en.properties";
-    private static final Properties PROPERTIES = new Properties();
+    private static final Properties properties = new Properties();
+    private static Translations instance;
 
-    private static TranslationDictionary instance;
-
-    private TranslationDictionary() {
+    private Translations() {
         try {
             var file = getClass().getClassLoader().getResource(PROPERTIES_PATH).getFile();
             try (var fis = new FileInputStream(file)) {
-                PROPERTIES.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
+                properties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
             }
         } catch (IOException | NullPointerException e) {
             throw new IllegalStateException("Translation properties cannot be initialised", e);
@@ -25,22 +24,22 @@ public class TranslationDictionary {
     }
 
     /**
-     * Initializes and provides access to the {@link TranslationDictionary} singleton.
+     * Initializes and provides access to the {@link Translations} singleton.
      *
-     * @return the {@link TranslationDictionary} singleton.
+     * @return the {@link Translations} singleton.
      * @throws IllegalStateException if initialization has failed.
      */
-    public static TranslationDictionary getInstance() {
+    public static Translations getInstance() {
         if (instance == null) {
-            synchronized (TranslationDictionary.class) {
-                if (instance == null) instance = new TranslationDictionary();
+            synchronized (Translations.class) {
+                if (instance == null) instance = new Translations();
             }
         }
         return instance;
     }
 
-    public String getTranslation(String key) {
-        var value = PROPERTIES.getProperty(key);
+    public String get(String key) {
+        var value = properties.getProperty(key);
         if (value == null) value = key;
         return value;
     }

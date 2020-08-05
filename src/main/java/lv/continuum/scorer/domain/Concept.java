@@ -1,13 +1,13 @@
 package lv.continuum.scorer.domain;
 
-import java.util.List;
-import java.util.ArrayList;
+import lv.continuum.scorer.common.Translations;
 
-import lv.continuum.scorer.common.TranslationDictionary;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Concept {
 
-    private static final String CONCEPT_NO_NAME = TranslationDictionary.getInstance().getTranslation("concept-no-name");
+    private static final Translations translations = Translations.getInstance();
 
     // TODO Address thread safety concerns
     private static final List<String> names = new ArrayList<>();
@@ -17,15 +17,15 @@ public class Concept {
 
     public Concept(String name) {
         if (name != null && name.length() > 0) {
-            if (names.contains(name.toLowerCase())) {
-                this.id = names.indexOf(name.toLowerCase());
-                this.name = name;
-            } else {
-                names.add(name.toLowerCase());
-                this.id = names.indexOf(name.toLowerCase());
-                this.name = name;
+            var lowerCaseName = name.toLowerCase();
+            var index = names.indexOf(lowerCaseName);
+            if (index == -1) {
+                names.add(lowerCaseName);
+                index = names.indexOf(lowerCaseName);
             }
-        } else throw new UnsupportedOperationException(CONCEPT_NO_NAME);
+            this.id = index;
+            this.name = name;
+        } else throw new UnsupportedOperationException(translations.get("concept-no-name"));
     }
 
     public int getId() {
@@ -38,8 +38,6 @@ public class Concept {
 
     @Override
     public String toString() {
-        return "Concept „" +
-                this.getName() + "” with id " +
-                this.getId() + ".";
+        return "Concept „" + getName() + "” with id " + getId() + ".";
     }
 }

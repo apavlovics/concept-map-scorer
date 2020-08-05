@@ -1,6 +1,6 @@
 package lv.continuum.scorer.ui;
 
-import lv.continuum.scorer.common.TranslationDictionary;
+import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.logic.ConceptMapScorer;
 
@@ -47,7 +47,7 @@ public class MainWindow extends javax.swing.JFrame {
         errorAnalysisCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle(lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("title"));
+        setTitle(Translations.getInstance().get("title"));
         setBounds(new java.awt.Rectangle(100, 100, 0, 0));
         setResizable(false);
 
@@ -56,8 +56,8 @@ public class MainWindow extends javax.swing.JFrame {
         scoreTextArea.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         scoreTextArea.setLineWrap(true);
         scoreTextArea.setRows(5);
-        scoreTextArea.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("default-text"));
+        scoreTextArea.setText(Translations.getInstance()
+                .get("default-text"));
         scoreTextArea.setWrapStyleWord(true);
         scoreTextArea.setDisabledTextColor(new java.awt.Color(140, 137, 126));
         scoreTextArea.setEnabled(false);
@@ -84,7 +84,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         studentButton.setText(
-                lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("browse"));
+                Translations.getInstance().get("browse"));
         studentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 studentButtonActionPerformed(evt);
@@ -92,21 +92,21 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         teacherButton.setText(
-                lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("browse"));
+                Translations.getInstance().get("browse"));
         teacherButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 teacherButtonActionPerformed(evt);
             }
         });
 
-        studentLabel.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("select-student-map"));
+        studentLabel.setText(Translations.getInstance()
+                .get("select-student-map"));
 
-        teacherLabel.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("select-teacher-map"));
+        teacherLabel.setText(Translations.getInstance()
+                .get("select-teacher-map"));
 
         scoreButton.setText(
-                lv.continuum.scorer.common.TranslationDictionary.getInstance().getTranslation("score"));
+                Translations.getInstance().get("score"));
         scoreButton.setEnabled(false);
         scoreButton.setMaximumSize(new java.awt.Dimension(83, 23));
         scoreButton.setMinimumSize(new java.awt.Dimension(83, 23));
@@ -117,8 +117,8 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         elementsCheckBox.setSelected(true);
-        elementsCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("method-element-count"));
+        elementsCheckBox.setText(Translations.getInstance()
+                .get("method-element-count"));
         elementsCheckBox.setEnabled(false);
         elementsCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -126,8 +126,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        closenessIndexesCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("method-closeness-indexes"));
+        closenessIndexesCheckBox.setText(Translations.getInstance()
+                .get("method-closeness-indexes"));
         closenessIndexesCheckBox.setEnabled(false);
         closenessIndexesCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -135,8 +135,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        importanceIndexesCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("method-importance-indexes"));
+        importanceIndexesCheckBox.setText(Translations.getInstance()
+                .get("method-importance-indexes"));
         importanceIndexesCheckBox.setEnabled(false);
         importanceIndexesCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -144,8 +144,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        propositionChainsCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("method-proposition-chains"));
+        propositionChainsCheckBox.setText(Translations.getInstance()
+                .get("method-proposition-chains"));
         propositionChainsCheckBox.setEnabled(false);
         propositionChainsCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -153,8 +153,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        errorAnalysisCheckBox.setText(lv.continuum.scorer.common.TranslationDictionary.getInstance()
-                .getTranslation("method-error-analysis"));
+        errorAnalysisCheckBox.setText(Translations.getInstance()
+                .get("method-error-analysis"));
         errorAnalysisCheckBox.setEnabled(false);
         errorAnalysisCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -308,7 +308,7 @@ public class MainWindow extends javax.swing.JFrame {
                 scorer = new ConceptMapScorer(studentMap);
             } else {
                 throw new UnsupportedOperationException(
-                        TranslationDictionary.getInstance().getTranslation("invalid-file")
+                        Translations.getInstance().get("invalid-file")
                 );
             }
 
@@ -337,14 +337,14 @@ public class MainWindow extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(
                     this,
                     e.getMessage(),
-                    TranslationDictionary.getInstance().getTranslation("error"),
+                    Translations.getInstance().get("error"),
                     JOptionPane.ERROR_MESSAGE
             );
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
                     this,
-                    TranslationDictionary.getInstance().getTranslation("invalid-file"),
-                    TranslationDictionary.getInstance().getTranslation("error"),
+                    Translations.getInstance().get("invalid-file"),
+                    Translations.getInstance().get("error"),
                     JOptionPane.ERROR_MESSAGE
             );
         }
@@ -395,9 +395,9 @@ public class MainWindow extends javax.swing.JFrame {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                TranslationDictionary.getInstance();
+                Translations.getInstance();
             } catch (IllegalStateException ise) {
-                JOptionPane.showMessageDialog(null, ise.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, ise.getMessage() + ".", "Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
             }
             new MainWindow().setVisible(true);
