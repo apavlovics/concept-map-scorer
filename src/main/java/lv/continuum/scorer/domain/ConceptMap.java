@@ -115,6 +115,7 @@ public class ConceptMap {
 
             System.out.println("Finished parsing IKAS XML file.");
         } else throw new UnsupportedOperationException(String.format(INVALID_XML, file.getName()));
+        System.out.println(toString());
     }
 
     public int conceptCount() {
@@ -185,7 +186,7 @@ public class ConceptMap {
 
         int currentId = this.getFirstConceptId();
         while (currentConcepts.size() < this.conceptCount()) {
-            subnetConcepts.removeAll(subnetConcepts);
+            subnetConcepts.clear();
             while (currentId >= 0) {
                 if (!subnetConcepts.contains(currentId)) subnetConcepts.add(currentId);
                 currentOutgoingRelationships = outgoingRelationships.get(currentId);
@@ -222,7 +223,7 @@ public class ConceptMap {
         int result = 0;
         List<Integer> currentConcepts = new ArrayList<Integer>();
         List<Integer> currentRelationships;
-        Map<Integer, List> allRelationships = this.allRelationships();
+        var allRelationships = this.allRelationships();
 
         int currentId = this.getFirstConceptId();
         while (currentConcepts.size() < this.conceptCount()) {
@@ -413,19 +414,14 @@ public class ConceptMap {
 
     @Override
     public String toString() {
-        String returnString;
-        String conceptLabel, relationshipLabel;
-        if (this.conceptCount() == 1) conceptLabel = " concept and ";
-        else conceptLabel = " concepts and ";
-        if (this.relationshipCount() == 1) relationshipLabel = " relationship.";
-        else relationshipLabel = " relationships.";
-
-        returnString = "Concept map with " +
-                this.conceptCount() + conceptLabel +
-                this.relationshipCount() + relationshipLabel + "\n";
-        for (Concept c : this.concepts) returnString += c.toString() + "\n";
-        for (Relationship r : this.relationships) returnString += r.toString() + "\n";
-        returnString = returnString.substring(0, returnString.length() - 1);
-        return returnString;
+        var sb = new StringBuilder();
+        sb.append("Concept map with ")
+                .append(conceptCount())
+                .append(this.conceptCount() == 1 ? " concept and " : " concepts and ")
+                .append(relationshipCount())
+                .append(this.relationshipCount() == 1 ? " relationship.\n" : " relationships.\n");
+        for (Concept c : this.concepts) sb.append(c).append("\n");
+        for (Relationship r : this.relationships) sb.append(r).append("\n");
+        return sb.substring(0, sb.length() - 1);
     }
 }

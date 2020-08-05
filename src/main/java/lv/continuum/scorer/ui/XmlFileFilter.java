@@ -1,9 +1,8 @@
 package lv.continuum.scorer.ui;
 
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.List;
-import java.util.stream.Stream;
-import javax.swing.filechooser.FileFilter;
 
 class XmlFileFilter extends FileFilter {
 
