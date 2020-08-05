@@ -7,7 +7,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Concept {
 
-    private static final Translations translations = Translations.getInstance();
+    private static final String CONCEPT_NO_NAME = Translations.getInstance().get("concept-no-name");
+
     private static final List<String> names = new CopyOnWriteArrayList<>();
 
     private final int id;
@@ -23,7 +24,7 @@ public class Concept {
             }
             this.id = index;
             this.name = name;
-        } else throw new UnsupportedOperationException(translations.get("concept-no-name"));
+        } else throw new UnsupportedOperationException(CONCEPT_NO_NAME);
     }
 
     public int getId() {

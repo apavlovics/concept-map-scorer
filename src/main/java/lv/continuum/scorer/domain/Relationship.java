@@ -8,52 +8,35 @@ public class Relationship {
 
     private static final String CONCEPT_NEGATIVE_ID = Translations.getInstance().get("concept-negative-id");
 
-    private static final AtomicInteger currentId = new AtomicInteger();
+    private static final AtomicInteger idIssuer = new AtomicInteger();
 
-    private int id;
-    private int fromConcept;
-    private int toConcept;
-    private String name;
-
-    public Relationship(int fromConcept, int toConcept) {
-        setId();
-        setFromConcept(fromConcept);
-        setToConcept(toConcept);
-    }
+    private final int id;
+    private final int fromConcept;
+    private final int toConcept;
+    private final String name;
 
     public Relationship(int fromConcept, int toConcept, String name) {
-        this(fromConcept, toConcept);
-        setName(name);
-    }
+        this.id = idIssuer.getAndIncrement();
 
-    private void setId() {
-        this.id = currentId.getAndIncrement();
+        if (fromConcept >= 0) this.fromConcept = fromConcept;
+        else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
+
+        if (toConcept >= 0) this.toConcept = toConcept;
+        else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
+
+        this.name = name;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public void setFromConcept(int fromConcept) {
-        if (fromConcept >= 0) this.fromConcept = fromConcept;
-        else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
-    }
-
     public int getFromConcept() {
         return this.fromConcept;
     }
 
-    public void setToConcept(int toConcept) {
-        if (toConcept >= 0) this.toConcept = toConcept;
-        else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
-    }
-
     public int getToConcept() {
         return this.toConcept;
-    }
-
-    public void setName(String name) {
-        if (name != null && !name.isEmpty()) this.name = name;
     }
 
     public String getName() {
