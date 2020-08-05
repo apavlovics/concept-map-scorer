@@ -34,7 +34,7 @@ public class ConceptMap {
         doc.getDocumentElement().normalize();
 
         if (doc.getDocumentElement().getNodeName().equals("conceptmap")) {
-            System.out.println("Started parsing standard XML file.");
+            System.out.println("Started parsing standard XML file");
 
             var concepts = doc.getElementsByTagName("concept");
             if (concepts.getLength() == 0) {
@@ -61,9 +61,9 @@ public class ConceptMap {
                 this.relationships.add(new Relationship(fromConcept, toConcept, item.getTextContent()));
             }
 
-            System.out.println("Finished parsing standard XML file.");
+            System.out.println("Finished parsing standard XML file");
         } else if (doc.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
-            System.out.println("Started parsing IKAS XML file.");
+            System.out.println("Started parsing IKAS XML file");
 
             var elements = doc.getElementsByTagName("element");
             for (int i = 0; i < elements.getLength(); i++) {
@@ -113,7 +113,7 @@ public class ConceptMap {
                 throw new UnsupportedOperationException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
             }
 
-            System.out.println("Finished parsing IKAS XML file.");
+            System.out.println("Finished parsing IKAS XML file");
         } else throw new UnsupportedOperationException(String.format(INVALID_XML, file.getName()));
         System.out.println(toString());
     }
@@ -130,14 +130,14 @@ public class ConceptMap {
         var levelCount = 0;
         var incomingRelationships = incomingRelationships();
         if (incomingRelationships.containsValue(null)) {
-            List<Integer> currentConcepts = new ArrayList<>();
+            var currentConcepts = new ArrayList<Integer>();
             while (currentConcepts.size() < this.conceptCount()) {
-                int sizeCheck = currentConcepts.size();
+                var previousConceptsSize = currentConcepts.size();
                 currentConcepts.clear();
                 for (var ir : incomingRelationships.entrySet()) {
                     if (ir.getValue() == null) currentConcepts.add(ir.getKey());
                 }
-                if (currentConcepts.size() == sizeCheck) {
+                if (currentConcepts.size() == previousConceptsSize) {
                     return 0;
                 }
                 for (var ir : incomingRelationships.entrySet()) {
@@ -400,7 +400,7 @@ public class ConceptMap {
         return this.concepts.get(0).getId();
     }
 
-    private boolean containsConcept(String name) {
+    public boolean containsConcept(String name) {
         for (Concept c : this.concepts)
             if (c.getName().compareToIgnoreCase(name) == 0) return true;
         return false;
@@ -419,7 +419,7 @@ public class ConceptMap {
                 .append(conceptCount())
                 .append(this.conceptCount() == 1 ? " concept and " : " concepts and ")
                 .append(relationshipCount())
-                .append(this.relationshipCount() == 1 ? " relationship.\n" : " relationships.\n");
+                .append(this.relationshipCount() == 1 ? " relationship.\n" : " relationships\n");
         for (Concept c : this.concepts) sb.append(c).append("\n");
         for (Relationship r : this.relationships) sb.append(r).append("\n");
         return sb.substring(0, sb.length() - 1);

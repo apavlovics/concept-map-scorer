@@ -5,6 +5,7 @@ import lv.continuum.scorer.domain.*;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+
 import lv.continuum.scorer.common.Translations;
 
 public class ConceptMapScorer {
@@ -36,12 +37,12 @@ public class ConceptMapScorer {
             return this.countConceptMapElements(
                     this.studentMap,
                     Translations.getInstance().get("student-map-contains")
-                    )
-                + "\n\n"
-                + this.countConceptMapElements(
+            )
+                    + "\n\n"
+                    + this.countConceptMapElements(
                     this.teacherMap,
                     Translations.getInstance().get("teacher-map-contains")
-                    );
+            );
     }
 
     public String compareConceptMapsUsingClosenessIndexes() {
@@ -71,7 +72,7 @@ public class ConceptMapScorer {
                     sizeUnion = sar.getValue().size();
 
                     if (sizeIntersection == 0 && sizeUnion == 0) closenessIndex = 1;
-                    else closenessIndex = (double)sizeIntersection / (double)sizeUnion;
+                    else closenessIndex = (double) sizeIntersection / (double) sizeUnion;
                     closenessIndexes.add(closenessIndex);
                 }
             }
@@ -121,7 +122,7 @@ public class ConceptMapScorer {
         }
         for (var sap : studentAllPaths.entrySet()) sumUnion += sap.getValue().size();
         for (var tap : teacherAllPaths.entrySet()) sumUnion += tap.getValue().size();
-        resultIndex = (double)sumIntersection / (double)sumUnion;
+        resultIndex = (double) sumIntersection / (double) sumUnion;
         return String.format(Translations.getInstance().get("maps-similarity-importance-indexes"), resultIndex);
     }
 
@@ -148,11 +149,10 @@ public class ConceptMapScorer {
                     studentMapScore++;
                     approvedCurrentBreakScore += currentBreakScore;
                     currentBreakScore = 0;
-                }
-                else currentBreakScore++;
-            breakScore += (double)approvedCurrentBreakScore / (double)(tlp.size() - 1);
+                } else currentBreakScore++;
+            breakScore += (double) approvedCurrentBreakScore / (double) (tlp.size() - 1);
         }
-        resultIndex = (double)(studentMapScore - breakScore) / (double)teacherMapScore;
+        resultIndex = (double) (studentMapScore - breakScore) / (double) teacherMapScore;
         return String.format(Translations.getInstance().get("maps-similarity-proposition-chains"), resultIndex);
     }
 
@@ -165,14 +165,15 @@ public class ConceptMapScorer {
         var teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
 
         double resultIndex, w1, w2, weightedResultIndex;
-        int totalRelationships = (int)Math.pow(studentOutgoingRelationships.keySet().size(), 2);
+        int totalRelationships = (int) Math.pow(studentOutgoingRelationships.keySet().size(), 2);
         int correctRelationships = 0, incorrectRelationships = 0, missingRelationships = 0, noRelationships = 0;
         boolean relationshipFound;
 
         List<Integer> studentRelationships, teacherRelationships;
         for (var sor : studentOutgoingRelationships.entrySet()) {
             if (sor.getValue() == null) sor.setValue(new ArrayList<Integer>());
-            if (teacherOutgoingRelationships.get(sor.getKey()) == null) teacherOutgoingRelationships.put(sor.getKey(), new ArrayList<Integer>());
+            if (teacherOutgoingRelationships.get(sor.getKey()) == null)
+                teacherOutgoingRelationships.put(sor.getKey(), new ArrayList<Integer>());
             studentRelationships = sor.getValue();
             teacherRelationships = teacherOutgoingRelationships.get(sor.getKey());
 
@@ -190,16 +191,16 @@ public class ConceptMapScorer {
         missingRelationships = this.teacherMap.relationshipCount() - correctRelationships;
         noRelationships = totalRelationships - correctRelationships - incorrectRelationships - missingRelationships;
 
-        resultIndex = (double)(correctRelationships
+        resultIndex = (double) (correctRelationships
                 + noRelationships
                 - incorrectRelationships
-                - missingRelationships) / (double)totalRelationships;
-        w1 = (double)(correctRelationships + missingRelationships) / (double)(incorrectRelationships + noRelationships);
+                - missingRelationships) / (double) totalRelationships;
+        w1 = (double) (correctRelationships + missingRelationships) / (double) (incorrectRelationships + noRelationships);
         w2 = 1.0 / w1;
-        weightedResultIndex = (w2 * (double)correctRelationships
-                + w1 * (double)noRelationships
-                - w2 * (double)incorrectRelationships
-                - w1 * (double)missingRelationships) / (double)totalRelationships;
+        weightedResultIndex = (w2 * (double) correctRelationships
+                + w1 * (double) noRelationships
+                - w2 * (double) incorrectRelationships
+                - w1 * (double) missingRelationships) / (double) totalRelationships;
 
         return String.format(Translations.getInstance().get("maps-similarity-error-analysis"), resultIndex)
                 + String.format(Translations.getInstance().get("maps-similarity-error-analysis-weighted"), weightedResultIndex);
@@ -266,7 +267,8 @@ public class ConceptMapScorer {
         var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
         var teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
 
-        if (studentOutgoingRelationships.keySet().size() != teacherOutgoingRelationships.keySet().size()) return false;
+        if (studentOutgoingRelationships.keySet().size() != teacherOutgoingRelationships.keySet().size())
+            return false;
         int initialSize = studentOutgoingRelationships.keySet().size();
         studentOutgoingRelationships.keySet().retainAll(teacherOutgoingRelationships.keySet());
         if (initialSize == studentOutgoingRelationships.keySet().size()) return true;
@@ -280,8 +282,8 @@ public class ConceptMapScorer {
 
     @Override
     public String toString() {
-        if (this.teacherMap != null)
-            return "Student and teacher concept map scoring and comparison mode.";
-        return "Student concept map scoring mode.";
+        return this.teacherMap != null ?
+                "Student and teacher concept map scoring and comparison mode" :
+                "Student concept map scoring mode";
     }
 }

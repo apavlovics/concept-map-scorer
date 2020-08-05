@@ -36,6 +36,6 @@ public class Concept {
 
     @Override
     public String toString() {
-        return "Concept „" + getName() + "” with id " + getId() + ".";
+        return "Concept „" + getName() + "” with id " + getId();
     }
 }

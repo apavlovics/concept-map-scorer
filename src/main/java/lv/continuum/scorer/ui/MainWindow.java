@@ -332,7 +332,7 @@ public class MainWindow extends javax.swing.JFrame {
 
             this.scoreTextArea.setText(resultString);
             this.scoreTextArea.setEnabled(true);
-            System.out.println("Scored concept map.");
+            System.out.println("Scored concept map");
         } catch (UnsupportedOperationException e) {
             JOptionPane.showMessageDialog(
                     this,

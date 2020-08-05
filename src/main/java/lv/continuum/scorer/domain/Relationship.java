@@ -62,17 +62,11 @@ public class Relationship {
 
     @Override
     public String toString() {
-        if (getName() == null || getName().isEmpty()) {
-            return "Unmarked relationship with id " +
-                    getId() + " from concept " +
-                    getFromConcept() + " to concept " +
-                    getToConcept() + ".";
-        } else {
-            return "Relationship „" +
-                    getName() + "” with id " +
-                    getId() + " from concept " +
-                    getFromConcept() + " to concept " +
-                    getToConcept() + ".";
-        }
+        var name = getName() == null || getName().isEmpty() ?
+                "Unmarked relationship with id " :
+                "Relationship „" + getName() + "” with id ";
+        return name + getId() +
+                " from concept " + getFromConcept() +
+                " to concept " + getToConcept();
     }
 }
