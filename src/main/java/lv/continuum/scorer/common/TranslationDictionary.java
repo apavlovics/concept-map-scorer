@@ -13,7 +13,7 @@ public class TranslationDictionary {
 
     private static TranslationDictionary instance;
 
-    protected TranslationDictionary() {
+    private TranslationDictionary() {
         try {
             var file = getClass().getClassLoader().getResource(PROPERTIES_PATH).getFile();
             try (var fis = new FileInputStream(file)) {
@@ -32,16 +32,16 @@ public class TranslationDictionary {
      */
     public static TranslationDictionary getInstance() {
         if (instance == null) {
-            instance = new TranslationDictionary();
+            synchronized (TranslationDictionary.class) {
+                if (instance == null) instance = new TranslationDictionary();
+            }
         }
         return instance;
     }
 
     public String getTranslation(String key) {
         var value = PROPERTIES.getProperty(key);
-        if (value == null) {
-            value = key;
-        }
+        if (value == null) value = key;
         return value;
     }
 }
