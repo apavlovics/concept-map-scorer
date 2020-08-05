@@ -12,12 +12,12 @@ import java.awt.*;
  */
 public class MainWindow extends javax.swing.JFrame {
     private JFileChooser chooser;
-    private FileFilterXml filter;
+    private XmlFileFilter filter;
 
     public MainWindow() {
         initComponents();
         this.chooser = new JFileChooser(System.getProperty("user.dir"));
-        this.filter = new FileFilterXml();
+        this.filter = new XmlFileFilter();
         chooser.setFileFilter(filter);
     }
 

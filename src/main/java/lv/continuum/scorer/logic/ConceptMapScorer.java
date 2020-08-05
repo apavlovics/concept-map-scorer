@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.ArrayList;
 import lv.continuum.scorer.common.Translations;
 
-/**
- * @author Andrey Pavlovich
- */
 public class ConceptMapScorer {
     private ConceptMap studentMap;
     private ConceptMap teacherMap;

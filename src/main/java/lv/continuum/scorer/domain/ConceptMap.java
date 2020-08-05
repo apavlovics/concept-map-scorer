@@ -14,9 +14,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import lv.continuum.scorer.common.Translations;
 
-/**
- * @author Andrey Pavlovich
- */
 public class ConceptMap {
 
     private static final Translations translations = Translations.getInstance();
