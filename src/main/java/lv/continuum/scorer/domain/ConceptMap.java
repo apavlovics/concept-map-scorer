@@ -57,7 +57,7 @@ public class ConceptMap {
                 relationships.add(new Relationship(fromConcept, toConcept, node.getTextContent()));
             }
 
-            System.out.println("Finished parsing standard XML file");
+            System.out.println("Finished parsing standard XML file\n" + toString());
         } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
             System.out.println("Started parsing IKAS XML file");
 
@@ -110,25 +110,25 @@ public class ConceptMap {
                 throw new IllegalArgumentException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
             }
 
-            System.out.println("Finished parsing IKAS XML file");
+            System.out.println("Finished parsing IKAS XML file\n" + toString());
         } else throw new IllegalArgumentException(String.format(INVALID_XML, file.getName()));
-        System.out.println(toString());
     }
 
     public int conceptCount() {
-        return this.concepts.size();
+        return concepts.size();
     }
 
     public int relationshipCount() {
-        return this.relationships.size();
+        return relationships.size();
     }
 
+    // TODO Rework in functional style
     public int levelCount() {
         var levelCount = 0;
         var incomingRelationships = incomingRelationships();
         if (incomingRelationships.containsValue(null)) {
             var currentConcepts = new ArrayList<Integer>();
-            while (currentConcepts.size() < this.conceptCount()) {
+            while (currentConcepts.size() < conceptCount()) {
                 var previousConceptsSize = currentConcepts.size();
                 currentConcepts.clear();
                 for (var ir : incomingRelationships.entrySet()) {
@@ -152,15 +152,18 @@ public class ConceptMap {
     }
 
     public int branchCount() {
-        int result = 0;
-        Map<Integer, Integer> branches = new HashMap<Integer, Integer>();
-        for (Concept c : this.concepts) branches.put(c.id, 0);
-        for (Relationship r : this.relationships) {
-            var i = branches.get(r.fromConcept);
-            if (i == 1) result++;
-            branches.put(r.fromConcept, ++i);
+        var branchCount = 0;
+        var branches = new HashMap<Integer, Boolean>();
+        for (Relationship r : relationships) {
+            var value = branches.get(r.fromConcept);
+            if (value == null) {
+                branches.put(r.fromConcept, false);
+            } else if (!value) {
+                branches.put(r.fromConcept, true);
+                branchCount++;
+            }
         }
-        return result;
+        return branchCount;
     }
 
     public int exampleCount() {
