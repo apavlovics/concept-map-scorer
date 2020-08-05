@@ -210,7 +210,7 @@ public class ConceptMapScorer {
         if (map == null) throw new UnsupportedOperationException(NO_MAP);
 
         String returnString = (title == null) ? Translations.getInstance().get("map-contains") : title;
-        int value;
+        long value;
         String format;
         value = map.conceptCount();
         format = Translations.getInstance().get("concepts");

@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 public class ConceptMap {
 
@@ -151,19 +155,13 @@ public class ConceptMap {
         return levelCount;
     }
 
-    public int branchCount() {
-        var branchCount = 0;
-        var branches = new HashMap<Integer, Boolean>();
-        for (Relationship r : relationships) {
-            var value = branches.get(r.fromConcept);
-            if (value == null) {
-                branches.put(r.fromConcept, false);
-            } else if (!value) {
-                branches.put(r.fromConcept, true);
-                branchCount++;
-            }
-        }
-        return branchCount;
+    public long branchCount() {
+        return relationships.stream()
+                .map(r -> r.fromConcept)
+                .collect(groupingBy(Function.identity(), counting()))
+                .values().stream()
+                .filter(v -> v > 1)
+                .count();
     }
 
     public int exampleCount() {
