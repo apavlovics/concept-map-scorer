@@ -15,7 +15,9 @@ public class Concept {
     private final String name;
 
     public Concept(String name) {
-        if (name != null && name.length() > 0) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException(CONCEPT_NO_NAME);
+        } else {
             var lowerCaseName = name.toLowerCase();
             var index = names.indexOf(lowerCaseName);
             if (index == -1) {
@@ -24,15 +26,15 @@ public class Concept {
             }
             this.id = index;
             this.name = name;
-        } else throw new UnsupportedOperationException(CONCEPT_NO_NAME);
+        }
     }
 
     public int getId() {
-        return this.id;
+        return id;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override

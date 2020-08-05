@@ -397,19 +397,17 @@ public class ConceptMap {
     }
 
     private int getFirstConceptId() {
-        return this.concepts.get(0).getId();
+        return concepts.get(0).getId();
     }
 
     public boolean containsConcept(String name) {
-        for (Concept c : this.concepts)
-            if (c.getName().compareToIgnoreCase(name) == 0) return true;
-        return false;
+        return concepts.stream()
+                .anyMatch(c -> c.getName().compareToIgnoreCase(name) == 0);
     }
 
     public boolean containsRelationship(int fromConcept, int toConcept) {
-        for (Relationship r : this.relationships)
-            if (r.getFromConcept() == fromConcept && r.getToConcept() == toConcept) return true;
-        return false;
+        return relationships.stream()
+                .anyMatch(r -> r.getFromConcept() == fromConcept && r.getToConcept() == toConcept);
     }
 
     @Override
@@ -417,11 +415,11 @@ public class ConceptMap {
         var sb = new StringBuilder();
         sb.append("Concept map with ")
                 .append(conceptCount())
-                .append(this.conceptCount() == 1 ? " concept and " : " concepts and ")
+                .append(conceptCount() == 1 ? " concept and " : " concepts and ")
                 .append(relationshipCount())
-                .append(this.relationshipCount() == 1 ? " relationship.\n" : " relationships\n");
-        for (Concept c : this.concepts) sb.append(c).append("\n");
-        for (Relationship r : this.relationships) sb.append(r).append("\n");
+                .append(relationshipCount() == 1 ? " relationship.\n" : " relationships\n");
+        for (Concept c : concepts) sb.append(c).append("\n");
+        for (Relationship r : relationships) sb.append(r).append("\n");
         return sb.substring(0, sb.length() - 1);
     }
 }

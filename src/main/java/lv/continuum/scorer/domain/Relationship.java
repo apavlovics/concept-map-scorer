@@ -10,43 +10,41 @@ public class Relationship {
 
     private static final AtomicInteger idIssuer = new AtomicInteger();
 
-    private final int id;
+    private final int id = idIssuer.getAndIncrement();
     private final int fromConcept;
     private final int toConcept;
     private final String name;
 
     public Relationship(int fromConcept, int toConcept, String name) {
-        this.id = idIssuer.getAndIncrement();
-
-        if (fromConcept >= 0) this.fromConcept = fromConcept;
-        else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
-
-        if (toConcept >= 0) this.toConcept = toConcept;
-        else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
-
+        if (fromConcept < 0 || toConcept < 0) {
+            throw new IllegalArgumentException(CONCEPT_NEGATIVE_ID);
+        } else {
+            this.fromConcept = fromConcept;
+            this.toConcept = toConcept;
+        }
         this.name = name;
     }
 
     public int getId() {
-        return this.id;
+        return id;
     }
 
     public int getFromConcept() {
-        return this.fromConcept;
+        return fromConcept;
     }
 
     public int getToConcept() {
-        return this.toConcept;
+        return toConcept;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     public String toString() {
         var name = getName() == null || getName().isEmpty() ?
-                "Unmarked relationship with id " :
+                "Unnamed relationship with id " :
                 "Relationship „" + getName() + "” with id ";
         return name + getId() +
                 " from concept " + getFromConcept() +
