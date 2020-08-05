@@ -11,8 +11,8 @@ public class Concept {
 
     private static final List<String> names = new CopyOnWriteArrayList<>();
 
-    private final int id;
-    private final String name;
+    public final int id;
+    public final String name;
 
     public Concept(String name) {
         if (name == null || name.isEmpty()) {
@@ -29,16 +29,8 @@ public class Concept {
         }
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String toString() {
-        return "Concept „" + getName() + "” with id " + getId();
+        return "Concept „" + name + "” with id " + id;
     }
 }

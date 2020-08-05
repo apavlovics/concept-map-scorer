@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.Properties;
 
 public class Translations {
@@ -39,8 +40,6 @@ public class Translations {
     }
 
     public String get(String key) {
-        var value = properties.getProperty(key);
-        if (value == null) value = key;
-        return value;
+        return Optional.ofNullable(properties.getProperty(key)).orElse(key);
     }
 }

@@ -56,8 +56,8 @@ public class ConceptMap {
                 var item = relationships.item(i);
                 var from = Integer.parseInt(item.getAttributes().getNamedItem("from").getNodeValue());
                 var to = Integer.parseInt(item.getAttributes().getNamedItem("to").getNodeValue());
-                var fromConcept = this.concepts.get(from).getId();
-                var toConcept = this.concepts.get(to).getId();
+                var fromConcept = this.concepts.get(from).id;
+                var toConcept = this.concepts.get(to).id;
                 this.relationships.add(new Relationship(fromConcept, toConcept, item.getTextContent()));
             }
 
@@ -103,8 +103,8 @@ public class ConceptMap {
                     var fromConcept = -1;
                     var toConcept = -1;
                     for (Concept c : this.concepts) {
-                        if (c.getName().equals(from)) fromConcept = c.getId();
-                        if (c.getName().equals(to)) toConcept = c.getId();
+                        if (c.name.equals(from)) fromConcept = c.id;
+                        if (c.name.equals(to)) toConcept = c.id;
                     }
                     this.relationships.add(new Relationship(fromConcept, toConcept, name));
                 }
@@ -157,11 +157,11 @@ public class ConceptMap {
     public int branchCount() {
         int result = 0;
         Map<Integer, Integer> branches = new HashMap<Integer, Integer>();
-        for (Concept c : this.concepts) branches.put(c.getId(), 0);
+        for (Concept c : this.concepts) branches.put(c.id, 0);
         for (Relationship r : this.relationships) {
-            var i = branches.get(r.getFromConcept());
+            var i = branches.get(r.fromConcept);
             if (i == 1) result++;
-            branches.put(r.getFromConcept(), ++i);
+            branches.put(r.fromConcept, ++i);
         }
         return result;
     }
@@ -170,7 +170,7 @@ public class ConceptMap {
         int result = 0;
         String regex = "(?i).*(piemēr|piemer|eksemplār|eksemplar|example|instance).*";
         for (Relationship r : this.relationships)
-            if (r.getName().matches(regex)) result++;
+            if (r.name.matches(regex)) result++;
         return result;
     }
 
@@ -211,8 +211,8 @@ public class ConceptMap {
             for (Integer i : subnetConcepts)
                 if (!currentConcepts.contains(i)) currentConcepts.add(i);
             for (Concept c : this.concepts)
-                if (!currentConcepts.contains(c.getId())) {
-                    currentId = c.getId();
+                if (!currentConcepts.contains(c.id)) {
+                    currentId = c.id;
                     break;
                 }
         }
@@ -237,11 +237,12 @@ public class ConceptMap {
                     currentId = currentConcepts.get(currentConcepts.indexOf(currentId) + 1);
                 else currentId = -1;
             }
-            for (Concept c : this.concepts)
-                if (!currentConcepts.contains(c.getId())) {
-                    currentId = c.getId();
+            for (Concept c : this.concepts) {
+                if (!currentConcepts.contains(c.id)) {
+                    currentId = c.id;
                     break;
                 }
+            }
             result++;
         }
         return result;
@@ -250,13 +251,13 @@ public class ConceptMap {
     public Map<Integer, List<Integer>> outgoingRelationships() {
         var relationships = new HashMap<Integer, List<Integer>>();
         for (Concept c : this.concepts) {
-            relationships.put(c.getId(), null);
+            relationships.put(c.id, null);
         }
         for (Relationship r : this.relationships) {
-            var ids = relationships.get(r.getFromConcept());
+            var ids = relationships.get(r.fromConcept);
             if (ids == null) ids = new ArrayList<>();
-            if (!ids.contains(r.getToConcept())) ids.add(r.getToConcept());
-            relationships.put(r.getFromConcept(), ids);
+            if (!ids.contains(r.toConcept)) ids.add(r.toConcept);
+            relationships.put(r.fromConcept, ids);
         }
         return relationships;
     }
@@ -264,13 +265,13 @@ public class ConceptMap {
     public Map<Integer, List<Integer>> incomingRelationships() {
         var relationships = new HashMap<Integer, List<Integer>>();
         for (Concept c : this.concepts) {
-            relationships.put(c.getId(), null);
+            relationships.put(c.id, null);
         }
         for (Relationship r : this.relationships) {
-            var ids = relationships.get(r.getToConcept());
+            var ids = relationships.get(r.toConcept);
             if (ids == null) ids = new ArrayList<>();
-            if (!ids.contains(r.getFromConcept())) ids.add(r.getFromConcept());
-            relationships.put(r.getToConcept(), ids);
+            if (!ids.contains(r.fromConcept)) ids.add(r.fromConcept);
+            relationships.put(r.toConcept, ids);
         }
         return relationships;
     }
@@ -278,17 +279,17 @@ public class ConceptMap {
     public Map<Integer, List> allRelationships() {
         Map<Integer, List> resultMap = new HashMap<Integer, List>();
         List<Integer> i;
-        for (Concept c : this.concepts) resultMap.put(c.getId(), null);
+        for (Concept c : this.concepts) resultMap.put(c.id, null);
         for (Relationship r : this.relationships) {
-            i = resultMap.get(r.getFromConcept());
-            if (i == null) i = new ArrayList<Integer>();
-            if (!i.contains(r.getToConcept())) i.add(r.getToConcept());
-            resultMap.put(r.getFromConcept(), i);
+            i = resultMap.get(r.fromConcept);
+            if (i == null) i = new ArrayList<>();
+            if (!i.contains(r.toConcept)) i.add(r.toConcept);
+            resultMap.put(r.fromConcept, i);
 
-            i = resultMap.get(r.getToConcept());
-            if (i == null) i = new ArrayList<Integer>();
-            if (!i.contains(r.getFromConcept())) i.add(r.getFromConcept());
-            resultMap.put(r.getToConcept(), i);
+            i = resultMap.get(r.toConcept);
+            if (i == null) i = new ArrayList<>();
+            if (!i.contains(r.fromConcept)) i.add(r.fromConcept);
+            resultMap.put(r.toConcept, i);
         }
         return resultMap;
     }
@@ -307,11 +308,11 @@ public class ConceptMap {
         for (Relationship r : this.relationships) {
             currentOutgoingConcepts.clear();
             currentIncomingConcepts.clear();
-            currentOutgoingConcepts.add(r.getToConcept());
-            currentIncomingConcepts.add(r.getFromConcept());
+            currentOutgoingConcepts.add(r.toConcept);
+            currentIncomingConcepts.add(r.fromConcept);
 
             i = new ArrayList<>();
-            keyPath = r.getFromConcept() + " " + r.getToConcept();
+            keyPath = r.fromConcept + " " + r.toConcept;
             i.add(keyPath);
 
             currentConcept = 0;
@@ -321,7 +322,7 @@ public class ConceptMap {
                     currentOutgoingRelationships = new ArrayList<>();
                 for (Integer cor : currentOutgoingRelationships) {
                     if (!currentOutgoingConcepts.contains(cor)) currentOutgoingConcepts.add(cor);
-                    valuePath = r.getFromConcept() + " " + cor;
+                    valuePath = r.fromConcept + " " + cor;
                     if (!i.contains(valuePath)) i.add(valuePath);
                 }
             }
@@ -397,17 +398,17 @@ public class ConceptMap {
     }
 
     private int getFirstConceptId() {
-        return concepts.get(0).getId();
+        return concepts.get(0).id;
     }
 
     public boolean containsConcept(String name) {
         return concepts.stream()
-                .anyMatch(c -> c.getName().compareToIgnoreCase(name) == 0);
+                .anyMatch(c -> c.name.compareToIgnoreCase(name) == 0);
     }
 
     public boolean containsRelationship(int fromConcept, int toConcept) {
         return relationships.stream()
-                .anyMatch(r -> r.getFromConcept() == fromConcept && r.getToConcept() == toConcept);
+                .anyMatch(r -> r.fromConcept == fromConcept && r.toConcept == toConcept);
     }
 
     @Override

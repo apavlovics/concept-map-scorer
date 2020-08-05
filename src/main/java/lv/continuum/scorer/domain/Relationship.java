@@ -10,10 +10,10 @@ public class Relationship {
 
     private static final AtomicInteger idIssuer = new AtomicInteger();
 
-    private final int id = idIssuer.getAndIncrement();
-    private final int fromConcept;
-    private final int toConcept;
-    private final String name;
+    public final int id = idIssuer.getAndIncrement();
+    public final int fromConcept;
+    public final int toConcept;
+    public final String name;
 
     public Relationship(int fromConcept, int toConcept, String name) {
         if (fromConcept < 0 || toConcept < 0) {
@@ -25,29 +25,11 @@ public class Relationship {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public int getFromConcept() {
-        return fromConcept;
-    }
-
-    public int getToConcept() {
-        return toConcept;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String toString() {
-        var name = getName() == null || getName().isEmpty() ?
+        var string = name == null || name.isEmpty() ?
                 "Unnamed relationship with id " :
-                "Relationship „" + getName() + "” with id ";
-        return name + getId() +
-                " from concept " + getFromConcept() +
-                " to concept " + getToConcept();
+                "Relationship „" + name + "” with id ";
+        return string + id + " from concept " + fromConcept + " to concept " + toConcept;
     }
 }
