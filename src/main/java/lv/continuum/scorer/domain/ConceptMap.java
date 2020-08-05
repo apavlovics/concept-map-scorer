@@ -91,10 +91,13 @@ public class ConceptMap {
                     var itemRelationships = ((Element) item).getElementsByTagName("element");
                     for (int j = 0; j < itemRelationships.getLength(); j++) {
                         var itemRelationship = itemRelationships.item(j);
-                        if (itemRelationship.getAttributes().getNamedItem("name").getNodeValue().equals("source"))
-                            from = itemRelationship.getAttributes().getNamedItem("value").getNodeValue();
-                        if (itemRelationship.getAttributes().getNamedItem("name").getNodeValue().equals("target"))
-                            to = itemRelationship.getAttributes().getNamedItem("value").getNodeValue();
+                        var itemRelationshipName = itemRelationship.getAttributes().getNamedItem("name").getNodeValue();
+                        var itemRelationshipValue = itemRelationship.getAttributes().getNamedItem("value").getNodeValue();
+                        if (itemRelationshipName.equals("source")) {
+                            from = itemRelationshipValue;
+                        } else if (itemRelationshipName.equals("target")) {
+                            to = itemRelationshipValue;
+                        }
                     }
                     if (from == null || to == null) {
                         throw new UnsupportedOperationException(String.format(MAP_INVALID_RELATIONSHIP, file.getName()));
@@ -136,7 +139,9 @@ public class ConceptMap {
                 for (var ir : incomingRelationships.entrySet()) {
                     if (ir.getValue() == null) currentConcepts.add(ir.getKey());
                 }
-                if (currentConcepts.size() == sizeCheck) return 0;
+                if (currentConcepts.size() == sizeCheck) {
+                    return 0;
+                }
                 for (var ir : incomingRelationships.entrySet()) {
                     if (ir.getValue() != null) {
                         var currentRelationships = ir.getValue();
@@ -152,11 +157,11 @@ public class ConceptMap {
     }
 
     public int branchCount() {
-        int result = 0, i = 0;
+        int result = 0;
         Map<Integer, Integer> branches = new HashMap<Integer, Integer>();
         for (Concept c : this.concepts) branches.put(c.getId(), 0);
         for (Relationship r : this.relationships) {
-            i = branches.get(r.getFromConcept());
+            var i = branches.get(r.getFromConcept());
             if (i == 1) result++;
             branches.put(r.getFromConcept(), ++i);
         }
