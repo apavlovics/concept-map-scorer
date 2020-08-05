@@ -2,38 +2,39 @@ package lv.continuum.scorer.domain;
 
 import lv.continuum.scorer.common.Translations;
 
-/**
- * @author Andrey Pavlovich
- */
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Relationship {
-    private static int currentId = 0;
+
+    private static final String CONCEPT_NEGATIVE_ID = Translations.getInstance().get("concept-negative-id");
+
+    private static final AtomicInteger currentId = new AtomicInteger();
+
     private int id;
     private int fromConcept;
     private int toConcept;
     private String name;
 
-    final public static String CONCEPT_NEGATIVE_ID = Translations.getInstance().get("concept-negative-id");
-
     public Relationship(int fromConcept, int toConcept) {
-        this.setId();
-        this.setFromConcept(fromConcept);
-        this.setToConcept(toConcept);
+        setId();
+        setFromConcept(fromConcept);
+        setToConcept(toConcept);
     }
 
     public Relationship(int fromConcept, int toConcept, String name) {
         this(fromConcept, toConcept);
-        this.setName(name);
+        setName(name);
     }
 
     private void setId() {
-        this.id = currentId++;
+        this.id = currentId.getAndIncrement();
     }
 
     public int getId() {
         return this.id;
     }
 
-    final public void setFromConcept(int fromConcept) {
+    public void setFromConcept(int fromConcept) {
         if (fromConcept >= 0) this.fromConcept = fromConcept;
         else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
     }
@@ -42,7 +43,7 @@ public class Relationship {
         return this.fromConcept;
     }
 
-    final public void setToConcept(int toConcept) {
+    public void setToConcept(int toConcept) {
         if (toConcept >= 0) this.toConcept = toConcept;
         else throw new UnsupportedOperationException(CONCEPT_NEGATIVE_ID);
     }
@@ -51,7 +52,7 @@ public class Relationship {
         return this.toConcept;
     }
 
-    final public void setName(String name) {
+    public void setName(String name) {
         if (name != null && name.length() > 0) this.name = name;
     }
 
@@ -61,15 +62,17 @@ public class Relationship {
 
     @Override
     public String toString() {
-        if (this.getName() == null || this.getName().length() == 0)
+        if (this.getName() == null || this.getName().length() == 0) {
             return "Unmarked relationship with id " +
-                    this.getId() + " from concept " +
-                    this.getFromConcept() + " to concept " +
-                    this.getToConcept() + ".";
-        return "Relationship „" +
-                this.getName() + "” with id " +
-                this.getId() + " from concept " +
-                this.getFromConcept() + " to concept " +
-                this.getToConcept() + ".";
+                    getId() + " from concept " +
+                    getFromConcept() + " to concept " +
+                    getToConcept() + ".";
+        } else {
+            return "Relationship „" +
+                    getName() + "” with id " +
+                    getId() + " from concept " +
+                    getFromConcept() + " to concept " +
+                    getToConcept() + ".";
+        }
     }
 }
