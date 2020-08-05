@@ -117,38 +117,38 @@ public class ConceptMap {
         } else throw new UnsupportedOperationException(String.format(INVALID_XML, file.getName()));
     }
 
-    final public int conceptCount() {
+    public int conceptCount() {
         return this.concepts.size();
     }
 
-    final public int relationshipCount() {
+    public int relationshipCount() {
         return this.relationships.size();
     }
 
     public int levelCount() {
-        int result = 0;
+        var levelCount = 0;
         var incomingRelationships = incomingRelationships();
         if (incomingRelationships.containsValue(null)) {
-            int sizeCheck = 0;
-            List<Integer> currentConcepts = new ArrayList<Integer>();
-            List<Integer> currentRelationships;
+            List<Integer> currentConcepts = new ArrayList<>();
             while (currentConcepts.size() < this.conceptCount()) {
-                sizeCheck = currentConcepts.size();
-                currentConcepts.removeAll(currentConcepts);
-                for (var ir : incomingRelationships.entrySet())
+                int sizeCheck = currentConcepts.size();
+                currentConcepts.clear();
+                for (var ir : incomingRelationships.entrySet()) {
                     if (ir.getValue() == null) currentConcepts.add(ir.getKey());
+                }
                 if (currentConcepts.size() == sizeCheck) return 0;
                 for (var ir : incomingRelationships.entrySet()) {
                     if (ir.getValue() != null) {
-                        currentRelationships = ir.getValue();
-                        for (Integer cc : currentConcepts)
+                        var currentRelationships = ir.getValue();
+                        for (Integer cc : currentConcepts) {
                             if (currentRelationships.contains(cc)) ir.setValue(null);
+                        }
                     }
                 }
-                result++;
+                levelCount++;
             }
         }
-        return result;
+        return levelCount;
     }
 
     public int branchCount() {
