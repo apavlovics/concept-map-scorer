@@ -53,7 +53,7 @@ public class Relationship {
     }
 
     public void setName(String name) {
-        if (name != null && name.length() > 0) this.name = name;
+        if (name != null && !name.isEmpty()) this.name = name;
     }
 
     public String getName() {
@@ -62,7 +62,7 @@ public class Relationship {
 
     @Override
     public String toString() {
-        if (this.getName() == null || this.getName().length() == 0) {
+        if (getName() == null || getName().isEmpty()) {
             return "Unmarked relationship with id " +
                     getId() + " from concept " +
                     getFromConcept() + " to concept " +

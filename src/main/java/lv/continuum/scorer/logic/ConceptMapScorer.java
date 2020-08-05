@@ -97,16 +97,16 @@ public class ConceptMapScorer {
 
         double resultIndex = 0.0;
         int sumIntersection = 0, sumUnion = 0;
-        Map<String, List> studentAllPaths = this.studentMap.allPaths();
-        Map<String, List> teacherAllPaths = this.teacherMap.allPaths();
+        var studentAllPaths = this.studentMap.allPaths();
+        var teacherAllPaths = this.teacherMap.allPaths();
         List<String> similarRelationships = new ArrayList<String>();
         List<String> temp = new ArrayList<String>();
 
-        for (Map.Entry<String, List> sap : studentAllPaths.entrySet()) {
-            for (Map.Entry<String, List> tap : teacherAllPaths.entrySet()) {
+        for (var sap : studentAllPaths.entrySet()) {
+            for (var tap : teacherAllPaths.entrySet()) {
                 if (sap.getKey().equals(tap.getKey())) {
                     similarRelationships.add(sap.getKey());
-                    temp.removeAll(temp);
+                    temp.clear();
                     temp.addAll(sap.getValue());
 
                     temp.retainAll(tap.getValue());
@@ -122,8 +122,8 @@ public class ConceptMapScorer {
             studentAllPaths.remove(sr);
             teacherAllPaths.remove(sr);
         }
-        for (Map.Entry<String, List> sap : studentAllPaths.entrySet()) sumUnion += sap.getValue().size();
-        for (Map.Entry<String, List> tap : teacherAllPaths.entrySet()) sumUnion += tap.getValue().size();
+        for (var sap : studentAllPaths.entrySet()) sumUnion += sap.getValue().size();
+        for (var tap : teacherAllPaths.entrySet()) sumUnion += tap.getValue().size();
         resultIndex = (double)sumIntersection / (double)sumUnion;
         return String.format(Translations.getInstance().get("maps-similarity-importance-indexes"), resultIndex);
     }

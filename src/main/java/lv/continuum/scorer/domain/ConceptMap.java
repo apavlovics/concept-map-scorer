@@ -290,20 +290,20 @@ public class ConceptMap {
         return resultMap;
     }
 
-    public Map<String, List> allPaths() {
-        Map<String, List> resultMap = new HashMap<String, List>();
+    public Map<String, List<String>> allPaths() {
+        var resultMap = new HashMap<String, List<String>>();
 
         int currentConcept;
         String keyPath, valuePath;
         List<String> i;
-        List<Integer> currentOutgoingConcepts = new ArrayList();
-        List<Integer> currentIncomingConcepts = new ArrayList();
+        List<Integer> currentOutgoingConcepts = new ArrayList<>();
+        List<Integer> currentIncomingConcepts = new ArrayList<>();
         var outgoingRelationships = this.outgoingRelationships();
         var incomingRelationships = this.incomingRelationships();
 
         for (Relationship r : this.relationships) {
-            currentOutgoingConcepts.removeAll(currentOutgoingConcepts);
-            currentIncomingConcepts.removeAll(currentIncomingConcepts);
+            currentOutgoingConcepts.clear();
+            currentIncomingConcepts.clear();
             currentOutgoingConcepts.add(r.getToConcept());
             currentIncomingConcepts.add(r.getFromConcept());
 
