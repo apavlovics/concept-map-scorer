@@ -164,12 +164,9 @@ public class ConceptMap {
                 .count();
     }
 
-    public int exampleCount() {
-        int result = 0;
-        String regex = "(?i).*(piemēr|piemer|eksemplār|eksemplar|example|instance).*";
-        for (Relationship r : this.relationships)
-            if (r.name.matches(regex)) result++;
-        return result;
+    public long exampleCount() {
+        var regex = "(?i).*(piemēr|piemer|eksemplār|eksemplar|example|instance).*";
+        return relationships.stream().filter(r -> r.name.matches(regex)).count();
     }
 
     public int cycleCount() {
