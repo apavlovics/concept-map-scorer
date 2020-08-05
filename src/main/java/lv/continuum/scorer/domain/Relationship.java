@@ -27,9 +27,9 @@ public class Relationship {
 
     @Override
     public String toString() {
-        var string = name == null || name.isEmpty() ?
+        var prefix = name == null || name.isEmpty() ?
                 "Unnamed relationship with id " :
                 "Relationship „" + name + "” with id ";
-        return string + id + " from concept " + fromConcept + " to concept " + toConcept;
+        return prefix + id + " from concept " + fromConcept + " to concept " + toConcept;
     }
 }

@@ -1,18 +1,14 @@
 package lv.continuum.scorer.domain;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.File;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
 import lv.continuum.scorer.common.Translations;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ConceptMap {
 
@@ -28,93 +24,94 @@ public class ConceptMap {
     private final List<Relationship> relationships = new ArrayList<>();
 
     public ConceptMap(String xml) throws Exception {
-        var builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        var documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         var file = new File(xml);
-        var doc = builder.parse(file);
-        doc.getDocumentElement().normalize();
+        var document = documentBuilder.parse(file);
+        document.getDocumentElement().normalize();
 
-        if (doc.getDocumentElement().getNodeName().equals("conceptmap")) {
+        if (document.getDocumentElement().getNodeName().equals("conceptmap")) {
             System.out.println("Started parsing standard XML file");
 
-            var concepts = doc.getElementsByTagName("concept");
-            if (concepts.getLength() == 0) {
-                throw new UnsupportedOperationException(String.format(MAP_NO_CONCEPTS, file.getName()));
+            var conceptNodes = document.getElementsByTagName("concept");
+            if (conceptNodes.getLength() == 0) {
+                throw new IllegalArgumentException(String.format(MAP_NO_CONCEPTS, file.getName()));
             }
-            for (int i = 0; i < concepts.getLength(); i++) {
-                var item = concepts.item(i);
-                if (this.containsConcept(item.getTextContent())) {
-                    throw new UnsupportedOperationException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
+            for (int i = 0; i < conceptNodes.getLength(); i++) {
+                var node = conceptNodes.item(i);
+                if (containsConcept(node.getTextContent())) {
+                    throw new IllegalArgumentException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
                 }
-                this.concepts.add(new Concept(item.getTextContent()));
+                concepts.add(new Concept(node.getTextContent()));
             }
 
-            var relationships = doc.getElementsByTagName("relationship");
-            if (relationships.getLength() == 0) {
-                throw new UnsupportedOperationException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
+            var relationshipNodes = document.getElementsByTagName("relationship");
+            if (relationshipNodes.getLength() == 0) {
+                throw new IllegalArgumentException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
             }
-            for (int i = 0; i < relationships.getLength(); i++) {
-                var item = relationships.item(i);
-                var from = Integer.parseInt(item.getAttributes().getNamedItem("from").getNodeValue());
-                var to = Integer.parseInt(item.getAttributes().getNamedItem("to").getNodeValue());
-                var fromConcept = this.concepts.get(from).id;
-                var toConcept = this.concepts.get(to).id;
-                this.relationships.add(new Relationship(fromConcept, toConcept, item.getTextContent()));
+            for (int i = 0; i < relationshipNodes.getLength(); i++) {
+                var node = relationshipNodes.item(i);
+                var from = Integer.parseInt(node.getAttributes().getNamedItem("from").getNodeValue());
+                var to = Integer.parseInt(node.getAttributes().getNamedItem("to").getNodeValue());
+                var fromConcept = concepts.get(from).id;
+                var toConcept = concepts.get(to).id;
+                relationships.add(new Relationship(fromConcept, toConcept, node.getTextContent()));
             }
 
             System.out.println("Finished parsing standard XML file");
-        } else if (doc.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
+        } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
             System.out.println("Started parsing IKAS XML file");
 
-            var elements = doc.getElementsByTagName("element");
-            for (int i = 0; i < elements.getLength(); i++) {
-                var item = elements.item(i);
-                if (item.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
-                    if (containsConcept(item.getAttributes().getNamedItem("value").getNodeValue())) {
-                        throw new UnsupportedOperationException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
+            var elementNodes = document.getElementsByTagName("element");
+            for (int i = 0; i < elementNodes.getLength(); i++) {
+                var node = elementNodes.item(i);
+                if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
+                    var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
+                    if (containsConcept(nodeValue)) {
+                        throw new IllegalArgumentException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
                     }
-                    this.concepts.add(new Concept(item.getAttributes().getNamedItem("value").getNodeValue()));
+                    concepts.add(new Concept(nodeValue));
                 }
             }
-            if (this.conceptCount() == 0) {
-                throw new UnsupportedOperationException(String.format(MAP_NO_CONCEPTS, file.getName()));
+            if (conceptCount() == 0) {
+                throw new IllegalArgumentException(String.format(MAP_NO_CONCEPTS, file.getName()));
             }
 
-            for (int i = 0; i < elements.getLength(); i++) {
-                var item = elements.item(i);
-                if (item.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
+            for (int i = 0; i < elementNodes.getLength(); i++) {
+                var node = elementNodes.item(i);
+                if (node.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
                     String from = null;
                     String to = null;
-                    var name = item.getAttributes().getNamedItem("value").getNodeValue();
-                    var itemRelationships = ((Element) item).getElementsByTagName("element");
-                    for (int j = 0; j < itemRelationships.getLength(); j++) {
-                        var itemRelationship = itemRelationships.item(j);
-                        var itemRelationshipName = itemRelationship.getAttributes().getNamedItem("name").getNodeValue();
-                        var itemRelationshipValue = itemRelationship.getAttributes().getNamedItem("value").getNodeValue();
-                        if (itemRelationshipName.equals("source")) {
-                            from = itemRelationshipValue;
-                        } else if (itemRelationshipName.equals("target")) {
-                            to = itemRelationshipValue;
+                    var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
+                    var relationshipNodes = ((Element) node).getElementsByTagName("element");
+                    for (int j = 0; j < relationshipNodes.getLength(); j++) {
+                        var relationshipNode = relationshipNodes.item(j);
+                        var relationshipNodeName = relationshipNode.getAttributes().getNamedItem("name").getNodeValue();
+                        var relationshipNodeValue = relationshipNode.getAttributes().getNamedItem("value").getNodeValue();
+                        if (relationshipNodeName.equals("source")) {
+                            from = relationshipNodeValue;
+                        } else if (relationshipNodeName.equals("target")) {
+                            to = relationshipNodeValue;
                         }
                     }
                     if (from == null || to == null) {
-                        throw new UnsupportedOperationException(String.format(MAP_INVALID_RELATIONSHIP, file.getName()));
+                        throw new IllegalArgumentException(String.format(MAP_INVALID_RELATIONSHIP, file.getName()));
                     }
 
                     var fromConcept = -1;
                     var toConcept = -1;
-                    for (Concept c : this.concepts) {
+                    for (Concept c : concepts) {
                         if (c.name.equals(from)) fromConcept = c.id;
                         if (c.name.equals(to)) toConcept = c.id;
                     }
-                    this.relationships.add(new Relationship(fromConcept, toConcept, name));
+                    relationships.add(new Relationship(fromConcept, toConcept, nodeValue));
                 }
             }
-            if (this.relationshipCount() == 0) {
-                throw new UnsupportedOperationException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
+            if (relationshipCount() == 0) {
+                throw new IllegalArgumentException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
             }
 
             System.out.println("Finished parsing IKAS XML file");
-        } else throw new UnsupportedOperationException(String.format(INVALID_XML, file.getName()));
+        } else throw new IllegalArgumentException(String.format(INVALID_XML, file.getName()));
         System.out.println(toString());
     }
 

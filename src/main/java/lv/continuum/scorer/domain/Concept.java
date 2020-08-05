@@ -9,7 +9,7 @@ public class Concept {
 
     private static final String CONCEPT_NO_NAME = Translations.getInstance().get("concept-no-name");
 
-    private static final List<String> names = new CopyOnWriteArrayList<>();
+    private static final List<String> lowerCaseNames = new CopyOnWriteArrayList<>();
 
     public final int id;
     public final String name;
@@ -19,10 +19,10 @@ public class Concept {
             throw new IllegalArgumentException(CONCEPT_NO_NAME);
         } else {
             var lowerCaseName = name.toLowerCase();
-            var index = names.indexOf(lowerCaseName);
+            var index = lowerCaseNames.indexOf(lowerCaseName);
             if (index == -1) {
-                names.add(lowerCaseName);
-                index = names.indexOf(lowerCaseName);
+                lowerCaseNames.add(lowerCaseName);
+                index = lowerCaseNames.indexOf(lowerCaseName);
             }
             this.id = index;
             this.name = name;
