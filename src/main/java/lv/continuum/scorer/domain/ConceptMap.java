@@ -25,7 +25,7 @@ public class ConceptMap {
         return relationships.size();
     }
 
-    // TODO Rework in functional style
+    // TODO Rework and optimize
     public int levelCount() {
         var levelCount = 0;
         var incomingRelationships = incomingRelationships();

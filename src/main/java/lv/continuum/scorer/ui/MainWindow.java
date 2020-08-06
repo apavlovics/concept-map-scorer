@@ -7,182 +7,151 @@ import lv.continuum.scorer.logic.ConceptMapScorer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-public class MainWindow extends javax.swing.JFrame {
+public class MainWindow extends JFrame {
 
-    private final JFileChooser chooser;
-    private final XmlFileFilter fileFilter;
+    private final JTextField studentTextField;
+    private final JTextField teacherTextField;
+    private final JFileChooser fileChooser;
+    private final JButton scoreButton;
+    private final JTextArea scoreTextArea;
+
+    private final JCheckBox elementsCheckBox;
+    private final JCheckBox closenessIndexesCheckBox;
+    private final JCheckBox importanceIndexesCheckBox;
+    private final JCheckBox propositionChainsCheckBox;
+    private final JCheckBox errorAnalysisCheckBox;
+
     private final ConceptMapParser conceptMapParser;
 
     public MainWindow() {
-        initComponents();
-        chooser = new JFileChooser(System.getProperty("user.dir"));
-        fileFilter = new XmlFileFilter();
-        chooser.setFileFilter(fileFilter);
+        studentTextField = new JTextField();
+        teacherTextField = new JTextField();
+
+        fileChooser = new JFileChooser(System.getProperty("user.dir"));
+        fileChooser.setFileFilter(new XmlFileFilter());
+
+        scoreButton = new JButton();
+        scoreTextArea = new JTextArea();
+
+        elementsCheckBox = new JCheckBox();
+        closenessIndexesCheckBox = new JCheckBox();
+        importanceIndexesCheckBox = new JCheckBox();
+        propositionChainsCheckBox = new JCheckBox();
+        errorAnalysisCheckBox = new JCheckBox();
+
         conceptMapParser = new ConceptMapParser();
+        initComponents();
     }
 
     private String getSelectedFileName() {
-        int operation = this.chooser.showOpenDialog(this);
-        if (operation == JFileChooser.APPROVE_OPTION) return this.chooser.getSelectedFile().getAbsolutePath();
-        return null;
+        int state = fileChooser.showOpenDialog(this);
+        return state == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile().getAbsolutePath() : null;
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        scoreScrollPane = new javax.swing.JScrollPane();
-        scoreTextArea = new javax.swing.JTextArea();
-        studentTextField = new javax.swing.JTextField();
-        teacherTextField = new javax.swing.JTextField();
-        studentButton = new javax.swing.JButton();
-        teacherButton = new javax.swing.JButton();
-        studentLabel = new javax.swing.JLabel();
-        teacherLabel = new javax.swing.JLabel();
-        scoreButton = new javax.swing.JButton();
-        elementsCheckBox = new javax.swing.JCheckBox();
-        closenessIndexesCheckBox = new javax.swing.JCheckBox();
-        importanceIndexesCheckBox = new javax.swing.JCheckBox();
-        propositionChainsCheckBox = new javax.swing.JCheckBox();
-        errorAnalysisCheckBox = new javax.swing.JCheckBox();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle(Translations.getInstance().get("title"));
-        setBounds(new java.awt.Rectangle(100, 100, 0, 0));
+        setBounds(new Rectangle(100, 100, 0, 0));
         setResizable(false);
+
+        var studentButton = new JButton();
+        var teacherButton = new JButton();
+        var studentLabel = new JLabel();
+        var teacherLabel = new JLabel();
 
         scoreTextArea.setColumns(20);
         scoreTextArea.setEditable(false);
         scoreTextArea.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         scoreTextArea.setLineWrap(true);
         scoreTextArea.setRows(5);
-        scoreTextArea.setText(Translations.getInstance()
-                .get("default-text"));
+        scoreTextArea.setText(Translations.getInstance().get("default-text"));
         scoreTextArea.setWrapStyleWord(true);
         scoreTextArea.setDisabledTextColor(new java.awt.Color(140, 137, 126));
         scoreTextArea.setEnabled(false);
+
+        var scoreScrollPane = new JScrollPane();
         scoreScrollPane.setViewportView(scoreTextArea);
 
-        studentTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
+        studentTextField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent evt) {
                 textFieldsChanged(evt);
             }
 
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                textFieldsChanged(evt);
-            }
-        });
-
-        teacherTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                textFieldsChanged(evt);
-            }
-
-            public void keyReleased(java.awt.event.KeyEvent evt) {
+            public void keyReleased(KeyEvent evt) {
                 textFieldsChanged(evt);
             }
         });
 
-        studentButton.setText(
-                Translations.getInstance().get("browse"));
-        studentButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                studentButtonActionPerformed(evt);
+        teacherTextField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent evt) {
+                textFieldsChanged(evt);
+            }
+
+            public void keyReleased(KeyEvent evt) {
+                textFieldsChanged(evt);
             }
         });
 
-        teacherButton.setText(
-                Translations.getInstance().get("browse"));
-        teacherButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                teacherButtonActionPerformed(evt);
-            }
-        });
+        studentButton.setText(Translations.getInstance().get("browse"));
+        studentButton.addActionListener(this::studentButtonActionPerformed);
 
-        studentLabel.setText(Translations.getInstance()
-                .get("select-student-map"));
+        teacherButton.setText(Translations.getInstance().get("browse"));
+        teacherButton.addActionListener(this::teacherButtonActionPerformed);
 
-        teacherLabel.setText(Translations.getInstance()
-                .get("select-teacher-map"));
+        studentLabel.setText(Translations.getInstance().get("select-student-map"));
 
-        scoreButton.setText(
-                Translations.getInstance().get("score"));
+        teacherLabel.setText(Translations.getInstance().get("select-teacher-map"));
+
+        scoreButton.setText(Translations.getInstance().get("score"));
         scoreButton.setEnabled(false);
         scoreButton.setMaximumSize(new java.awt.Dimension(83, 23));
         scoreButton.setMinimumSize(new java.awt.Dimension(83, 23));
-        scoreButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                scoreButtonActionPerformed(evt);
-            }
-        });
+        scoreButton.addActionListener(this::scoreButtonActionPerformed);
 
         elementsCheckBox.setSelected(true);
-        elementsCheckBox.setText(Translations.getInstance()
-                .get("method-element-count"));
+        elementsCheckBox.setText(Translations.getInstance().get("method-element-count"));
         elementsCheckBox.setEnabled(false);
-        elementsCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                checkBoxStateChanged(evt);
-            }
-        });
+        elementsCheckBox.addChangeListener(this::checkBoxStateChanged);
 
-        closenessIndexesCheckBox.setText(Translations.getInstance()
-                .get("method-closeness-indexes"));
+        closenessIndexesCheckBox.setText(Translations.getInstance().get("method-closeness-indexes"));
         closenessIndexesCheckBox.setEnabled(false);
-        closenessIndexesCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                checkBoxStateChanged(evt);
-            }
-        });
+        closenessIndexesCheckBox.addChangeListener(this::checkBoxStateChanged);
 
-        importanceIndexesCheckBox.setText(Translations.getInstance()
-                .get("method-importance-indexes"));
+        importanceIndexesCheckBox.setText(Translations.getInstance().get("method-importance-indexes"));
         importanceIndexesCheckBox.setEnabled(false);
-        importanceIndexesCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                checkBoxStateChanged(evt);
-            }
-        });
+        importanceIndexesCheckBox.addChangeListener(this::checkBoxStateChanged);
 
-        propositionChainsCheckBox.setText(Translations.getInstance()
-                .get("method-proposition-chains"));
+        propositionChainsCheckBox.setText(Translations.getInstance().get("method-proposition-chains"));
         propositionChainsCheckBox.setEnabled(false);
-        propositionChainsCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                checkBoxStateChanged(evt);
-            }
-        });
+        propositionChainsCheckBox.addChangeListener(this::checkBoxStateChanged);
 
-        errorAnalysisCheckBox.setText(Translations.getInstance()
-                .get("method-error-analysis"));
+        errorAnalysisCheckBox.setText(Translations.getInstance().get("method-error-analysis"));
         errorAnalysisCheckBox.setEnabled(false);
-        errorAnalysisCheckBox.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                checkBoxStateChanged(evt);
-            }
-        });
+        errorAnalysisCheckBox.addChangeListener(this::checkBoxStateChanged);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(
-                                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addComponent(scoreScrollPane,
-                                                                javax.swing.GroupLayout.DEFAULT_SIZE, 680,
+                                                                GroupLayout.DEFAULT_SIZE, 680,
                                                                 Short.MAX_VALUE)
                                                         .addContainerGap())
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addComponent(studentLabel)
                                                         .addContainerGap())
-                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                                .addGroup(GroupLayout.Alignment.TRAILING,
                                                         layout.createSequentialGroup()
-                                                                .addGroup(layout.createParallelGroup(
-                                                                        javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                .addGroup(layout
+                                                                        .createParallelGroup(GroupLayout.Alignment.TRAILING)
                                                                         .addGroup(
                                                                                 layout.createSequentialGroup()
                                                                                         .addComponent(
@@ -220,9 +189,9 @@ public class MainWindow extends javax.swing.JFrame {
                                                                 .addGap(96, 96, 96))
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addComponent(scoreButton,
-                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                GroupLayout.PREFERRED_SIZE,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                GroupLayout.PREFERRED_SIZE)
                                                         .addGap(18, 18, 18)
                                                         .addGroup(layout.createParallelGroup(
                                                                 javax.swing.GroupLayout.Alignment.LEADING)
@@ -283,19 +252,19 @@ public class MainWindow extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     private void studentButtonActionPerformed(
-            java.awt.event.ActionEvent evt) {//GEN-FIRST:event_studentButtonActionPerformed
+            java.awt.event.ActionEvent evt) {
         String fileName = this.getSelectedFileName();
         if (fileName != null) {
             this.studentTextField.setText(fileName);
             this.textFieldsChanged(null);
         }
-    }//GEN-LAST:event_studentButtonActionPerformed
+    }
 
     private void scoreButtonActionPerformed(
-            java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoreButtonActionPerformed
+            java.awt.event.ActionEvent evt) {
         try {
             ConceptMap studentMap, teacherMap;
             ConceptMapScorer scorer;
@@ -349,22 +318,22 @@ public class MainWindow extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE
             );
         }
-    }//GEN-LAST:event_scoreButtonActionPerformed
+    }
 
     private void teacherButtonActionPerformed(
-            java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teacherButtonActionPerformed
+            java.awt.event.ActionEvent evt) {
         String fileName = this.getSelectedFileName();
         if (fileName != null) {
             this.teacherTextField.setText(fileName);
             this.textFieldsChanged(null);
         }
-    }//GEN-LAST:event_teacherButtonActionPerformed
+    }
 
-    private void textFieldsChanged(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldsChanged
-        boolean state = (this.teacherTextField.getText().length() > 0 &&
-                this.studentTextField.getText().length() > 0) ? true : false;
-        if ((state == true && !this.elementsCheckBox.isEnabled()) ||
-                (state == false && this.elementsCheckBox.isEnabled())) {
+    private void textFieldsChanged(java.awt.event.KeyEvent evt) {
+        boolean state = this.teacherTextField.getText().length() > 0 &&
+                this.studentTextField.getText().length() > 0;
+        if ((state && !this.elementsCheckBox.isEnabled()) ||
+                (!state && this.elementsCheckBox.isEnabled())) {
             this.elementsCheckBox.setEnabled(state);
             this.closenessIndexesCheckBox.setEnabled(state);
             this.importanceIndexesCheckBox.setEnabled(state);
@@ -378,14 +347,12 @@ public class MainWindow extends javax.swing.JFrame {
             this.errorAnalysisCheckBox.setSelected(state);
         }
 
-        if (this.studentTextField.getText().length() > 0
+        this.scoreButton.setEnabled(this.studentTextField.getText().length() > 0
                 && (this.elementsCheckBox.isSelected() ||
                 this.closenessIndexesCheckBox.isSelected() ||
                 this.importanceIndexesCheckBox.isSelected() ||
                 this.propositionChainsCheckBox.isSelected() ||
-                this.errorAnalysisCheckBox.isSelected())) { this.scoreButton.setEnabled(true); } else {
-            this.scoreButton.setEnabled(false);
-        }
+                this.errorAnalysisCheckBox.isSelected()));
     }//GEN-LAST:event_textFieldsChanged
 
     private void checkBoxStateChanged(
@@ -405,19 +372,4 @@ public class MainWindow extends javax.swing.JFrame {
         });
         System.out.println("Created main application window");
     }
-
-    private JCheckBox closenessIndexesCheckBox;
-    private JCheckBox elementsCheckBox;
-    private JCheckBox errorAnalysisCheckBox;
-    private JCheckBox importanceIndexesCheckBox;
-    private JCheckBox propositionChainsCheckBox;
-    private JButton scoreButton;
-    private JScrollPane scoreScrollPane;
-    private JTextArea scoreTextArea;
-    private JButton studentButton;
-    private JLabel studentLabel;
-    private JTextField studentTextField;
-    private JButton teacherButton;
-    private JLabel teacherLabel;
-    private JTextField teacherTextField;
 }
