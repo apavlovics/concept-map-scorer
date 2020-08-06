@@ -4,16 +4,17 @@ import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Set;
 
 public class MainWindow extends JFrame {
-
-    private static final Translations translations = Translations.getInstance();
 
     private final JTextField studentTextField;
     private final JTextField teacherTextField;
@@ -28,7 +29,8 @@ public class MainWindow extends JFrame {
     private final JCheckBox errorAnalysisCheckBox;
     private final Set<JCheckBox> checkBoxes;
 
-    private final ConceptMapParser conceptMapParser;
+    private final Translations translations = Translations.getInstance();
+    private final ConceptMapParser conceptMapParser = new ConceptMapParser();
 
     public MainWindow() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -60,7 +62,7 @@ public class MainWindow extends JFrame {
         scoreButton.setText(translations.get("score"));
         scoreButton.setEnabled(false);
         scoreButton.setSize(new Dimension(83, 23));
-        scoreButton.addActionListener(this::scoreButtonActionPerformed);
+        scoreButton.addActionListener(e -> scoreButtonActionPerformed());
 
         elementsCheckBox = new JCheckBox();
         elementsCheckBox.setText(translations.get("method-element-count"));
@@ -99,11 +101,10 @@ public class MainWindow extends JFrame {
         scoreTextArea.setWrapStyleWord(true);
         scoreTextArea.setEnabled(false);
 
-        conceptMapParser = new ConceptMapParser();
-        initComponents();
+        layoutComponents();
     }
 
-    private void initComponents() {
+    private void layoutComponents() {
         var scoreScrollPane = new JScrollPane();
         scoreScrollPane.setViewportView(scoreTextArea);
 
@@ -243,54 +244,52 @@ public class MainWindow extends JFrame {
         pack();
     }
 
-    private void scoreButtonActionPerformed(
-            java.awt.event.ActionEvent evt) {
+    private void scoreButtonActionPerformed() {
         try {
-            ConceptMap studentMap, teacherMap;
+            var studentText = studentTextField.getText();
+            var teacherText = teacherTextField.getText();
+
             ConceptMapScorer scorer;
-            if (!this.teacherTextField.getText().isEmpty() &&
-                    !this.studentTextField.getText().isEmpty()) {
-                studentMap = conceptMapParser.parse(this.studentTextField.getText());
-                teacherMap = conceptMapParser.parse(this.teacherTextField.getText());
+            if (!studentText.isEmpty() && !teacherText.isEmpty()) {
+                var studentMap = conceptMapParser.parse(studentText);
+                var teacherMap = conceptMapParser.parse(teacherText);
                 scorer = new ConceptMapScorer(studentMap, teacherMap);
-            } else if (!this.studentTextField.getText().isEmpty()) {
-                studentMap = conceptMapParser.parse(this.studentTextField.getText());
+            } else if (!studentText.isEmpty()) {
+                var studentMap = conceptMapParser.parse(studentText);
                 scorer = new ConceptMapScorer(studentMap);
             } else {
-                throw new UnsupportedOperationException(
-                        translations.get("invalid-file")
-                );
+                throw new UnsupportedOperationException(translations.get("invalid-file"));
             }
 
-            String resultString = "";
-            if (this.elementsCheckBox.isSelected()) {
-                resultString += scorer.countConceptMapsElements() + "\n\n";
+            var sb = new StringBuilder();
+            if (elementsCheckBox.isSelected()) {
+                sb.append(scorer.countConceptMapsElements()).append("\n\n");
             }
-            if (this.closenessIndexesCheckBox.isSelected()) {
-                resultString += scorer.compareConceptMapsUsingClosenessIndexes() + "\n\n";
+            if (closenessIndexesCheckBox.isSelected()) {
+                sb.append(scorer.compareConceptMapsUsingClosenessIndexes()).append("\n\n");
             }
-            if (this.importanceIndexesCheckBox.isSelected()) {
-                resultString += scorer.compareConceptMapsUsingImportanceIndexes() + "\n\n";
+            if (importanceIndexesCheckBox.isSelected()) {
+                sb.append(scorer.compareConceptMapsUsingImportanceIndexes()).append("\n\n");
             }
-            if (this.propositionChainsCheckBox.isSelected()) {
-                resultString += scorer.compareConceptMapsUsingPropositionChains() + "\n\n";
+            if (propositionChainsCheckBox.isSelected()) {
+                sb.append(scorer.compareConceptMapsUsingPropositionChains()).append("\n\n");
             }
-            if (this.errorAnalysisCheckBox.isSelected()) {
-                resultString += scorer.compareConceptMapsUsingErrorAnalysis() + "\n\n";
+            if (errorAnalysisCheckBox.isSelected()) {
+                sb.append(scorer.compareConceptMapsUsingErrorAnalysis()).append("\n\n");
             }
-            resultString = resultString.substring(0, resultString.length() - 2);
+            var score = sb.substring(0, sb.length() - 2);
 
-            this.scoreTextArea.setText(resultString);
-            this.scoreTextArea.setEnabled(true);
+            scoreTextArea.setText(score);
+            scoreTextArea.setEnabled(true);
             System.out.println("Scored concept map");
-        } catch (UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException uoe) {
             JOptionPane.showMessageDialog(
                     this,
-                    e.getMessage(),
+                    uoe.getMessage(),
                     translations.get("error"),
                     JOptionPane.ERROR_MESSAGE
             );
-        } catch (Exception e) {
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             JOptionPane.showMessageDialog(
                     this,
                     translations.get("invalid-file"),
@@ -330,8 +329,10 @@ public class MainWindow extends JFrame {
     }
 
     private void updateScoreButtonAndCheckBoxes(boolean updateCheckBoxes) {
+        var studentText = studentTextField.getText();
+        var teacherText = teacherTextField.getText();
         if (updateCheckBoxes) {
-            boolean selectedEnabled = !teacherTextField.getText().isEmpty() && !studentTextField.getText().isEmpty();
+            boolean selectedEnabled = !studentText.isEmpty() && !teacherText.isEmpty();
             checkBoxes.forEach(cb -> {
                 if (cb == elementsCheckBox) {
                     cb.setSelected(true);
@@ -341,21 +342,23 @@ public class MainWindow extends JFrame {
                 cb.setEnabled(selectedEnabled);
             });
         }
-        scoreButton.setEnabled(
-                !studentTextField.getText().isEmpty() && checkBoxes.stream().anyMatch(JCheckBox::isSelected)
-        );
+        scoreButton.setEnabled(!studentText.isEmpty() && checkBoxes.stream().anyMatch(JCheckBox::isSelected));
     }
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
                 Translations.getInstance();
+                new MainWindow().setVisible(true);
+                System.out.println("Created main application window");
             } catch (IllegalStateException ise) {
-                JOptionPane.showMessageDialog(null, ise.getMessage() + ".", "Error", JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
+                JOptionPane.showMessageDialog(
+                        null,
+                        ise.getMessage() + ".",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
-            new MainWindow().setVisible(true);
         });
-        System.out.println("Created main application window");
     }
 }

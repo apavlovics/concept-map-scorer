@@ -25,7 +25,7 @@ public class ConceptMapParser {
     private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
     private static final String MAP_INVALID_RELATIONSHIP = translations.get("map-invalid-relationship");
 
-    public ConceptMap parse(String xml) throws ParserConfigurationException, IOException, SAXException {
+    public ConceptMap parse(String xml) throws IOException, ParserConfigurationException, SAXException {
         var documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         var file = new File(xml);
         var document = documentBuilder.parse(file);
