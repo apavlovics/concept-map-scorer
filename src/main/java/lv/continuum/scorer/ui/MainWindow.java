@@ -6,11 +6,15 @@ import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Set;
 
 public class MainWindow extends JFrame {
+
+    private static final Translations translations = Translations.getInstance();
 
     private final JTextField studentTextField;
     private final JTextField teacherTextField;
@@ -23,6 +27,7 @@ public class MainWindow extends JFrame {
     private final JCheckBox importanceIndexesCheckBox;
     private final JCheckBox propositionChainsCheckBox;
     private final JCheckBox errorAnalysisCheckBox;
+    private final Set<JCheckBox> checkBoxes;
 
     private final ConceptMapParser conceptMapParser;
 
@@ -34,13 +39,47 @@ public class MainWindow extends JFrame {
         fileChooser.setFileFilter(new XmlFileFilter());
 
         scoreButton = new JButton();
-        scoreTextArea = new JTextArea();
+        scoreButton.setText(translations.get("score"));
+        scoreButton.setEnabled(false);
+        scoreButton.setSize(new Dimension(83, 23));
+        scoreButton.addActionListener(this::scoreButtonActionPerformed);
 
         elementsCheckBox = new JCheckBox();
+        elementsCheckBox.setText(translations.get("method-element-count"));
+        elementsCheckBox.setSelected(true);
+
         closenessIndexesCheckBox = new JCheckBox();
+        closenessIndexesCheckBox.setText(translations.get("method-closeness-indexes"));
+
         importanceIndexesCheckBox = new JCheckBox();
+        importanceIndexesCheckBox.setText(translations.get("method-importance-indexes"));
+
         propositionChainsCheckBox = new JCheckBox();
+        propositionChainsCheckBox.setText(translations.get("method-proposition-chains"));
+
         errorAnalysisCheckBox = new JCheckBox();
+        errorAnalysisCheckBox.setText(translations.get("method-error-analysis"));
+
+        checkBoxes = Set.of(
+                elementsCheckBox,
+                closenessIndexesCheckBox,
+                importanceIndexesCheckBox,
+                propositionChainsCheckBox,
+                errorAnalysisCheckBox
+        );
+        checkBoxes.forEach(cb -> {
+            cb.setEnabled(false);
+            cb.addChangeListener(e -> checkBoxChanged());
+        });
+
+        scoreTextArea = new JTextArea();
+        scoreTextArea.setColumns(20);
+        scoreTextArea.setEditable(false);
+        scoreTextArea.setLineWrap(true);
+        scoreTextArea.setRows(5);
+        scoreTextArea.setText(translations.get("default-text"));
+        scoreTextArea.setWrapStyleWord(true);
+        scoreTextArea.setEnabled(false);
 
         conceptMapParser = new ConceptMapParser();
         initComponents();
@@ -53,7 +92,7 @@ public class MainWindow extends JFrame {
 
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle(Translations.getInstance().get("title"));
+        setTitle(translations.get("title"));
         setBounds(new Rectangle(100, 100, 0, 0));
         setResizable(false);
 
@@ -62,75 +101,31 @@ public class MainWindow extends JFrame {
         var studentLabel = new JLabel();
         var teacherLabel = new JLabel();
 
-        scoreTextArea.setColumns(20);
-        scoreTextArea.setEditable(false);
-        scoreTextArea.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        scoreTextArea.setLineWrap(true);
-        scoreTextArea.setRows(5);
-        scoreTextArea.setText(Translations.getInstance().get("default-text"));
-        scoreTextArea.setWrapStyleWord(true);
-        scoreTextArea.setDisabledTextColor(new java.awt.Color(140, 137, 126));
-        scoreTextArea.setEnabled(false);
-
         var scoreScrollPane = new JScrollPane();
         scoreScrollPane.setViewportView(scoreTextArea);
 
-        studentTextField.addKeyListener(new KeyAdapter() {
+        var keyAdapter = new KeyAdapter() {
+
             public void keyPressed(KeyEvent evt) {
-                textFieldsChanged(evt);
+                textFieldChanged();
             }
 
             public void keyReleased(KeyEvent evt) {
-                textFieldsChanged(evt);
+                textFieldChanged();
             }
-        });
+        };
+        studentTextField.addKeyListener(keyAdapter);
+        teacherTextField.addKeyListener(keyAdapter);
 
-        teacherTextField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent evt) {
-                textFieldsChanged(evt);
-            }
-
-            public void keyReleased(KeyEvent evt) {
-                textFieldsChanged(evt);
-            }
-        });
-
-        studentButton.setText(Translations.getInstance().get("browse"));
+        studentButton.setText(translations.get("browse"));
         studentButton.addActionListener(this::studentButtonActionPerformed);
 
-        teacherButton.setText(Translations.getInstance().get("browse"));
+        teacherButton.setText(translations.get("browse"));
         teacherButton.addActionListener(this::teacherButtonActionPerformed);
 
-        studentLabel.setText(Translations.getInstance().get("select-student-map"));
+        studentLabel.setText(translations.get("select-student-map"));
 
-        teacherLabel.setText(Translations.getInstance().get("select-teacher-map"));
-
-        scoreButton.setText(Translations.getInstance().get("score"));
-        scoreButton.setEnabled(false);
-        scoreButton.setMaximumSize(new java.awt.Dimension(83, 23));
-        scoreButton.setMinimumSize(new java.awt.Dimension(83, 23));
-        scoreButton.addActionListener(this::scoreButtonActionPerformed);
-
-        elementsCheckBox.setSelected(true);
-        elementsCheckBox.setText(Translations.getInstance().get("method-element-count"));
-        elementsCheckBox.setEnabled(false);
-        elementsCheckBox.addChangeListener(this::checkBoxStateChanged);
-
-        closenessIndexesCheckBox.setText(Translations.getInstance().get("method-closeness-indexes"));
-        closenessIndexesCheckBox.setEnabled(false);
-        closenessIndexesCheckBox.addChangeListener(this::checkBoxStateChanged);
-
-        importanceIndexesCheckBox.setText(Translations.getInstance().get("method-importance-indexes"));
-        importanceIndexesCheckBox.setEnabled(false);
-        importanceIndexesCheckBox.addChangeListener(this::checkBoxStateChanged);
-
-        propositionChainsCheckBox.setText(Translations.getInstance().get("method-proposition-chains"));
-        propositionChainsCheckBox.setEnabled(false);
-        propositionChainsCheckBox.addChangeListener(this::checkBoxStateChanged);
-
-        errorAnalysisCheckBox.setText(Translations.getInstance().get("method-error-analysis"));
-        errorAnalysisCheckBox.setEnabled(false);
-        errorAnalysisCheckBox.addChangeListener(this::checkBoxStateChanged);
+        teacherLabel.setText(translations.get("select-teacher-map"));
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -259,7 +254,7 @@ public class MainWindow extends JFrame {
         String fileName = this.getSelectedFileName();
         if (fileName != null) {
             this.studentTextField.setText(fileName);
-            this.textFieldsChanged(null);
+            this.textFieldChanged();
         }
     }
 
@@ -278,11 +273,11 @@ public class MainWindow extends JFrame {
                 scorer = new ConceptMapScorer(studentMap);
             } else {
                 throw new UnsupportedOperationException(
-                        Translations.getInstance().get("invalid-file")
+                        translations.get("invalid-file")
                 );
             }
 
-            String resultString = new String();
+            String resultString = "";
             if (this.elementsCheckBox.isSelected()) {
                 resultString += scorer.countConceptMapsElements() + "\n\n";
             }
@@ -307,14 +302,14 @@ public class MainWindow extends JFrame {
             JOptionPane.showMessageDialog(
                     this,
                     e.getMessage(),
-                    Translations.getInstance().get("error"),
+                    translations.get("error"),
                     JOptionPane.ERROR_MESSAGE
             );
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
                     this,
-                    Translations.getInstance().get("invalid-file"),
-                    Translations.getInstance().get("error"),
+                    translations.get("invalid-file"),
+                    translations.get("error"),
                     JOptionPane.ERROR_MESSAGE
             );
         }
@@ -325,39 +320,34 @@ public class MainWindow extends JFrame {
         String fileName = this.getSelectedFileName();
         if (fileName != null) {
             this.teacherTextField.setText(fileName);
-            this.textFieldsChanged(null);
+            this.textFieldChanged();
         }
     }
 
-    private void textFieldsChanged(java.awt.event.KeyEvent evt) {
-        boolean state = this.teacherTextField.getText().length() > 0 &&
-                this.studentTextField.getText().length() > 0;
-        if ((state && !this.elementsCheckBox.isEnabled()) ||
-                (!state && this.elementsCheckBox.isEnabled())) {
-            this.elementsCheckBox.setEnabled(state);
-            this.closenessIndexesCheckBox.setEnabled(state);
-            this.importanceIndexesCheckBox.setEnabled(state);
-            this.propositionChainsCheckBox.setEnabled(state);
-            this.errorAnalysisCheckBox.setEnabled(state);
+    private void textFieldChanged() {
+        updateScoreButtonAndCheckBoxes(true);
+    }
 
-            this.elementsCheckBox.setSelected(true);
-            this.closenessIndexesCheckBox.setSelected(state);
-            this.importanceIndexesCheckBox.setSelected(state);
-            this.propositionChainsCheckBox.setSelected(state);
-            this.errorAnalysisCheckBox.setSelected(state);
+    private void checkBoxChanged() {
+        updateScoreButtonAndCheckBoxes(false);
+    }
+
+    private void updateScoreButtonAndCheckBoxes(boolean updateCheckBoxes) {
+        if (updateCheckBoxes) {
+            boolean checkBoxesSelectedEnabled =
+                    !teacherTextField.getText().isEmpty() && !studentTextField.getText().isEmpty();
+            checkBoxes.forEach(cb -> {
+                if (cb == elementsCheckBox) {
+                    cb.setSelected(true);
+                } else {
+                    cb.setSelected(checkBoxesSelectedEnabled);
+                }
+                cb.setEnabled(checkBoxesSelectedEnabled);
+            });
         }
-
-        this.scoreButton.setEnabled(this.studentTextField.getText().length() > 0
-                && (this.elementsCheckBox.isSelected() ||
-                this.closenessIndexesCheckBox.isSelected() ||
-                this.importanceIndexesCheckBox.isSelected() ||
-                this.propositionChainsCheckBox.isSelected() ||
-                this.errorAnalysisCheckBox.isSelected()));
-    }//GEN-LAST:event_textFieldsChanged
-
-    private void checkBoxStateChanged(
-            javax.swing.event.ChangeEvent evt) {
-        this.textFieldsChanged(null);
+        boolean scoreButtonEnabled =
+                !studentTextField.getText().isEmpty() && checkBoxes.stream().anyMatch(JCheckBox::isSelected);
+        scoreButton.setEnabled(scoreButtonEnabled);
     }
 
     public static void main(String[] args) {
