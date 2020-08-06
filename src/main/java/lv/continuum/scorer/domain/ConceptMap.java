@@ -1,10 +1,5 @@
 package lv.continuum.scorer.domain;
 
-import lv.continuum.scorer.common.Translations;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 
@@ -13,14 +8,7 @@ import static java.util.stream.Collectors.groupingBy;
 
 public class ConceptMap {
 
-    private static final Translations translations = Translations.getInstance();
-
-    private static final String INVALID_XML = translations.get("invalid-xml");
-    private static final String MAP_NO_CONCEPTS = translations.get("map-no-concepts");
-    private static final String MAP_DUPLICATE_CONCEPTS = translations.get("map-duplicate-concepts");
-    private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
-    private static final String MAP_INVALID_RELATIONSHIP = translations.get("map-invalid-relationship");
-
+    // TODO Consider replacing lists with sets
     private final List<Concept> concepts;
     private final List<Relationship> relationships;
 
@@ -151,40 +139,6 @@ public class ConceptMap {
         return result;
     }
 
-    public Map<Integer, Set<Integer>> outgoingRelationships() {
-        var outgoingRelationships = new HashMap<Integer, Set<Integer>>();
-        for (Concept c : concepts) {
-            outgoingRelationships.put(c.id, new HashSet<>());
-        }
-        for (Relationship r : relationships) {
-            outgoingRelationships.get(r.fromConcept).add(r.toConcept);
-        }
-        return outgoingRelationships;
-    }
-
-    public Map<Integer, Set<Integer>> incomingRelationships() {
-        var incomingRelationships = new HashMap<Integer, Set<Integer>>();
-        for (Concept c : concepts) {
-            incomingRelationships.put(c.id, new HashSet<>());
-        }
-        for (Relationship r : relationships) {
-            incomingRelationships.get(r.toConcept).add(r.fromConcept);
-        }
-        return incomingRelationships;
-    }
-
-    public Map<Integer, Set<Integer>> allRelationships() {
-        var allRelationships = new HashMap<Integer, Set<Integer>>();
-        for (Concept c : concepts) {
-            allRelationships.put(c.id, new HashSet<>());
-        }
-        for (Relationship r : relationships) {
-            allRelationships.get(r.fromConcept).add(r.toConcept);
-            allRelationships.get(r.toConcept).add(r.fromConcept);
-        }
-        return allRelationships;
-    }
-
     public Map<String, List<String>> allPaths() {
         var resultMap = new HashMap<String, List<String>>();
 
@@ -290,6 +244,41 @@ public class ConceptMap {
     public boolean containsRelationship(int fromConcept, int toConcept) {
         return relationships.stream()
                 .anyMatch(r -> r.fromConcept == fromConcept && r.toConcept == toConcept);
+    }
+
+    /**
+     * Represents relationship direction.
+     */
+    private enum Direction {
+        OUTGOING, INCOMING;
+    }
+
+    public Map<Integer, Set<Integer>> outgoingRelationships() {
+        return relationships(Set.of(Direction.OUTGOING));
+    }
+
+    public Map<Integer, Set<Integer>> incomingRelationships() {
+        return relationships(Set.of(Direction.INCOMING));
+    }
+
+    public Map<Integer, Set<Integer>> allRelationships() {
+        return relationships(Set.of(Direction.OUTGOING, Direction.INCOMING));
+    }
+
+    private Map<Integer, Set<Integer>> relationships(Set<Direction> directions) {
+        var allRelationships = new HashMap<Integer, Set<Integer>>();
+        for (Concept c : concepts) {
+            allRelationships.put(c.id, new HashSet<>());
+        }
+        for (Relationship r : relationships) {
+            if (directions.contains(Direction.OUTGOING)) {
+                allRelationships.get(r.fromConcept).add(r.toConcept);
+            }
+            if (directions.contains(Direction.INCOMING)) {
+                allRelationships.get(r.toConcept).add(r.fromConcept);
+            }
+        }
+        return allRelationships;
     }
 
     @Override

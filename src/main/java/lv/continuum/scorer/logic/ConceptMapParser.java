@@ -136,7 +136,6 @@ public class ConceptMapParser {
     }
 
     private boolean containsConcept(List<Concept> concepts, String name) {
-        return concepts.stream()
-                .anyMatch(c -> c.name.compareToIgnoreCase(name) == 0);
+        return concepts.stream().anyMatch(c -> c.name.compareToIgnoreCase(name) == 0);
     }
 }
