@@ -6,7 +6,6 @@ import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -32,8 +31,27 @@ public class MainWindow extends JFrame {
     private final ConceptMapParser conceptMapParser;
 
     public MainWindow() {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setTitle(translations.get("title"));
+        setBounds(new Rectangle(100, 100, 0, 0));
+        setResizable(false);
+
+        var keyAdapter = new KeyAdapter() {
+
+            public void keyPressed(KeyEvent evt) {
+                textFieldChanged();
+            }
+
+            public void keyReleased(KeyEvent evt) {
+                textFieldChanged();
+            }
+        };
+
         studentTextField = new JTextField();
+        studentTextField.addKeyListener(keyAdapter);
+
         teacherTextField = new JTextField();
+        teacherTextField.addKeyListener(keyAdapter);
 
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
         fileChooser.setFileFilter(new XmlFileFilter());
@@ -85,46 +103,22 @@ public class MainWindow extends JFrame {
         initComponents();
     }
 
-    private String getSelectedFileName() {
-        int state = fileChooser.showOpenDialog(this);
-        return state == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile().getAbsolutePath() : null;
-    }
-
     private void initComponents() {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle(translations.get("title"));
-        setBounds(new Rectangle(100, 100, 0, 0));
-        setResizable(false);
-
-        var studentButton = new JButton();
-        var teacherButton = new JButton();
-        var studentLabel = new JLabel();
-        var teacherLabel = new JLabel();
-
         var scoreScrollPane = new JScrollPane();
         scoreScrollPane.setViewportView(scoreTextArea);
 
-        var keyAdapter = new KeyAdapter() {
-
-            public void keyPressed(KeyEvent evt) {
-                textFieldChanged();
-            }
-
-            public void keyReleased(KeyEvent evt) {
-                textFieldChanged();
-            }
-        };
-        studentTextField.addKeyListener(keyAdapter);
-        teacherTextField.addKeyListener(keyAdapter);
-
+        var studentButton = new JButton();
         studentButton.setText(translations.get("browse"));
-        studentButton.addActionListener(this::studentButtonActionPerformed);
+        studentButton.addActionListener(e -> studentButtonActionPerformed());
 
+        var teacherButton = new JButton();
         teacherButton.setText(translations.get("browse"));
-        teacherButton.addActionListener(this::teacherButtonActionPerformed);
+        teacherButton.addActionListener(e -> teacherButtonActionPerformed());
 
+        var studentLabel = new JLabel();
         studentLabel.setText(translations.get("select-student-map"));
 
+        var teacherLabel = new JLabel();
         teacherLabel.setText(translations.get("select-teacher-map"));
 
         GroupLayout layout = new GroupLayout(getContentPane());
@@ -249,15 +243,6 @@ public class MainWindow extends JFrame {
         pack();
     }
 
-    private void studentButtonActionPerformed(
-            java.awt.event.ActionEvent evt) {
-        String fileName = this.getSelectedFileName();
-        if (fileName != null) {
-            this.studentTextField.setText(fileName);
-            this.textFieldChanged();
-        }
-    }
-
     private void scoreButtonActionPerformed(
             java.awt.event.ActionEvent evt) {
         try {
@@ -315,12 +300,24 @@ public class MainWindow extends JFrame {
         }
     }
 
-    private void teacherButtonActionPerformed(
-            java.awt.event.ActionEvent evt) {
-        String fileName = this.getSelectedFileName();
+    private String getSelectedFileName() {
+        int state = fileChooser.showOpenDialog(this);
+        return state == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile().getAbsolutePath() : null;
+    }
+
+    private void studentButtonActionPerformed() {
+        String fileName = getSelectedFileName();
         if (fileName != null) {
-            this.teacherTextField.setText(fileName);
-            this.textFieldChanged();
+            studentTextField.setText(fileName);
+            textFieldChanged();
+        }
+    }
+
+    private void teacherButtonActionPerformed() {
+        String fileName = getSelectedFileName();
+        if (fileName != null) {
+            teacherTextField.setText(fileName);
+            textFieldChanged();
         }
     }
 
@@ -334,20 +331,19 @@ public class MainWindow extends JFrame {
 
     private void updateScoreButtonAndCheckBoxes(boolean updateCheckBoxes) {
         if (updateCheckBoxes) {
-            boolean checkBoxesSelectedEnabled =
-                    !teacherTextField.getText().isEmpty() && !studentTextField.getText().isEmpty();
+            boolean selectedEnabled = !teacherTextField.getText().isEmpty() && !studentTextField.getText().isEmpty();
             checkBoxes.forEach(cb -> {
                 if (cb == elementsCheckBox) {
                     cb.setSelected(true);
                 } else {
-                    cb.setSelected(checkBoxesSelectedEnabled);
+                    cb.setSelected(selectedEnabled);
                 }
-                cb.setEnabled(checkBoxesSelectedEnabled);
+                cb.setEnabled(selectedEnabled);
             });
         }
-        boolean scoreButtonEnabled =
-                !studentTextField.getText().isEmpty() && checkBoxes.stream().anyMatch(JCheckBox::isSelected);
-        scoreButton.setEnabled(scoreButtonEnabled);
+        scoreButton.setEnabled(
+                !studentTextField.getText().isEmpty() && checkBoxes.stream().anyMatch(JCheckBox::isSelected)
+        );
     }
 
     public static void main(String[] args) {
