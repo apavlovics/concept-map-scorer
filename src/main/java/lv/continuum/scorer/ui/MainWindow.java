@@ -2,23 +2,24 @@ package lv.continuum.scorer.ui;
 
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.ConceptMap;
+import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
 
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * @author Andrey Pavlovich
- */
 public class MainWindow extends javax.swing.JFrame {
-    private JFileChooser chooser;
-    private XmlFileFilter filter;
+
+    private final JFileChooser chooser;
+    private final XmlFileFilter fileFilter;
+    private final ConceptMapParser conceptMapParser;
 
     public MainWindow() {
         initComponents();
-        this.chooser = new JFileChooser(System.getProperty("user.dir"));
-        this.filter = new XmlFileFilter();
-        chooser.setFileFilter(filter);
+        chooser = new JFileChooser(System.getProperty("user.dir"));
+        fileFilter = new XmlFileFilter();
+        chooser.setFileFilter(fileFilter);
+        conceptMapParser = new ConceptMapParser();
     }
 
     private String getSelectedFileName() {
@@ -298,13 +299,13 @@ public class MainWindow extends javax.swing.JFrame {
         try {
             ConceptMap studentMap, teacherMap;
             ConceptMapScorer scorer;
-            if (this.teacherTextField.getText().length() > 0 &&
-                    this.studentTextField.getText().length() > 0) {
-                studentMap = new ConceptMap(this.studentTextField.getText());
-                teacherMap = new ConceptMap(this.teacherTextField.getText());
+            if (!this.teacherTextField.getText().isEmpty() &&
+                    !this.studentTextField.getText().isEmpty()) {
+                studentMap = conceptMapParser.parse(this.studentTextField.getText());
+                teacherMap = conceptMapParser.parse(this.teacherTextField.getText());
                 scorer = new ConceptMapScorer(studentMap, teacherMap);
-            } else if (this.studentTextField.getText().length() > 0) {
-                studentMap = new ConceptMap(this.studentTextField.getText());
+            } else if (!this.studentTextField.getText().isEmpty()) {
+                studentMap = conceptMapParser.parse(this.studentTextField.getText());
                 scorer = new ConceptMapScorer(studentMap);
             } else {
                 throw new UnsupportedOperationException(

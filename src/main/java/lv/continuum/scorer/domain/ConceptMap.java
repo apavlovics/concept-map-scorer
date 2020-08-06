@@ -21,98 +21,12 @@ public class ConceptMap {
     private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
     private static final String MAP_INVALID_RELATIONSHIP = translations.get("map-invalid-relationship");
 
-    private final List<Concept> concepts = new ArrayList<>();
-    private final List<Relationship> relationships = new ArrayList<>();
+    private final List<Concept> concepts;
+    private final List<Relationship> relationships;
 
-    public ConceptMap(String xml) throws Exception {
-        var documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        var file = new File(xml);
-        var document = documentBuilder.parse(file);
-        document.getDocumentElement().normalize();
-
-        if (document.getDocumentElement().getNodeName().equals("conceptmap")) {
-            System.out.println("Started parsing standard XML file");
-
-            var conceptNodes = document.getElementsByTagName("concept");
-            if (conceptNodes.getLength() == 0) {
-                throw new IllegalArgumentException(String.format(MAP_NO_CONCEPTS, file.getName()));
-            }
-            for (int i = 0; i < conceptNodes.getLength(); i++) {
-                var node = conceptNodes.item(i);
-                if (containsConcept(node.getTextContent())) {
-                    throw new IllegalArgumentException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
-                }
-                concepts.add(new Concept(node.getTextContent()));
-            }
-
-            var relationshipNodes = document.getElementsByTagName("relationship");
-            if (relationshipNodes.getLength() == 0) {
-                throw new IllegalArgumentException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
-            }
-            for (int i = 0; i < relationshipNodes.getLength(); i++) {
-                var node = relationshipNodes.item(i);
-                var from = Integer.parseInt(node.getAttributes().getNamedItem("from").getNodeValue());
-                var to = Integer.parseInt(node.getAttributes().getNamedItem("to").getNodeValue());
-                var fromConcept = concepts.get(from).id;
-                var toConcept = concepts.get(to).id;
-                relationships.add(new Relationship(fromConcept, toConcept, node.getTextContent()));
-            }
-
-            System.out.println("Finished parsing standard XML file\n" + toString());
-        } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
-            System.out.println("Started parsing IKAS XML file");
-
-            var elementNodes = document.getElementsByTagName("element");
-            for (int i = 0; i < elementNodes.getLength(); i++) {
-                var node = elementNodes.item(i);
-                if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
-                    var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
-                    if (containsConcept(nodeValue)) {
-                        throw new IllegalArgumentException(String.format(MAP_DUPLICATE_CONCEPTS, file.getName()));
-                    }
-                    concepts.add(new Concept(nodeValue));
-                }
-            }
-            if (conceptCount() == 0) {
-                throw new IllegalArgumentException(String.format(MAP_NO_CONCEPTS, file.getName()));
-            }
-
-            for (int i = 0; i < elementNodes.getLength(); i++) {
-                var node = elementNodes.item(i);
-                if (node.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
-                    String from = null;
-                    String to = null;
-                    var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
-                    var relationshipNodes = ((Element) node).getElementsByTagName("element");
-                    for (int j = 0; j < relationshipNodes.getLength(); j++) {
-                        var relationshipNode = relationshipNodes.item(j);
-                        var relationshipNodeName = relationshipNode.getAttributes().getNamedItem("name").getNodeValue();
-                        var relationshipNodeValue = relationshipNode.getAttributes().getNamedItem("value").getNodeValue();
-                        if (relationshipNodeName.equals("source")) {
-                            from = relationshipNodeValue;
-                        } else if (relationshipNodeName.equals("target")) {
-                            to = relationshipNodeValue;
-                        }
-                    }
-                    if (from == null || to == null) {
-                        throw new IllegalArgumentException(String.format(MAP_INVALID_RELATIONSHIP, file.getName()));
-                    }
-
-                    var fromConcept = -1;
-                    var toConcept = -1;
-                    for (Concept c : concepts) {
-                        if (c.name.equals(from)) fromConcept = c.id;
-                        if (c.name.equals(to)) toConcept = c.id;
-                    }
-                    relationships.add(new Relationship(fromConcept, toConcept, nodeValue));
-                }
-            }
-            if (relationshipCount() == 0) {
-                throw new IllegalArgumentException(String.format(MAP_NO_RELATIONSHIPS, file.getName()));
-            }
-
-            System.out.println("Finished parsing IKAS XML file\n" + toString());
-        } else throw new IllegalArgumentException(String.format(INVALID_XML, file.getName()));
+    public ConceptMap(List<Concept> concepts, List<Relationship> relationships) {
+        this.concepts = concepts;
+        this.relationships = relationships;
     }
 
     public int conceptCount() {
@@ -371,11 +285,6 @@ public class ConceptMap {
 
     private int getFirstConceptId() {
         return concepts.get(0).id;
-    }
-
-    public boolean containsConcept(String name) {
-        return concepts.stream()
-                .anyMatch(c -> c.name.compareToIgnoreCase(name) == 0);
     }
 
     public boolean containsRelationship(int fromConcept, int toConcept) {
