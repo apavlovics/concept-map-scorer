@@ -2,6 +2,7 @@ package lv.continuum.scorer.logic;
 
 import lv.continuum.scorer.domain.*;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -47,19 +48,17 @@ public class ConceptMapScorer {
 
     public String compareConceptMapsUsingClosenessIndexes() {
         this.checkConceptMaps();
-        Map<Integer, List> studentAllRelationships = this.studentMap.allRelationships();
-        Map<Integer, List> teacherAllRelationships = this.teacherMap.allRelationships();
+        var studentAllRelationships = this.studentMap.allRelationships();
+        var teacherAllRelationships = this.teacherMap.allRelationships();
 
         double resultIndex = 0.0, closenessIndex;
         int sizeIntersection, sizeUnion;
         List<Double> closenessIndexes = new ArrayList<Double>();
         List<Integer> similarConcepts = new ArrayList<Integer>();
         List<Integer> temp = new ArrayList<Integer>();
-        for (Map.Entry<Integer, List> sar : studentAllRelationships.entrySet()) {
-            for (Map.Entry<Integer, List> tar : teacherAllRelationships.entrySet()) {
+        for (var sar : studentAllRelationships.entrySet()) {
+            for (var tar : teacherAllRelationships.entrySet()) {
                 if (sar.getKey() == tar.getKey()) {
-                    if (sar.getValue() == null) sar.setValue(new ArrayList<Integer>());
-                    if (tar.getValue() == null) tar.setValue(new ArrayList<Integer>());
                     similarConcepts.add(sar.getKey());
                     temp.removeAll(temp);
                     temp.addAll(sar.getValue());
@@ -81,8 +80,8 @@ public class ConceptMapScorer {
             studentAllRelationships.remove(sc);
             teacherAllRelationships.remove(sc);
         }
-        for (Map.Entry<Integer, List> sar : studentAllRelationships.entrySet()) closenessIndexes.add(0.0);
-        for (Map.Entry<Integer, List> par : teacherAllRelationships.entrySet()) closenessIndexes.add(0.0);
+        for (var sar : studentAllRelationships.entrySet()) closenessIndexes.add(0.0);
+        for (var par : teacherAllRelationships.entrySet()) closenessIndexes.add(0.0);
         for (Double ci : closenessIndexes) resultIndex += ci;
         resultIndex = resultIndex / closenessIndexes.size();
         return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), resultIndex);
@@ -169,13 +168,9 @@ public class ConceptMapScorer {
         int correctRelationships = 0, incorrectRelationships = 0, missingRelationships = 0, noRelationships = 0;
         boolean relationshipFound;
 
-        List<Integer> studentRelationships, teacherRelationships;
         for (var sor : studentOutgoingRelationships.entrySet()) {
-            if (sor.getValue() == null) sor.setValue(new ArrayList<Integer>());
-            if (teacherOutgoingRelationships.get(sor.getKey()) == null)
-                teacherOutgoingRelationships.put(sor.getKey(), new ArrayList<Integer>());
-            studentRelationships = sor.getValue();
-            teacherRelationships = teacherOutgoingRelationships.get(sor.getKey());
+            var studentRelationships = sor.getValue();
+            var teacherRelationships = teacherOutgoingRelationships.get(sor.getKey());
 
             for (Integer sr : studentRelationships) {
                 relationshipFound = false;

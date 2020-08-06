@@ -5,10 +5,7 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.counting;
@@ -130,22 +127,22 @@ public class ConceptMap {
     public int levelCount() {
         var levelCount = 0;
         var incomingRelationships = incomingRelationships();
-        if (incomingRelationships.containsValue(null)) {
-            var currentConcepts = new ArrayList<Integer>();
+        var currentConcepts = new HashSet<Integer>();
+        if (incomingRelationships.containsValue(Set.of())) {
             while (currentConcepts.size() < conceptCount()) {
                 var previousConceptsSize = currentConcepts.size();
                 currentConcepts.clear();
                 for (var ir : incomingRelationships.entrySet()) {
-                    if (ir.getValue() == null) currentConcepts.add(ir.getKey());
+                    if (ir.getValue().isEmpty()) currentConcepts.add(ir.getKey());
                 }
                 if (currentConcepts.size() == previousConceptsSize) {
                     return 0;
                 }
                 for (var ir : incomingRelationships.entrySet()) {
-                    if (ir.getValue() != null) {
-                        var currentRelationships = ir.getValue();
+                    var currentRelationships = ir.getValue();
+                    if (!currentRelationships.isEmpty()) {
                         for (Integer cc : currentConcepts) {
-                            if (currentRelationships.contains(cc)) ir.setValue(null);
+                            if (currentRelationships.contains(cc)) ir.setValue(Set.of());
                         }
                     }
                 }
@@ -172,25 +169,23 @@ public class ConceptMap {
     public int cycleCount() {
         int result = 0;
         boolean isCycle;
-        List<Integer> currentConcepts = new ArrayList<Integer>();
-        List<Integer> subnetConcepts = new ArrayList<Integer>();
-        List<Integer> currentOutgoingRelationships;
-        List<Integer> currentIncomingRelationships;
-        var outgoingRelationships = this.outgoingRelationships();
-        var incomingRelationships = this.incomingRelationships();
+        List<Integer> currentConcepts = new ArrayList<>();
+        List<Integer> subnetConcepts = new ArrayList<>();
+        var outgoingRelationships = outgoingRelationships();
+        var incomingRelationships = incomingRelationships();
 
         int currentId = this.getFirstConceptId();
         while (currentConcepts.size() < this.conceptCount()) {
             subnetConcepts.clear();
             while (currentId >= 0) {
                 if (!subnetConcepts.contains(currentId)) subnetConcepts.add(currentId);
-                currentOutgoingRelationships = outgoingRelationships.get(currentId);
-                if (currentOutgoingRelationships != null)
+                var currentOutgoingRelationships = outgoingRelationships.get(currentId);
+                if (!currentOutgoingRelationships.isEmpty())
                     for (Integer cor : currentOutgoingRelationships) {
                         if (!subnetConcepts.contains(cor)) subnetConcepts.add(cor);
                         else {
                             isCycle = false;
-                            currentIncomingRelationships = incomingRelationships.get(cor);
+                            var currentIncomingRelationships = incomingRelationships.get(cor);
                             for (Integer cir : currentIncomingRelationships)
                                 if (!currentConcepts.contains(cir) &&
                                         subnetConcepts.contains(cir) &&
@@ -216,16 +211,15 @@ public class ConceptMap {
 
     public int subnetCount() {
         int result = 0;
-        List<Integer> currentConcepts = new ArrayList<Integer>();
-        List<Integer> currentRelationships;
+        List<Integer> currentConcepts = new ArrayList<>();
         var allRelationships = this.allRelationships();
 
         int currentId = this.getFirstConceptId();
         while (currentConcepts.size() < this.conceptCount()) {
             while (currentId >= 0) {
                 if (!currentConcepts.contains(currentId)) currentConcepts.add(currentId);
-                currentRelationships = allRelationships.get(currentId);
-                if (currentRelationships != null)
+                var currentRelationships = allRelationships.get(currentId);
+                if (!currentRelationships.isEmpty())
                     for (Integer cr : currentRelationships)
                         if (!currentConcepts.contains(cr)) currentConcepts.add(cr);
                 if (currentConcepts.indexOf(currentId) < currentConcepts.size() - 1)
@@ -243,50 +237,38 @@ public class ConceptMap {
         return result;
     }
 
-    public Map<Integer, List<Integer>> outgoingRelationships() {
-        var relationships = new HashMap<Integer, List<Integer>>();
-        for (Concept c : this.concepts) {
-            relationships.put(c.id, null);
+    public Map<Integer, Set<Integer>> outgoingRelationships() {
+        var outgoingRelationships = new HashMap<Integer, Set<Integer>>();
+        for (Concept c : concepts) {
+            outgoingRelationships.put(c.id, new HashSet<>());
         }
-        for (Relationship r : this.relationships) {
-            var ids = relationships.get(r.fromConcept);
-            if (ids == null) ids = new ArrayList<>();
-            if (!ids.contains(r.toConcept)) ids.add(r.toConcept);
-            relationships.put(r.fromConcept, ids);
+        for (Relationship r : relationships) {
+            outgoingRelationships.get(r.fromConcept).add(r.toConcept);
         }
-        return relationships;
+        return outgoingRelationships;
     }
 
-    public Map<Integer, List<Integer>> incomingRelationships() {
-        var relationships = new HashMap<Integer, List<Integer>>();
-        for (Concept c : this.concepts) {
-            relationships.put(c.id, null);
+    public Map<Integer, Set<Integer>> incomingRelationships() {
+        var incomingRelationships = new HashMap<Integer, Set<Integer>>();
+        for (Concept c : concepts) {
+            incomingRelationships.put(c.id, new HashSet<>());
         }
-        for (Relationship r : this.relationships) {
-            var ids = relationships.get(r.toConcept);
-            if (ids == null) ids = new ArrayList<>();
-            if (!ids.contains(r.fromConcept)) ids.add(r.fromConcept);
-            relationships.put(r.toConcept, ids);
+        for (Relationship r : relationships) {
+            incomingRelationships.get(r.toConcept).add(r.fromConcept);
         }
-        return relationships;
+        return incomingRelationships;
     }
 
-    public Map<Integer, List> allRelationships() {
-        Map<Integer, List> resultMap = new HashMap<Integer, List>();
-        List<Integer> i;
-        for (Concept c : this.concepts) resultMap.put(c.id, null);
-        for (Relationship r : this.relationships) {
-            i = resultMap.get(r.fromConcept);
-            if (i == null) i = new ArrayList<>();
-            if (!i.contains(r.toConcept)) i.add(r.toConcept);
-            resultMap.put(r.fromConcept, i);
-
-            i = resultMap.get(r.toConcept);
-            if (i == null) i = new ArrayList<>();
-            if (!i.contains(r.fromConcept)) i.add(r.fromConcept);
-            resultMap.put(r.toConcept, i);
+    public Map<Integer, Set<Integer>> allRelationships() {
+        var allRelationships = new HashMap<Integer, Set<Integer>>();
+        for (Concept c : concepts) {
+            allRelationships.put(c.id, new HashSet<>());
         }
-        return resultMap;
+        for (Relationship r : relationships) {
+            allRelationships.get(r.fromConcept).add(r.toConcept);
+            allRelationships.get(r.toConcept).add(r.fromConcept);
+        }
+        return allRelationships;
     }
 
     public Map<String, List<String>> allPaths() {
@@ -312,9 +294,7 @@ public class ConceptMap {
 
             currentConcept = 0;
             while (currentConcept < currentOutgoingConcepts.size()) {
-                List<Integer> currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(currentConcept++));
-                if (currentOutgoingRelationships == null)
-                    currentOutgoingRelationships = new ArrayList<>();
+                var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(currentConcept++));
                 for (Integer cor : currentOutgoingRelationships) {
                     if (!currentOutgoingConcepts.contains(cor)) currentOutgoingConcepts.add(cor);
                     valuePath = r.fromConcept + " " + cor;
@@ -323,9 +303,7 @@ public class ConceptMap {
             }
             currentConcept = 0;
             while (currentConcept < currentIncomingConcepts.size()) {
-                List<Integer> currentIncomingRelationships = incomingRelationships.get(currentIncomingConcepts.get(currentConcept++));
-                if (currentIncomingRelationships == null)
-                    currentIncomingRelationships = new ArrayList<>();
+                var currentIncomingRelationships = incomingRelationships.get(currentIncomingConcepts.get(currentConcept++));
                 for (Integer cir : currentIncomingRelationships) {
                     if (!currentIncomingConcepts.contains(cir)) currentIncomingConcepts.add(cir);
                     for (Integer coc : currentOutgoingConcepts) {
@@ -348,26 +326,25 @@ public class ConceptMap {
         ArrayList<Integer> newPath;
 
         List<Integer> currentConcepts = new ArrayList<Integer>();
-        List<Integer> currentOutgoingRelationships;
-        var outgoingRelationships = this.outgoingRelationships();
-        var incomingRelationships = this.incomingRelationships();
+        var outgoingRelationships = outgoingRelationships();
+        var incomingRelationships = incomingRelationships();
 
         int currentConcept;
         int currentConceptIndex;
         for (var ir : incomingRelationships.entrySet())
-            if (ir.getValue() == null) {
-                currentConcepts.removeAll(currentConcepts);
+            if (ir.getValue().isEmpty()) {
+                currentConcepts.clear();
                 currentConcepts.add(ir.getKey());
                 currentConceptIndex = 0;
                 while (currentConceptIndex < currentConcepts.size()) {
                     currentConcept = currentConcepts.get(currentConceptIndex);
-                    currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
-                    if (currentOutgoingRelationships != null) {
-                        toRemoveResultList.removeAll(toRemoveResultList);
+                    var currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
+                    if (!currentOutgoingRelationships.isEmpty()) {
+                        toRemoveResultList.clear();
                         for (Integer cor : currentOutgoingRelationships) {
                             currentConcepts.add(cor);
                             if (currentConceptIndex == 0) {
-                                path = new ArrayList<Integer>();
+                                path = new ArrayList<>();
                                 path.add(currentConcept);
                                 path.add(cor);
                                 resultList.add(path);
