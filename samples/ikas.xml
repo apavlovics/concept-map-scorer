@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <element name="root">
-	<element name="relation" value="atrodas">
-		<element name="source" value="Deputati"/>
-		<element name="target" value="Ministri"/>
-	</element>
-	<element name="relation" value="ir piemers">
-		<element name="source" value="Ministru kabinets"/>
-		<element name="target" value="Prezidijs"/>
-	</element>
-	<element name="relation" value="eksiste">
-		<element name="source" value="Ministru kabinets"/>
-		<element name="target" value="Prezidents"/>
-	</element>
+    <element name="relation" value="atrodas">
+        <element name="source" value="Deputati"/>
+        <element name="target" value="Ministri"/>
+    </element>
+    <element name="relation" value="ir piemers">
+        <element name="source" value="Ministru kabinets"/>
+        <element name="target" value="Prezidijs"/>
+    </element>
+    <element name="relation" value="eksiste">
+        <element name="source" value="Ministru kabinets"/>
+        <element name="target" value="Prezidents"/>
+    </element>
     <element name="node" value="Deputati"/>
     <element name="node" value="Ministri"/>
     <element name="node" value="Ministru kabinets"/>

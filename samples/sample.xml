@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <conceptmap>
-	<concepts>
-		<concept id="0">Example</concept>
-		<concept id="1">Earth</concept>
-		<concept id="2">Human</concept>
-		<concept id="3">Some other crap</concept>
-		<concept id="4">Student</concept>
-		<concept id="5">Teacher</concept>
-	</concepts>
-	<relationships>
-		<relationship id="0" from="0" to="2">is</relationship>
-		<relationship id="1" from="1" to="0">almost is</relationship>
-		<relationship id="2" from="2" to="1">is not</relationship>
-		<relationship id="3" from="2" to="3">belongs to</relationship>
-		<relationship id="4" from="3" to="1">not belongs to</relationship>
-		<relationship id="5" from="5" to="5">belongs to</relationship>
-	</relationships>
+    <concepts>
+        <concept id="0">Example</concept>
+        <concept id="1">Earth</concept>
+        <concept id="2">Human</concept>
+        <concept id="3">Some other crap</concept>
+        <concept id="4">Student</concept>
+        <concept id="5">Teacher</concept>
+    </concepts>
+    <relationships>
+        <relationship id="0" from="0" to="2">is</relationship>
+        <relationship id="1" from="1" to="0">almost is</relationship>
+        <relationship id="2" from="2" to="1">is not</relationship>
+        <relationship id="3" from="2" to="3">belongs to</relationship>
+        <relationship id="4" from="3" to="1">not belongs to</relationship>
+        <relationship id="5" from="5" to="5">belongs to</relationship>
+    </relationships>
 </conceptmap>

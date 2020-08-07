@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <conceptmap>
-	<concepts>
-		<concept id="0">Example</concept>
-		<concept id="1">Earth</concept>
-		<concept id="2">Human</concept>
-		<concept id="3">Some other crap</concept>
-	</concepts>
-	<relationships>
-	</relationships>
+    <concepts>
+        <concept id="0">Example</concept>
+        <concept id="1">Earth</concept>
+        <concept id="2">Human</concept>
+        <concept id="3">Some other crap</concept>
+    </concepts>
+    <relationships/>
 </conceptmap>
