@@ -2,7 +2,6 @@ package lv.continuum.scorer.domain;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -40,13 +39,13 @@ public class ConceptMap {
                     explicitLevels = false;
                     levelCount = 0;
                 } else {
-                    levelCount++;
                     conceptsNoIncoming = newConceptsNoIncoming;
                     for (var ir : incomingRelationships.entrySet()) {
                         for (var cni : conceptsNoIncoming) {
                             if (ir.getValue().contains(cni)) ir.setValue(Set.of());
                         }
                     }
+                    levelCount++;
                 }
             }
         }
@@ -69,7 +68,6 @@ public class ConceptMap {
 
     public int cycleCount() {
         int result = 0;
-        boolean isCycle;
         List<Integer> currentConcepts = new ArrayList<>();
         List<Integer> subnetConcepts = new ArrayList<>();
         var outgoingRelationships = outgoingRelationships();
@@ -85,7 +83,7 @@ public class ConceptMap {
                     for (Integer cor : currentOutgoingRelationships) {
                         if (!subnetConcepts.contains(cor)) subnetConcepts.add(cor);
                         else {
-                            isCycle = false;
+                            var isCycle = false;
                             var currentIncomingRelationships = incomingRelationships.get(cor);
                             for (Integer cir : currentIncomingRelationships)
                                 if (!currentConcepts.contains(cir) &&
@@ -99,13 +97,14 @@ public class ConceptMap {
                     currentId = subnetConcepts.get(subnetConcepts.indexOf(currentId) + 1);
                 else currentId = -1;
             }
-            for (Integer i : subnetConcepts)
-                if (!currentConcepts.contains(i)) currentConcepts.add(i);
-            for (Concept c : this.concepts)
-                if (!currentConcepts.contains(c.id)) {
-                    currentId = c.id;
-                    break;
-                }
+            for (var sc : subnetConcepts) {
+                if (!currentConcepts.contains(sc)) currentConcepts.add(sc);
+            }
+            currentId = concepts.stream()
+                    .filter(c -> !currentConcepts.contains(c.id))
+                    .findFirst()
+                    .map(c -> c.id)
+                    .orElse(currentId);
         }
         return result;
     }
