@@ -1,6 +1,5 @@
 package lv.continuum.scorer.domain;
 
-import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
 import java.util.*;
@@ -9,6 +8,8 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.*;
 
 public class ConceptMap {
+
+    private static final Set<Integer> EMPTY = Set.of();
 
     // TODO Consider replacing lists with sets
     private final List<Concept> concepts;
@@ -30,9 +31,9 @@ public class ConceptMap {
     public int levelCount() {
         var levelCount = 0;
         var incomingRelationships = incomingRelationships();
-        if (incomingRelationships.containsValue(Set.of())) {
+        if (incomingRelationships.containsValue(EMPTY)) {
             var explicitLevels = true;
-            Set<Integer> conceptsNoIncoming = Set.of();
+            Set<Integer> conceptsNoIncoming = EMPTY;
             while (explicitLevels && conceptsNoIncoming.size() < conceptCount()) {
                 var newConceptsNoIncoming = incomingRelationships.entrySet().stream()
                         .filter(e -> e.getValue().isEmpty())
@@ -45,7 +46,7 @@ public class ConceptMap {
                     conceptsNoIncoming = newConceptsNoIncoming;
                     for (var ir : incomingRelationships.entrySet()) {
                         for (var cni : conceptsNoIncoming) {
-                            if (ir.getValue().contains(cni)) ir.setValue(Set.of());
+                            if (ir.getValue().contains(cni)) ir.setValue(EMPTY);
                         }
                     }
                     levelCount++;
@@ -95,7 +96,7 @@ public class ConceptMap {
                 currentId = index < subnetConcepts.size() - 1 ? subnetConcepts.get(index + 1) : -1;
             }
             currentConcepts.addAll(subnetConcepts);
-            currentId = getFirstConceptIdNotIn(currentConcepts, currentId);
+            currentId = findFirstConceptIdNotIn(currentConcepts, currentId);
         }
         return cycleCount;
     }
@@ -112,56 +113,48 @@ public class ConceptMap {
                 var index = currentConcepts.indexOf(currentId);
                 currentId = index < currentConcepts.size() - 1 ? currentConcepts.get(index + 1) : -1;
             }
-            currentId = getFirstConceptIdNotIn(currentConcepts, currentId);
+            currentId = findFirstConceptIdNotIn(currentConcepts, currentId);
             subnetCount++;
         }
         return subnetCount;
     }
 
-    public Map<String, List<String>> allPaths() {
-        var resultMap = new HashMap<String, List<String>>();
-
-        int currentConcept;
-        String keyPath, valuePath;
-        List<String> i;
-        List<Integer> currentOutgoingConcepts = new ArrayList<>();
-        List<Integer> currentIncomingConcepts = new ArrayList<>();
-        var outgoingRelationships = this.outgoingRelationships();
-        var incomingRelationships = this.incomingRelationships();
-
-        for (Relationship r : this.relationships) {
-            currentOutgoingConcepts.clear();
-            currentIncomingConcepts.clear();
+    public Map<String, Set<String>> allPaths() {
+        var allPaths = new HashMap<String, Set<String>>();
+        var outgoingRelationships = outgoingRelationships();
+        var incomingRelationships = incomingRelationships();
+        for (Relationship r : relationships) {
+            var currentOutgoingConcepts = new HashSet<Integer>();
+            var currentIncomingConcepts = new HashSet<Integer>();
             currentOutgoingConcepts.add(r.toConcept);
             currentIncomingConcepts.add(r.fromConcept);
 
-            i = new ArrayList<>();
-            keyPath = r.fromConcept + " " + r.toConcept;
-            i.add(keyPath);
+            var paths = new HashSet<String>();
+            var keyPath = r.fromConcept + " " + r.toConcept;
+            paths.add(keyPath);
 
-            currentConcept = 0;
-            while (currentConcept < currentOutgoingConcepts.size()) {
-                var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(currentConcept++));
-                for (Integer cor : currentOutgoingRelationships) {
-                    if (!currentOutgoingConcepts.contains(cor)) currentOutgoingConcepts.add(cor);
-                    valuePath = r.fromConcept + " " + cor;
-                    if (!i.contains(valuePath)) i.add(valuePath);
+            for (var coc : currentOutgoingConcepts) {
+                var currentOutgoingRelationships = outgoingRelationships.get(coc);
+                for (var cor : currentOutgoingRelationships) {
+                    currentOutgoingConcepts.add(cor);
+                    var valuePath = r.fromConcept + " " + cor;
+                    paths.add(valuePath);
                 }
             }
-            currentConcept = 0;
-            while (currentConcept < currentIncomingConcepts.size()) {
-                var currentIncomingRelationships = incomingRelationships.get(currentIncomingConcepts.get(currentConcept++));
-                for (Integer cir : currentIncomingRelationships) {
-                    if (!currentIncomingConcepts.contains(cir)) currentIncomingConcepts.add(cir);
-                    for (Integer coc : currentOutgoingConcepts) {
-                        valuePath = cir + " " + coc;
-                        if (!i.contains(valuePath)) i.add(valuePath);
+            for (var cic : currentIncomingConcepts) {
+                var currentIncomingRelationships = incomingRelationships.get(cic);
+                for (var cir : currentIncomingRelationships) {
+                    currentIncomingConcepts.add(cir);
+                    for (var coc : currentOutgoingConcepts) {
+                        var valuePath = cir + " " + coc;
+                        paths.add(valuePath);
                     }
                 }
             }
-            resultMap.put(keyPath, i);
+            allPaths.put(keyPath, paths);
         }
-        return resultMap;
+        System.out.println("!!! " + allPaths);
+        return allPaths;
     }
 
     public List<ArrayList> longestPaths() {
@@ -260,7 +253,7 @@ public class ConceptMap {
         return concepts.get(0).id;
     }
 
-    private int getFirstConceptIdNotIn(Set<Integer> conceptIds, int defaultId) {
+    private int findFirstConceptIdNotIn(Set<Integer> conceptIds, int defaultId) {
         return concepts.stream()
                 .filter(c -> !conceptIds.contains(c.id))
                 .findFirst()
