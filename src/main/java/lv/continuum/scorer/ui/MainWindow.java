@@ -124,75 +124,66 @@ public class MainWindow extends JFrame {
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
 
-        var studentLabelGroup = layout.createSequentialGroup()
-                .addComponent(studentLabel);
-        var studentTextFieldGroup = layout.createSequentialGroup()
-                .addComponent(studentTextField, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+        var studentTextFieldHorizontalGroup = layout.createSequentialGroup()
+                .addComponent(studentTextField)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(studentButton);
-        var teacherLabelGroup = layout.createSequentialGroup()
-                .addComponent(teacherLabel);
-        var teacherTextFieldGroup = layout.createSequentialGroup()
-                .addComponent(teacherTextField, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+        var teacherTextFieldHorizontalGroup = layout.createSequentialGroup()
+                .addComponent(teacherTextField)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(teacherButton);
-        var checkBoxesGroup = layout.createParallelGroup()
+        var checkBoxesHorizontalGroup = layout.createParallelGroup()
                 .addComponent(importanceIndexesCheckBox)
                 .addComponent(closenessIndexesCheckBox)
                 .addComponent(propositionChainsCheckBox)
                 .addComponent(errorAnalysisCheckBox)
                 .addComponent(elementsCheckBox);
-        var scoreButtonAndCheckBoxesGroup = layout.createSequentialGroup()
+        var scoreButtonAndCheckBoxesHorizontalGroup = layout.createSequentialGroup()
                 .addComponent(scoreButton)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(checkBoxesGroup);
-        var scoreScrollPaneGroup = layout.createSequentialGroup()
-                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE);
+                .addGroup(checkBoxesHorizontalGroup);
+
+        var studentTextFieldVerticalGroup = layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(studentTextField)
+                .addComponent(studentButton);
+        var teacherTextFieldVerticalGroup = layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(teacherTextField)
+                .addComponent(teacherButton);
+        var checkBoxesVerticalGroup = layout.createSequentialGroup()
+                .addComponent(elementsCheckBox)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(closenessIndexesCheckBox)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(importanceIndexesCheckBox)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(propositionChainsCheckBox)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(errorAnalysisCheckBox);
+        var scoreButtonAndCheckBoxesVerticalGroup = layout.createParallelGroup()
+                .addComponent(scoreButton)
+                .addGroup(checkBoxesVerticalGroup);
 
         layout.setAutoCreateContainerGaps(true);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup()
-                        .addGroup(scoreScrollPaneGroup)
-                        .addGroup(studentLabelGroup)
-                        .addGroup(teacherLabelGroup)
-                        .addGroup(studentTextFieldGroup)
-                        .addGroup(teacherTextFieldGroup)
-                        .addGroup(scoreButtonAndCheckBoxesGroup)
+        layout.setHorizontalGroup(layout.createParallelGroup()
+                .addComponent(studentLabel)
+                .addGroup(studentTextFieldHorizontalGroup)
+                .addComponent(teacherLabel)
+                .addGroup(teacherTextFieldHorizontalGroup)
+                .addGroup(scoreButtonAndCheckBoxesHorizontalGroup)
+                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-                layout.createParallelGroup()
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(studentLabel)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(
-                                        layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                .addComponent(studentTextField)
-                                                .addComponent(studentButton))
-                                .addGap(18)
-                                .addComponent(teacherLabel)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(
-                                        layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                .addComponent(teacherTextField)
-                                                .addComponent(teacherButton))
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(
-                                        layout.createParallelGroup()
-                                                .addComponent(scoreButton)
-                                                .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(elementsCheckBox)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                                        .addComponent(closenessIndexesCheckBox)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(importanceIndexesCheckBox)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(propositionChainsCheckBox)
-                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                        .addComponent(errorAnalysisCheckBox)))
-                                .addGap(18)
-                                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
-                                .addContainerGap())
+        layout.setVerticalGroup(layout.createSequentialGroup()
+                .addComponent(studentLabel)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(studentTextFieldVerticalGroup)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(teacherLabel)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(teacherTextFieldVerticalGroup)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scoreButtonAndCheckBoxesVerticalGroup)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
         );
         pack();
     }
