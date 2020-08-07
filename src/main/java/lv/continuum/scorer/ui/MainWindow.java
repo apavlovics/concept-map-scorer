@@ -124,11 +124,15 @@ public class MainWindow extends JFrame {
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
 
-        var studentGroup = layout.createSequentialGroup()
+        var studentLabelGroup = layout.createSequentialGroup()
+                .addComponent(studentLabel);
+        var studentTextFieldGroup = layout.createSequentialGroup()
                 .addComponent(studentTextField, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(studentButton);
-        var teacherGroup = layout.createSequentialGroup()
+        var teacherLabelGroup = layout.createSequentialGroup()
+                .addComponent(teacherLabel);
+        var teacherTextFieldGroup = layout.createSequentialGroup()
                 .addComponent(teacherTextField, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(teacherButton);
@@ -141,29 +145,19 @@ public class MainWindow extends JFrame {
         var scoreButtonAndCheckBoxesGroup = layout.createSequentialGroup()
                 .addComponent(scoreButton)
                 .addGap(18)
-                .addGroup(checkBoxesGroup)
-                .addContainerGap();
+                .addGroup(checkBoxesGroup);
+        var scoreScrollPaneGroup = layout.createSequentialGroup()
+                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE);
 
+        layout.setAutoCreateContainerGaps(true);
         layout.setHorizontalGroup(
                 layout.createParallelGroup()
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(
-                                        layout.createParallelGroup()
-                                                .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(scoreScrollPane,
-                                                                GroupLayout.DEFAULT_SIZE, 680,
-                                                                Short.MAX_VALUE)
-                                                        .addContainerGap())
-                                                .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(studentLabel)
-                                                        .addContainerGap())
-                                                .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(teacherLabel)
-                                                        .addContainerGap())
-                                                .addGroup(studentGroup)
-                                                .addGroup(teacherGroup)
-                                                .addGroup(scoreButtonAndCheckBoxesGroup)))
+                        .addGroup(scoreScrollPaneGroup)
+                        .addGroup(studentLabelGroup)
+                        .addGroup(teacherLabelGroup)
+                        .addGroup(studentTextFieldGroup)
+                        .addGroup(teacherTextFieldGroup)
+                        .addGroup(scoreButtonAndCheckBoxesGroup)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
