@@ -144,7 +144,7 @@ public class MainWindow extends JFrame {
                 .addComponent(elementsCheckBox);
         var scoreButtonAndCheckBoxesGroup = layout.createSequentialGroup()
                 .addComponent(scoreButton)
-                .addGap(18)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(checkBoxesGroup);
         var scoreScrollPaneGroup = layout.createSequentialGroup()
                 .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE);
@@ -160,54 +160,40 @@ public class MainWindow extends JFrame {
                         .addGroup(scoreButtonAndCheckBoxesGroup)
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(studentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 14,
-                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(studentLabel)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(
-                                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                .addComponent(studentTextField,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 20,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                .addComponent(studentTextField)
                                                 .addComponent(studentButton))
-                                .addGap(18, 18, 18)
+                                .addGap(18)
                                 .addComponent(teacherLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(
-                                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                .addComponent(teacherTextField,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 20,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                .addComponent(teacherTextField)
                                                 .addComponent(teacherButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(
-                                        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(scoreButton,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        layout.createParallelGroup()
+                                                .addComponent(scoreButton)
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addComponent(elementsCheckBox)
-                                                        .addPreferredGap(
-                                                                javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                                         .addComponent(closenessIndexesCheckBox)
-                                                        .addPreferredGap(
-                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                         .addComponent(importanceIndexesCheckBox)
-                                                        .addPreferredGap(
-                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                         .addComponent(propositionChainsCheckBox)
-                                                        .addPreferredGap(
-                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                         .addComponent(errorAnalysisCheckBox)))
-                                .addGap(18, 18, 18)
-                                .addComponent(scoreScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 257,
-                                        Short.MAX_VALUE)
+                                .addGap(18)
+                                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                                 .addContainerGap())
         );
-
         pack();
     }
 
