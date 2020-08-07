@@ -2,7 +2,7 @@ package lv.continuum.scorer.ui;
 
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
-import lv.continuum.scorer.common.TranslationsException;
+import lv.continuum.scorer.common.TranslationException;
 import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
 import org.xml.sax.SAXException;
@@ -293,7 +293,7 @@ public class MainWindow extends JFrame {
                 Translations.getInstance();
                 new MainWindow().setVisible(true);
                 System.out.println("Created main application window");
-            } catch (TranslationsException e) {
+            } catch (TranslationException e) {
                 JOptionPane.showMessageDialog(
                         null,
                         e.getMessage() + ".",
