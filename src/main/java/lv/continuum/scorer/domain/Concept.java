@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+// TODO Define equality and similarity
 public class Concept {
 
     private static final Translations translations = Translations.getInstance();

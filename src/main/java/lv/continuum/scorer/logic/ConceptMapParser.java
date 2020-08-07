@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 public class ConceptMapParser {
 
@@ -52,7 +51,7 @@ public class ConceptMapParser {
         for (var i = 0; i < conceptNodes.getLength(); i++) {
             var node = conceptNodes.item(i);
             var name = node.getTextContent();
-            if (containsConcept(concepts.values(), name)) {
+            if (containsDuplicateConcept(concepts.values(), name)) {
                 throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
             }
             var id = Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue());
@@ -85,7 +84,7 @@ public class ConceptMapParser {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
                 var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
-                if (containsConcept(concepts, nodeValue)) {
+                if (containsDuplicateConcept(concepts, nodeValue)) {
                     throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
                 }
                 concepts.add(new Concept(nodeValue));
@@ -130,7 +129,7 @@ public class ConceptMapParser {
         return conceptMap;
     }
 
-    private boolean containsConcept(Collection<Concept> concepts, String name) {
+    private boolean containsDuplicateConcept(Collection<Concept> concepts, String name) {
         return concepts.stream().anyMatch(c -> c.name.compareToIgnoreCase(name) == 0);
     }
 }

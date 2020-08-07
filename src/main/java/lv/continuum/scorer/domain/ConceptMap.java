@@ -81,6 +81,7 @@ public class ConceptMap {
         return relationships.stream().filter(r -> r.name.matches(regex)).count();
     }
 
+    // TODO This algorithm contains mistake
     public int cycleCount() {
         var cycleCount = 0;
         var currentId = anyConceptId();
@@ -98,6 +99,7 @@ public class ConceptMap {
                         for (var cir : currentIncomingRelationships) {
                             if (!currentConcepts.contains(cir)
                                     && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor)) {
+                                System.out.println("Subnet is " + subnetConcepts + ", will increse cycle count to " + cycleCount);
                                 cycleCount++;
                             }
                         }

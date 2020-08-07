@@ -257,18 +257,18 @@ public class ConceptMapScorer {
         return returnString;
     }
 
-    // TODO Rewrite with correct definition of similar concepts
+    // TODO Rewrite with new definition of concept similarity
     private boolean similarConcepts() {
-        this.checkConceptMaps();
-        var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
-        var teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
+        checkConceptMaps();
+        var studentOutgoingRelationships = studentMap.outgoingRelationships();
+        var teacherOutgoingRelationships = teacherMap.outgoingRelationships();
 
-        if (studentOutgoingRelationships.keySet().size() != teacherOutgoingRelationships.keySet().size())
+        if (studentOutgoingRelationships.size() != teacherOutgoingRelationships.size()) {
             return false;
-        int initialSize = studentOutgoingRelationships.keySet().size();
+        }
+        int initialSize = studentOutgoingRelationships.size();
         studentOutgoingRelationships.keySet().retainAll(teacherOutgoingRelationships.keySet());
-        if (initialSize == studentOutgoingRelationships.keySet().size()) return true;
-        return false;
+        return initialSize == studentOutgoingRelationships.size();
     }
 
     private void checkConceptMaps() {
