@@ -95,41 +95,27 @@ public class ConceptMap {
                 currentId = index < subnetConcepts.size() - 1 ? subnetConcepts.get(index + 1) : -1;
             }
             currentConcepts.addAll(subnetConcepts);
-            currentId = concepts.stream()
-                    .filter(c -> !currentConcepts.contains(c.id))
-                    .findFirst()
-                    .map(c -> c.id)
-                    .orElse(currentId);
+            currentId = getFirstConceptIdNotIn(currentConcepts, currentId);
         }
         return cycleCount;
     }
 
     public int subnetCount() {
-        int result = 0;
-        List<Integer> currentConcepts = new ArrayList<>();
-        var allRelationships = this.allRelationships();
-
-        int currentId = this.getFirstConceptId();
-        while (currentConcepts.size() < this.conceptCount()) {
+        var subnetCount = 0;
+        var currentId = getFirstConceptId();
+        var currentConcepts = new ListOrderedSet<Integer>();
+        var allRelationships = allRelationships();
+        while (currentConcepts.size() < conceptCount()) {
             while (currentId >= 0) {
-                if (!currentConcepts.contains(currentId)) currentConcepts.add(currentId);
-                var currentRelationships = allRelationships.get(currentId);
-                if (!currentRelationships.isEmpty())
-                    for (Integer cr : currentRelationships)
-                        if (!currentConcepts.contains(cr)) currentConcepts.add(cr);
-                if (currentConcepts.indexOf(currentId) < currentConcepts.size() - 1)
-                    currentId = currentConcepts.get(currentConcepts.indexOf(currentId) + 1);
-                else currentId = -1;
+                currentConcepts.add(currentId);
+                currentConcepts.addAll(allRelationships.get(currentId));
+                var index = currentConcepts.indexOf(currentId);
+                currentId = index < currentConcepts.size() - 1 ? currentConcepts.get(index + 1) : -1;
             }
-            for (Concept c : this.concepts) {
-                if (!currentConcepts.contains(c.id)) {
-                    currentId = c.id;
-                    break;
-                }
-            }
-            result++;
+            currentId = getFirstConceptIdNotIn(currentConcepts, currentId);
+            subnetCount++;
         }
-        return result;
+        return subnetCount;
     }
 
     public Map<String, List<String>> allPaths() {
@@ -230,10 +216,6 @@ public class ConceptMap {
         return resultList;
     }
 
-    private int getFirstConceptId() {
-        return concepts.get(0).id;
-    }
-
     public boolean containsRelationship(int fromConcept, int toConcept) {
         return relationships.stream()
                 .anyMatch(r -> r.fromConcept == fromConcept && r.toConcept == toConcept);
@@ -272,6 +254,18 @@ public class ConceptMap {
             }
         }
         return allRelationships;
+    }
+
+    private int getFirstConceptId() {
+        return concepts.get(0).id;
+    }
+
+    private int getFirstConceptIdNotIn(Set<Integer> conceptIds, int defaultId) {
+        return concepts.stream()
+                .filter(c -> !conceptIds.contains(c.id))
+                .findFirst()
+                .map(c -> c.id)
+                .orElse(defaultId);
     }
 
     @Override
