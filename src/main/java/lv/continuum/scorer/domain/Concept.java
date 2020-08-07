@@ -1,5 +1,6 @@
 package lv.continuum.scorer.domain;
 
+import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 
 import java.util.List;
@@ -14,9 +15,9 @@ public class Concept {
     public final int id;
     public final String name;
 
-    public Concept(String name) {
+    public Concept(String name) throws InvalidDataException {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException(CONCEPT_NO_NAME);
+            throw new InvalidDataException(CONCEPT_NO_NAME);
         } else {
             var lowerCaseName = name.toLowerCase();
             var index = lowerCaseNames.indexOf(lowerCaseName);

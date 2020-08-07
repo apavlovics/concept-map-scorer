@@ -1,5 +1,6 @@
 package lv.continuum.scorer.logic;
 
+import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
@@ -25,7 +26,7 @@ public class ConceptMapParser {
     private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
     private static final String MAP_INVALID_RELATIONSHIP = translations.get("map-invalid-relationship");
 
-    public ConceptMap parse(String xml) throws IOException, ParserConfigurationException, SAXException {
+    public ConceptMap parse(String xml) throws IOException, ParserConfigurationException, SAXException, InvalidDataException {
         var documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         var file = new File(xml);
         var document = documentBuilder.parse(file);
@@ -36,28 +37,28 @@ public class ConceptMapParser {
             return parseStandard(document, fileName);
         } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
             return parseIkas(document, fileName);
-        } else throw new IllegalArgumentException(String.format(INVALID_XML, file.getName()));
+        } else throw new InvalidDataException(String.format(INVALID_XML, file.getName()));
     }
 
-    private ConceptMap parseStandard(Document document, String fileName) {
+    private ConceptMap parseStandard(Document document, String fileName) throws InvalidDataException {
         System.out.println("Started parsing standard XML file");
 
         var conceptNodes = document.getElementsByTagName("concept");
         if (conceptNodes.getLength() == 0) {
-            throw new IllegalArgumentException(String.format(MAP_NO_CONCEPTS, fileName));
+            throw new InvalidDataException(String.format(MAP_NO_CONCEPTS, fileName));
         }
         var concepts = new ArrayList<Concept>();
         for (int i = 0; i < conceptNodes.getLength(); i++) {
             var node = conceptNodes.item(i);
             if (containsConcept(concepts, node.getTextContent())) {
-                throw new IllegalArgumentException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
+                throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
             }
             concepts.add(new Concept(node.getTextContent()));
         }
 
         var relationshipNodes = document.getElementsByTagName("relationship");
         if (relationshipNodes.getLength() == 0) {
-            throw new IllegalArgumentException(String.format(MAP_NO_RELATIONSHIPS, fileName));
+            throw new InvalidDataException(String.format(MAP_NO_RELATIONSHIPS, fileName));
         }
         var relationships = new ArrayList<Relationship>();
         for (int i = 0; i < relationshipNodes.getLength(); i++) {
@@ -75,7 +76,7 @@ public class ConceptMapParser {
         return conceptMap;
     }
 
-    private ConceptMap parseIkas(Document document, String fileName) {
+    private ConceptMap parseIkas(Document document, String fileName) throws InvalidDataException {
         System.out.println("Started parsing IKAS XML file");
 
         var concepts = new ArrayList<Concept>();
@@ -85,13 +86,13 @@ public class ConceptMapParser {
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
                 var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
                 if (containsConcept(concepts, nodeValue)) {
-                    throw new IllegalArgumentException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
+                    throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
                 }
                 concepts.add(new Concept(nodeValue));
             }
         }
         if (concepts.isEmpty()) {
-            throw new IllegalArgumentException(String.format(MAP_NO_CONCEPTS, fileName));
+            throw new InvalidDataException(String.format(MAP_NO_CONCEPTS, fileName));
         }
 
         var relationships = new ArrayList<Relationship>();
@@ -113,7 +114,7 @@ public class ConceptMapParser {
                     }
                 }
                 if (from == null || to == null) {
-                    throw new IllegalArgumentException(String.format(MAP_INVALID_RELATIONSHIP, fileName));
+                    throw new InvalidDataException(String.format(MAP_INVALID_RELATIONSHIP, fileName));
                 }
 
                 var fromConcept = -1;
@@ -126,7 +127,7 @@ public class ConceptMapParser {
             }
         }
         if (relationships.isEmpty()) {
-            throw new IllegalArgumentException(String.format(MAP_NO_RELATIONSHIPS, fileName));
+            throw new InvalidDataException(String.format(MAP_NO_RELATIONSHIPS, fileName));
         }
 
         var conceptMap = new ConceptMap(concepts, relationships);

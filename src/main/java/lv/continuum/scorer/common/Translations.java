@@ -13,14 +13,14 @@ public class Translations {
     private static final Properties properties = new Properties();
     private static Translations instance;
 
-    private Translations() {
+    private Translations() throws TranslationsException {
         try {
             var file = getClass().getClassLoader().getResource(PROPERTIES_PATH).getFile();
             try (var fis = new FileInputStream(file)) {
                 properties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
             }
         } catch (IOException | NullPointerException e) {
-            throw new IllegalStateException("Translation properties cannot be initialised", e);
+            throw new TranslationsException("Translation properties cannot be initialised", e);
         }
     }
 
@@ -28,9 +28,9 @@ public class Translations {
      * Initializes and provides access to the {@link Translations} singleton.
      *
      * @return the {@link Translations} singleton.
-     * @throws IllegalStateException if initialization has failed.
+     * @throws TranslationsException if initialization has failed.
      */
-    public static Translations getInstance() {
+    public static Translations getInstance() throws TranslationsException {
         if (instance == null) {
             synchronized (Translations.class) {
                 if (instance == null) instance = new Translations();

@@ -1,6 +1,8 @@
 package lv.continuum.scorer.ui;
 
+import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.common.TranslationsException;
 import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
 import org.xml.sax.SAXException;
@@ -166,7 +168,7 @@ public class MainWindow extends JFrame {
                 .addComponent(teacherLabel)
                 .addGroup(teacherTextFieldHorizontalGroup)
                 .addGroup(scoreButtonAndCheckBoxesHorizontalGroup)
-                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(studentLabel)
@@ -222,14 +224,14 @@ public class MainWindow extends JFrame {
             scoreTextArea.setText(score);
             scoreTextArea.setEnabled(true);
             System.out.println("Scored concept map");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException e) {
             JOptionPane.showMessageDialog(
                     this,
-                    uoe.getMessage(),
+                    e.getMessage(),
                     translations.get("error"),
                     JOptionPane.ERROR_MESSAGE
             );
-        } catch (IOException | ParserConfigurationException | SAXException e) {
+        } catch (IOException | ParserConfigurationException | SAXException | InvalidDataException e) {
             JOptionPane.showMessageDialog(
                     this,
                     translations.get("invalid-file"),
@@ -291,10 +293,10 @@ public class MainWindow extends JFrame {
                 Translations.getInstance();
                 new MainWindow().setVisible(true);
                 System.out.println("Created main application window");
-            } catch (IllegalStateException ise) {
+            } catch (TranslationsException e) {
                 JOptionPane.showMessageDialog(
                         null,
-                        ise.getMessage() + ".",
+                        e.getMessage() + ".",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                 );

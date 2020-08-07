@@ -1,5 +1,6 @@
 package lv.continuum.scorer.domain;
 
+import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,9 +16,9 @@ public class Relationship {
     public final int toConcept;
     public final String name;
 
-    public Relationship(int fromConcept, int toConcept, String name) {
+    public Relationship(int fromConcept, int toConcept, String name) throws InvalidDataException {
         if (fromConcept < 0 || toConcept < 0) {
-            throw new IllegalArgumentException(CONCEPT_NEGATIVE_ID);
+            throw new InvalidDataException(CONCEPT_NEGATIVE_ID);
         } else {
             this.fromConcept = fromConcept;
             this.toConcept = toConcept;
