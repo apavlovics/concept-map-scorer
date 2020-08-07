@@ -13,17 +13,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ConceptMapParser {
 
     private static final Translations translations = Translations.getInstance();
 
     private static final String INVALID_XML = translations.get("invalid-xml");
-    private static final String MAP_NO_CONCEPTS = translations.get("map-no-concepts");
     private static final String MAP_DUPLICATE_CONCEPTS = translations.get("map-duplicate-concepts");
-    private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
     private static final String MAP_INVALID_RELATIONSHIP = translations.get("map-invalid-relationship");
 
     public ConceptMap parse(String xml) throws IOException, ParserConfigurationException, SAXException, InvalidDataException {
@@ -32,35 +32,35 @@ public class ConceptMapParser {
         var document = documentBuilder.parse(file);
         document.getDocumentElement().normalize();
 
-        var fileName = file.getName();
-        if (document.getDocumentElement().getNodeName().equals("conceptmap")) {
-            return parseStandard(document, fileName);
-        } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
-            return parseIkas(document, fileName);
-        } else throw new InvalidDataException(String.format(INVALID_XML, file.getName()));
+        try {
+            var fileName = file.getName();
+            if (document.getDocumentElement().getNodeName().equals("conceptmap")) {
+                return parseStandard(document, fileName);
+            } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
+                return parseIkas(document, fileName);
+            } else throw new InvalidDataException(String.format(INVALID_XML, file.getName()));
+        } catch (NumberFormatException | NullPointerException e) {
+            throw new InvalidDataException(String.format(INVALID_XML, file.getName()));
+        }
     }
 
     private ConceptMap parseStandard(Document document, String fileName) throws InvalidDataException {
         System.out.println("Started parsing standard XML file");
 
         var conceptNodes = document.getElementsByTagName("concept");
-        if (conceptNodes.getLength() == 0) {
-            throw new InvalidDataException(String.format(MAP_NO_CONCEPTS, fileName));
-        }
-        var concepts = new ArrayList<Concept>();
+        var concepts = new HashMap<Integer, Concept>();
         for (var i = 0; i < conceptNodes.getLength(); i++) {
             var node = conceptNodes.item(i);
-            if (containsConcept(concepts, node.getTextContent())) {
+            var name = node.getTextContent();
+            if (containsConcept(concepts.values(), name)) {
                 throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
             }
-            concepts.add(new Concept(node.getTextContent()));
+            var id = Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue());
+            concepts.put(id, new Concept(id, name));
         }
 
         var relationshipNodes = document.getElementsByTagName("relationship");
-        if (relationshipNodes.getLength() == 0) {
-            throw new InvalidDataException(String.format(MAP_NO_RELATIONSHIPS, fileName));
-        }
-        var relationships = new ArrayList<Relationship>();
+        var relationships = new HashSet<Relationship>();
         for (var i = 0; i < relationshipNodes.getLength(); i++) {
             var node = relationshipNodes.item(i);
             var from = Integer.parseInt(node.getAttributes().getNamedItem("from").getNodeValue());
@@ -70,7 +70,7 @@ public class ConceptMapParser {
             relationships.add(new Relationship(fromConcept, toConcept, node.getTextContent()));
         }
 
-        var conceptMap = new ConceptMap(concepts, relationships);
+        var conceptMap = new ConceptMap(new HashSet<>(concepts.values()), relationships, fileName);
         System.out.println("Finished parsing standard XML file");
         System.out.println(conceptMap);
         return conceptMap;
@@ -79,7 +79,7 @@ public class ConceptMapParser {
     private ConceptMap parseIkas(Document document, String fileName) throws InvalidDataException {
         System.out.println("Started parsing IKAS XML file");
 
-        var concepts = new ArrayList<Concept>();
+        var concepts = new HashSet<Concept>();
         var elementNodes = document.getElementsByTagName("element");
         for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);
@@ -91,11 +91,8 @@ public class ConceptMapParser {
                 concepts.add(new Concept(nodeValue));
             }
         }
-        if (concepts.isEmpty()) {
-            throw new InvalidDataException(String.format(MAP_NO_CONCEPTS, fileName));
-        }
 
-        var relationships = new ArrayList<Relationship>();
+        var relationships = new HashSet<Relationship>();
         for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
@@ -126,17 +123,14 @@ public class ConceptMapParser {
                 relationships.add(new Relationship(fromConcept, toConcept, nodeValue));
             }
         }
-        if (relationships.isEmpty()) {
-            throw new InvalidDataException(String.format(MAP_NO_RELATIONSHIPS, fileName));
-        }
 
-        var conceptMap = new ConceptMap(concepts, relationships);
+        var conceptMap = new ConceptMap(concepts, relationships, fileName);
         System.out.println("Finished parsing IKAS XML file");
         System.out.println(conceptMap);
         return conceptMap;
     }
 
-    private boolean containsConcept(List<Concept> concepts, String name) {
+    private boolean containsConcept(Collection<Concept> concepts, String name) {
         return concepts.stream().anyMatch(c -> c.name.compareToIgnoreCase(name) == 0);
     }
 }

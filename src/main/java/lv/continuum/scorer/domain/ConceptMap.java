@@ -1,5 +1,7 @@
 package lv.continuum.scorer.domain;
 
+import lv.continuum.scorer.common.InvalidDataException;
+import lv.continuum.scorer.common.Translations;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
 import java.util.*;
@@ -9,13 +11,22 @@ import static java.util.stream.Collectors.*;
 
 public class ConceptMap {
 
+    private static final Translations translations = Translations.getInstance();
+
+    private static final String MAP_NO_CONCEPTS = translations.get("map-no-concepts");
+    private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
     private static final Set<Integer> EMPTY = Set.of();
 
-    // TODO Consider replacing lists with sets
-    private final List<Concept> concepts;
-    private final List<Relationship> relationships;
+    private final Set<Concept> concepts;
+    private final Set<Relationship> relationships;
 
-    public ConceptMap(List<Concept> concepts, List<Relationship> relationships) {
+    public ConceptMap(Set<Concept> concepts, Set<Relationship> relationships, String fileName) throws InvalidDataException {
+        if (concepts.isEmpty()) {
+            throw new InvalidDataException(String.format(MAP_NO_CONCEPTS, fileName));
+        }
+        if (relationships.isEmpty()) {
+            throw new InvalidDataException(String.format(MAP_NO_RELATIONSHIPS, fileName));
+        }
         this.concepts = concepts;
         this.relationships = relationships;
     }
@@ -72,7 +83,7 @@ public class ConceptMap {
 
     public int cycleCount() {
         var cycleCount = 0;
-        var currentId = getFirstConceptId();
+        var currentId = anyConceptId();
         var currentConcepts = new HashSet<Integer>();
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
@@ -103,7 +114,7 @@ public class ConceptMap {
 
     public int subnetCount() {
         var subnetCount = 0;
-        var currentId = getFirstConceptId();
+        var currentId = anyConceptId();
         var currentConcepts = new ListOrderedSet<Integer>();
         var allRelationships = allRelationships();
         while (currentConcepts.size() < conceptCount()) {
@@ -162,7 +173,7 @@ public class ConceptMap {
         if (cycleCount() == 0) {
             var outgoingRelationships = outgoingRelationships();
             var incomingRelationships = incomingRelationships();
-            for (var ir : incomingRelationships.entrySet())
+            for (var ir : incomingRelationships.entrySet()) {
                 if (ir.getValue().isEmpty()) {
                     var currentConcepts = new ArrayList<Integer>();
                     currentConcepts.add(ir.getKey());
@@ -191,7 +202,7 @@ public class ConceptMap {
                         i++;
                     }
                 }
-            System.out.println("Longest paths: " + longestPaths);
+            }
         }
         return longestPaths;
     }
@@ -236,8 +247,8 @@ public class ConceptMap {
         return allRelationships;
     }
 
-    private int getFirstConceptId() {
-        return concepts.get(0).id;
+    private int anyConceptId() {
+        return concepts.iterator().next().id;
     }
 
     private int findFirstConceptIdNotIn(Set<Integer> conceptIds, int defaultId) {

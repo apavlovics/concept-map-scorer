@@ -257,6 +257,7 @@ public class ConceptMapScorer {
         return returnString;
     }
 
+    // TODO Rewrite with correct definition of similar concepts
     private boolean similarConcepts() {
         this.checkConceptMaps();
         var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
