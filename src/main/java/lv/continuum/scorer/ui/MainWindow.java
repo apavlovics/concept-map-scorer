@@ -100,10 +100,6 @@ public class MainWindow extends JFrame {
         scoreTextArea.setWrapStyleWord(true);
         scoreTextArea.setEnabled(false);
 
-        layoutComponents();
-    }
-
-    private void layoutComponents() {
         var scoreScrollPane = new JScrollPane();
         scoreScrollPane.setViewportView(scoreTextArea);
 

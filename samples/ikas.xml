@@ -12,10 +12,10 @@
 		<element name="source" value="Ministru kabinets"/>
 		<element name="target" value="Prezidents"/>
 	</element>
-	<element name="node" value="Deputati"></element>
-	<element name="node" value="Ministri"></element>
-	<element name="node" value="Ministru kabinets"></element>
-	<element name="node" value="Ministru prezidents"></element>
-	<element name="node" value="Prezidijs"></element>
-	<element name="node" value="Prezidents"></element>
+    <element name="node" value="Deputati"/>
+    <element name="node" value="Ministri"/>
+    <element name="node" value="Ministru kabinets"/>
+    <element name="node" value="Ministru prezidents"/>
+    <element name="node" value="Prezidijs"/>
+    <element name="node" value="Prezidents"/>
 </element>
