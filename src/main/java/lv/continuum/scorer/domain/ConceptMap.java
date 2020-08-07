@@ -2,9 +2,9 @@ package lv.continuum.scorer.domain;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.*;
 
 public class ConceptMap {
 
@@ -25,30 +25,29 @@ public class ConceptMap {
         return relationships.size();
     }
 
-    // TODO Rework and optimize
     public int levelCount() {
         var levelCount = 0;
         var incomingRelationships = incomingRelationships();
-        var currentConcepts = new HashSet<Integer>();
         if (incomingRelationships.containsValue(Set.of())) {
-            while (currentConcepts.size() < conceptCount()) {
-                var previousConceptsSize = currentConcepts.size();
-                currentConcepts.clear();
-                for (var ir : incomingRelationships.entrySet()) {
-                    if (ir.getValue().isEmpty()) currentConcepts.add(ir.getKey());
-                }
-                if (currentConcepts.size() == previousConceptsSize) {
-                    return 0;
-                }
-                for (var ir : incomingRelationships.entrySet()) {
-                    var currentRelationships = ir.getValue();
-                    if (!currentRelationships.isEmpty()) {
-                        for (Integer cc : currentConcepts) {
-                            if (currentRelationships.contains(cc)) ir.setValue(Set.of());
+            var explicitLevels = true;
+            Set<Integer> conceptsNoIncoming = Set.of();
+            while (explicitLevels && conceptsNoIncoming.size() < conceptCount()) {
+                var newConceptsNoIncoming = incomingRelationships.entrySet().stream()
+                        .filter(e -> e.getValue().isEmpty())
+                        .map(Map.Entry::getKey)
+                        .collect(toSet());
+                if (conceptsNoIncoming.size() == newConceptsNoIncoming.size()) {
+                    explicitLevels = false;
+                    levelCount = 0;
+                } else {
+                    levelCount++;
+                    conceptsNoIncoming = newConceptsNoIncoming;
+                    for (var ir : incomingRelationships.entrySet()) {
+                        for (var cni : conceptsNoIncoming) {
+                            if (ir.getValue().contains(cni)) ir.setValue(Set.of());
                         }
                     }
                 }
-                levelCount++;
             }
         }
         return levelCount;
