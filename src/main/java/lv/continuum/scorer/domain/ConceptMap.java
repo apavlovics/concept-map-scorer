@@ -170,25 +170,23 @@ public class ConceptMap {
                     while (i < currentConcepts.size()) {
                         var currentConcept = currentConcepts.get(i);
                         var currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
+                        var pathsToAdd = new HashSet<List<Integer>>();
                         var pathsToRemove = new HashSet<List<Integer>>();
                         for (var cor : currentOutgoingRelationships) {
                             currentConcepts.add(cor);
                             if (i == 0) {
                                 var path = List.of(currentConcept, cor);
                                 longestPaths.add(path);
-                            } else {
-                                var pathsToAdd = new HashSet<List<Integer>>();
-                                for (var path : longestPaths) {
-                                    if (path.indexOf(currentConcept) == path.size() - 1) {
-                                        var longerPath = new ArrayList<>(path);
-                                        longerPath.add(cor);
-                                        pathsToRemove.add(path);
-                                        pathsToAdd.add(longerPath);
-                                    }
+                            } else for (var path : longestPaths) {
+                                if (path.indexOf(currentConcept) == path.size() - 1) {
+                                    var longerPath = new ArrayList<>(path);
+                                    longerPath.add(cor);
+                                    pathsToAdd.add(longerPath);
+                                    pathsToRemove.add(path);
                                 }
-                                longestPaths.addAll(pathsToAdd);
                             }
                         }
+                        longestPaths.addAll(pathsToAdd);
                         longestPaths.removeAll(pathsToRemove);
                         i++;
                     }
