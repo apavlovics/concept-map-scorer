@@ -133,18 +133,18 @@ public class ConceptMap {
             currentOutgoingConcepts.add(r.toConcept);
             currentIncomingConcepts.add(r.fromConcept);
 
-            var outgoingConcept = 0;
-            while (outgoingConcept < currentOutgoingConcepts.size()) {
-                var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(outgoingConcept++));
+            var o = 0;
+            while (o < currentOutgoingConcepts.size()) {
+                var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(o++));
                 for (var cor : currentOutgoingRelationships) {
                     currentOutgoingConcepts.add(cor);
                     valuePaths.add(r.fromConcept + " " + cor);
                 }
             }
 
-            var incomingConcept = 0;
-            while (incomingConcept < currentIncomingConcepts.size()) {
-                var currentIncomingRelationships = incomingRelationships.get(currentIncomingConcepts.get(incomingConcept++));
+            var i = 0;
+            while (i < currentIncomingConcepts.size()) {
+                var currentIncomingRelationships = incomingRelationships.get(currentIncomingConcepts.get(i++));
                 for (var cir : currentIncomingRelationships) {
                     currentIncomingConcepts.add(cir);
                     for (var coc : currentOutgoingConcepts) {
@@ -166,34 +166,35 @@ public class ConceptMap {
                 if (ir.getValue().isEmpty()) {
                     var currentConcepts = new ArrayList<Integer>();
                     currentConcepts.add(ir.getKey());
-                    var currentConceptIndex = 0;
-                    while (currentConceptIndex < currentConcepts.size()) {
-                        var currentConcept = currentConcepts.get(currentConceptIndex);
+                    var i = 0;
+                    while (i < currentConcepts.size()) {
+                        var currentConcept = currentConcepts.get(i);
                         var currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
                         if (!currentOutgoingRelationships.isEmpty()) {
-                            var toRemoveResultList = new HashSet<List<Integer>>();
-                            for (Integer cor : currentOutgoingRelationships) {
+                            var pathsToRemove = new HashSet<List<Integer>>();
+                            for (var cor : currentOutgoingRelationships) {
                                 currentConcepts.add(cor);
-                                if (currentConceptIndex == 0) {
+                                if (i == 0) {
                                     var path = new ArrayList<Integer>();
                                     path.add(currentConcept);
                                     path.add(cor);
                                     longestPaths.add(path);
                                 } else {
-                                    var toAddResultList = new HashSet<List<Integer>>();
-                                    for (var rl : longestPaths)
-                                        if (rl.indexOf(currentConcept) == rl.size() - 1) {
-                                            toRemoveResultList.add(rl);
-                                            var path = new ArrayList<>(rl);
+                                    var pathsToAdd = new HashSet<List<Integer>>();
+                                    for (var longestPath : longestPaths) {
+                                        if (longestPath.indexOf(currentConcept) == longestPath.size() - 1) {
+                                            pathsToRemove.add(longestPath);
+                                            var path = new ArrayList<>(longestPath);
                                             path.add(cor);
-                                            toAddResultList.add(path);
+                                            pathsToAdd.add(path);
                                         }
-                                    longestPaths.addAll(toAddResultList);
+                                    }
+                                    longestPaths.addAll(pathsToAdd);
                                 }
                             }
-                            longestPaths.removeAll(toRemoveResultList);
+                            longestPaths.removeAll(pathsToRemove);
                         }
-                        currentConceptIndex++;
+                        i++;
                     }
                 }
             System.out.println("Longest paths: " + longestPaths);
