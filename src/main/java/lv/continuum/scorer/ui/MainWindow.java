@@ -1,7 +1,6 @@
 package lv.continuum.scorer.ui;
 
 import lv.continuum.scorer.common.Translations;
-import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
 import org.xml.sax.SAXException;
@@ -124,12 +123,33 @@ public class MainWindow extends JFrame {
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
+
+        var studentGroup = layout.createSequentialGroup()
+                .addComponent(studentTextField, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(studentButton);
+        var teacherGroup = layout.createSequentialGroup()
+                .addComponent(teacherTextField, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(teacherButton);
+        var checkBoxesGroup = layout.createParallelGroup()
+                .addComponent(importanceIndexesCheckBox)
+                .addComponent(closenessIndexesCheckBox)
+                .addComponent(propositionChainsCheckBox)
+                .addComponent(errorAnalysisCheckBox)
+                .addComponent(elementsCheckBox);
+        var scoreButtonAndCheckBoxesGroup = layout.createSequentialGroup()
+                .addComponent(scoreButton)
+                .addGap(18)
+                .addGroup(checkBoxesGroup)
+                .addContainerGap();
+
         layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(
-                                        layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        layout.createParallelGroup()
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addComponent(scoreScrollPane,
                                                                 GroupLayout.DEFAULT_SIZE, 680,
@@ -138,59 +158,12 @@ public class MainWindow extends JFrame {
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addComponent(studentLabel)
                                                         .addContainerGap())
-                                                .addGroup(GroupLayout.Alignment.TRAILING,
-                                                        layout.createSequentialGroup()
-                                                                .addGroup(layout
-                                                                        .createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                                                        .addGroup(
-                                                                                layout.createSequentialGroup()
-                                                                                        .addComponent(
-                                                                                                studentTextField,
-                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                489,
-                                                                                                Short.MAX_VALUE)
-                                                                                        .addPreferredGap(
-                                                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                        .addComponent(
-                                                                                                studentButton))
-                                                                        .addGroup(
-                                                                                layout.createSequentialGroup()
-                                                                                        .addGroup(
-                                                                                                layout.createParallelGroup(
-                                                                                                        javax.swing.GroupLayout.Alignment.LEADING)
-                                                                                                        .addGroup(
-                                                                                                                layout.createSequentialGroup()
-                                                                                                                        .addComponent(
-                                                                                                                                teacherLabel)
-                                                                                                                        .addGap(183,
-                                                                                                                                183,
-                                                                                                                                183))
-                                                                                                        .addGroup(
-                                                                                                                layout.createSequentialGroup()
-                                                                                                                        .addComponent(
-                                                                                                                                teacherTextField,
-                                                                                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                                                                489,
-                                                                                                                                Short.MAX_VALUE)
-                                                                                                                        .addPreferredGap(
-                                                                                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                                                                                        .addComponent(
-                                                                                                teacherButton)))
-                                                                .addGap(96, 96, 96))
                                                 .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(scoreButton,
-                                                                GroupLayout.PREFERRED_SIZE,
-                                                                GroupLayout.DEFAULT_SIZE,
-                                                                GroupLayout.PREFERRED_SIZE)
-                                                        .addGap(18, 18, 18)
-                                                        .addGroup(layout.createParallelGroup(
-                                                                javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addComponent(importanceIndexesCheckBox)
-                                                                .addComponent(closenessIndexesCheckBox)
-                                                                .addComponent(propositionChainsCheckBox)
-                                                                .addComponent(errorAnalysisCheckBox)
-                                                                .addComponent(elementsCheckBox))
-                                                        .addContainerGap())))
+                                                        .addComponent(teacherLabel)
+                                                        .addContainerGap())
+                                                .addGroup(studentGroup)
+                                                .addGroup(teacherGroup)
+                                                .addGroup(scoreButtonAndCheckBoxesGroup)))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -300,7 +273,7 @@ public class MainWindow extends JFrame {
     }
 
     private String getSelectedFileName() {
-        int state = fileChooser.showOpenDialog(this);
+        var state = fileChooser.showOpenDialog(this);
         return state == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile().getAbsolutePath() : null;
     }
 
