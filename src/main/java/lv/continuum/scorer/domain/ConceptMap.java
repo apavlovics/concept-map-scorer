@@ -170,30 +170,26 @@ public class ConceptMap {
                     while (i < currentConcepts.size()) {
                         var currentConcept = currentConcepts.get(i);
                         var currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
-                        if (!currentOutgoingRelationships.isEmpty()) {
-                            var pathsToRemove = new HashSet<List<Integer>>();
-                            for (var cor : currentOutgoingRelationships) {
-                                currentConcepts.add(cor);
-                                if (i == 0) {
-                                    var path = new ArrayList<Integer>();
-                                    path.add(currentConcept);
-                                    path.add(cor);
-                                    longestPaths.add(path);
-                                } else {
-                                    var pathsToAdd = new HashSet<List<Integer>>();
-                                    for (var longestPath : longestPaths) {
-                                        if (longestPath.indexOf(currentConcept) == longestPath.size() - 1) {
-                                            pathsToRemove.add(longestPath);
-                                            var path = new ArrayList<>(longestPath);
-                                            path.add(cor);
-                                            pathsToAdd.add(path);
-                                        }
+                        var pathsToRemove = new HashSet<List<Integer>>();
+                        for (var cor : currentOutgoingRelationships) {
+                            currentConcepts.add(cor);
+                            if (i == 0) {
+                                var path = List.of(currentConcept, cor);
+                                longestPaths.add(path);
+                            } else {
+                                var pathsToAdd = new HashSet<List<Integer>>();
+                                for (var path : longestPaths) {
+                                    if (path.indexOf(currentConcept) == path.size() - 1) {
+                                        var longerPath = new ArrayList<>(path);
+                                        longerPath.add(cor);
+                                        pathsToRemove.add(path);
+                                        pathsToAdd.add(longerPath);
                                     }
-                                    longestPaths.addAll(pathsToAdd);
                                 }
+                                longestPaths.addAll(pathsToAdd);
                             }
-                            longestPaths.removeAll(pathsToRemove);
                         }
+                        longestPaths.removeAll(pathsToRemove);
                         i++;
                     }
                 }
