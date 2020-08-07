@@ -124,8 +124,8 @@ public class ConceptMap {
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
         for (Relationship r : relationships) {
-            var currentOutgoingConcepts = new HashSet<Integer>();
-            var currentIncomingConcepts = new HashSet<Integer>();
+            var currentOutgoingConcepts = new ListOrderedSet<Integer>();
+            var currentIncomingConcepts = new ListOrderedSet<Integer>();
             currentOutgoingConcepts.add(r.toConcept);
             currentIncomingConcepts.add(r.fromConcept);
 
@@ -133,16 +133,19 @@ public class ConceptMap {
             var keyPath = r.fromConcept + " " + r.toConcept;
             paths.add(keyPath);
 
-            for (var coc : currentOutgoingConcepts) {
-                var currentOutgoingRelationships = outgoingRelationships.get(coc);
+            var outgoingConcept = 0;
+            while (outgoingConcept < currentOutgoingConcepts.size()) {
+                var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(outgoingConcept++));
                 for (var cor : currentOutgoingRelationships) {
                     currentOutgoingConcepts.add(cor);
                     var valuePath = r.fromConcept + " " + cor;
                     paths.add(valuePath);
                 }
             }
-            for (var cic : currentIncomingConcepts) {
-                var currentIncomingRelationships = incomingRelationships.get(cic);
+
+            var incomingConcept = 0;
+            while (incomingConcept < currentIncomingConcepts.size()) {
+                var currentIncomingRelationships = incomingRelationships.get(currentIncomingConcepts.get(incomingConcept++));
                 for (var cir : currentIncomingRelationships) {
                     currentIncomingConcepts.add(cir);
                     for (var coc : currentOutgoingConcepts) {
