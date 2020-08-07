@@ -2,6 +2,7 @@ package lv.continuum.scorer.domain;
 
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -16,7 +17,7 @@ public class Concept {
     public final String name;
 
     public Concept(String name) throws InvalidDataException {
-        if (name == null || name.isEmpty()) {
+        if (StringUtils.isEmpty(name)) {
             throw new InvalidDataException(CONCEPT_NO_NAME);
         } else {
             var lowerCaseName = name.toLowerCase();

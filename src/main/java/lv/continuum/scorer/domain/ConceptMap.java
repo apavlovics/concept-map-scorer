@@ -1,5 +1,8 @@
 package lv.continuum.scorer.domain;
 
+import org.apache.commons.collections4.list.SetUniqueList;
+import org.apache.commons.collections4.set.ListOrderedSet;
+
 import java.util.*;
 import java.util.function.Function;
 
@@ -67,46 +70,38 @@ public class ConceptMap {
     }
 
     public int cycleCount() {
-        int result = 0;
-        List<Integer> currentConcepts = new ArrayList<>();
-        List<Integer> subnetConcepts = new ArrayList<>();
+        var cycleCount = 0;
+        var currentId = getFirstConceptId();
+        var currentConcepts = new HashSet<Integer>();
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
-
-        int currentId = this.getFirstConceptId();
-        while (currentConcepts.size() < this.conceptCount()) {
-            subnetConcepts.clear();
+        while (currentConcepts.size() < conceptCount()) {
+            var subnetConcepts = new ListOrderedSet<Integer>();
             while (currentId >= 0) {
-                if (!subnetConcepts.contains(currentId)) subnetConcepts.add(currentId);
+                subnetConcepts.add(currentId);
                 var currentOutgoingRelationships = outgoingRelationships.get(currentId);
-                if (!currentOutgoingRelationships.isEmpty())
-                    for (Integer cor : currentOutgoingRelationships) {
-                        if (!subnetConcepts.contains(cor)) subnetConcepts.add(cor);
-                        else {
-                            var isCycle = false;
-                            var currentIncomingRelationships = incomingRelationships.get(cor);
-                            for (Integer cir : currentIncomingRelationships)
-                                if (!currentConcepts.contains(cir) &&
-                                        subnetConcepts.contains(cir) &&
-                                        subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor))
-                                    isCycle = true;
-                            if (isCycle) result++;
+                for (var cor : currentOutgoingRelationships) {
+                    if (!subnetConcepts.add(cor)) {
+                        var currentIncomingRelationships = incomingRelationships.get(cor);
+                        for (var cir : currentIncomingRelationships) {
+                            if (!currentConcepts.contains(cir)
+                                    && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor)) {
+                                cycleCount++;
+                            }
                         }
                     }
-                if (subnetConcepts.indexOf(currentId) < subnetConcepts.size() - 1)
-                    currentId = subnetConcepts.get(subnetConcepts.indexOf(currentId) + 1);
-                else currentId = -1;
+                }
+                var index = subnetConcepts.indexOf(currentId);
+                currentId = index < subnetConcepts.size() - 1 ? subnetConcepts.get(index + 1) : -1;
             }
-            for (var sc : subnetConcepts) {
-                if (!currentConcepts.contains(sc)) currentConcepts.add(sc);
-            }
+            currentConcepts.addAll(subnetConcepts);
             currentId = concepts.stream()
                     .filter(c -> !currentConcepts.contains(c.id))
                     .findFirst()
                     .map(c -> c.id)
                     .orElse(currentId);
         }
-        return result;
+        return cycleCount;
     }
 
     public int subnetCount() {

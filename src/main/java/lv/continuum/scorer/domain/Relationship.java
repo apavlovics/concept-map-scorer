@@ -2,6 +2,7 @@ package lv.continuum.scorer.domain;
 
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,7 +29,7 @@ public class Relationship {
 
     @Override
     public String toString() {
-        var prefix = name == null || name.isEmpty() ?
+        var prefix = StringUtils.isEmpty(name) ?
                 "Unnamed relationship with id " :
                 "Relationship „" + name + "” with id ";
         return prefix + id + " from concept " + fromConcept + " to concept " + toConcept;
