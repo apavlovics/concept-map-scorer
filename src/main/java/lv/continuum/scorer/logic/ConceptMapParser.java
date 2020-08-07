@@ -48,7 +48,7 @@ public class ConceptMapParser {
             throw new InvalidDataException(String.format(MAP_NO_CONCEPTS, fileName));
         }
         var concepts = new ArrayList<Concept>();
-        for (int i = 0; i < conceptNodes.getLength(); i++) {
+        for (var i = 0; i < conceptNodes.getLength(); i++) {
             var node = conceptNodes.item(i);
             if (containsConcept(concepts, node.getTextContent())) {
                 throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
@@ -61,7 +61,7 @@ public class ConceptMapParser {
             throw new InvalidDataException(String.format(MAP_NO_RELATIONSHIPS, fileName));
         }
         var relationships = new ArrayList<Relationship>();
-        for (int i = 0; i < relationshipNodes.getLength(); i++) {
+        for (var i = 0; i < relationshipNodes.getLength(); i++) {
             var node = relationshipNodes.item(i);
             var from = Integer.parseInt(node.getAttributes().getNamedItem("from").getNodeValue());
             var to = Integer.parseInt(node.getAttributes().getNamedItem("to").getNodeValue());
@@ -81,7 +81,7 @@ public class ConceptMapParser {
 
         var concepts = new ArrayList<Concept>();
         var elementNodes = document.getElementsByTagName("element");
-        for (int i = 0; i < elementNodes.getLength(); i++) {
+        for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
                 var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
@@ -96,14 +96,14 @@ public class ConceptMapParser {
         }
 
         var relationships = new ArrayList<Relationship>();
-        for (int i = 0; i < elementNodes.getLength(); i++) {
+        for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
                 String from = null;
                 String to = null;
                 var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
                 var relationshipNodes = ((Element) node).getElementsByTagName("element");
-                for (int j = 0; j < relationshipNodes.getLength(); j++) {
+                for (var j = 0; j < relationshipNodes.getLength(); j++) {
                     var relationshipNode = relationshipNodes.item(j);
                     var relationshipNodeName = relationshipNode.getAttributes().getNamedItem("name").getNodeValue();
                     var relationshipNodeValue = relationshipNode.getAttributes().getNamedItem("value").getNodeValue();
@@ -119,7 +119,7 @@ public class ConceptMapParser {
 
                 var fromConcept = -1;
                 var toConcept = -1;
-                for (Concept c : concepts) {
+                for (var c : concepts) {
                     if (c.name.equals(from)) fromConcept = c.id;
                     if (c.name.equals(to)) toConcept = c.id;
                 }

@@ -131,15 +131,15 @@ public class ConceptMapScorer {
             return Translations.getInstance().get("maps-different-concepts-proposition-chains");
 
         double resultIndex = 0.0;
-        List<ArrayList> studentLongestPaths = this.studentMap.longestPaths();
-        List<ArrayList> teacherLongestPaths = this.teacherMap.longestPaths();
-        if (studentLongestPaths == null || teacherLongestPaths == null)
+        var studentLongestPaths = this.studentMap.longestPaths();
+        var teacherLongestPaths = this.teacherMap.longestPaths();
+        if (studentLongestPaths.isEmpty() || teacherLongestPaths.isEmpty())
             return Translations.getInstance().get("maps-cycles-proposition-chains");
 
         int teacherMapScore = 0, studentMapScore = 0;
         double breakScore = 0.0;
         int currentBreakScore, approvedCurrentBreakScore;
-        for (ArrayList<Integer> tlp : teacherLongestPaths) {
+        for (var tlp : teacherLongestPaths) {
             teacherMapScore += tlp.size() - 1;
             currentBreakScore = 0;
             approvedCurrentBreakScore = 0;
