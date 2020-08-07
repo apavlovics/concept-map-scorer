@@ -33,7 +33,7 @@ public class ConceptMap {
         var incomingRelationships = incomingRelationships();
         if (incomingRelationships.containsValue(EMPTY)) {
             var explicitLevels = true;
-            Set<Integer> conceptsNoIncoming = EMPTY;
+            var conceptsNoIncoming = EMPTY;
             while (explicitLevels && conceptsNoIncoming.size() < conceptCount()) {
                 var newConceptsNoIncoming = incomingRelationships.entrySet().stream()
                         .filter(e -> e.getValue().isEmpty())
@@ -123,23 +123,22 @@ public class ConceptMap {
         var allPaths = new HashMap<String, Set<String>>();
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
-        for (Relationship r : relationships) {
+        for (var r : relationships) {
+            var valuePaths = new HashSet<String>();
+            var keyPath = r.fromConcept + " " + r.toConcept;
+            valuePaths.add(keyPath);
+
             var currentOutgoingConcepts = new ListOrderedSet<Integer>();
             var currentIncomingConcepts = new ListOrderedSet<Integer>();
             currentOutgoingConcepts.add(r.toConcept);
             currentIncomingConcepts.add(r.fromConcept);
-
-            var paths = new HashSet<String>();
-            var keyPath = r.fromConcept + " " + r.toConcept;
-            paths.add(keyPath);
 
             var outgoingConcept = 0;
             while (outgoingConcept < currentOutgoingConcepts.size()) {
                 var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(outgoingConcept++));
                 for (var cor : currentOutgoingRelationships) {
                     currentOutgoingConcepts.add(cor);
-                    var valuePath = r.fromConcept + " " + cor;
-                    paths.add(valuePath);
+                    valuePaths.add(r.fromConcept + " " + cor);
                 }
             }
 
@@ -149,14 +148,12 @@ public class ConceptMap {
                 for (var cir : currentIncomingRelationships) {
                     currentIncomingConcepts.add(cir);
                     for (var coc : currentOutgoingConcepts) {
-                        var valuePath = cir + " " + coc;
-                        paths.add(valuePath);
+                        valuePaths.add(cir + " " + coc);
                     }
                 }
             }
-            allPaths.put(keyPath, paths);
+            allPaths.put(keyPath, valuePaths);
         }
-        System.out.println("!!! " + allPaths);
         return allPaths;
     }
 
@@ -238,10 +235,10 @@ public class ConceptMap {
 
     private Map<Integer, Set<Integer>> relationships(Set<Direction> directions) {
         var allRelationships = new HashMap<Integer, Set<Integer>>();
-        for (Concept c : concepts) {
+        for (var c : concepts) {
             allRelationships.put(c.id, new HashSet<>());
         }
-        for (Relationship r : relationships) {
+        for (var r : relationships) {
             if (directions.contains(Direction.OUTGOING)) {
                 allRelationships.get(r.fromConcept).add(r.toConcept);
             }
@@ -272,8 +269,8 @@ public class ConceptMap {
                 .append(conceptCount() == 1 ? " concept and " : " concepts and ")
                 .append(relationshipCount())
                 .append(relationshipCount() == 1 ? " relationship.\n" : " relationships\n");
-        for (Concept c : concepts) sb.append(c).append("\n");
-        for (Relationship r : relationships) sb.append(r).append("\n");
+        for (var c : concepts) sb.append(c).append("\n");
+        for (var r : relationships) sb.append(r).append("\n");
         return sb.substring(0, sb.length() - 1);
     }
 }
