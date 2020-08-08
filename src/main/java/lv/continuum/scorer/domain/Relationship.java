@@ -4,15 +4,14 @@ import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Objects;
 
 public class Relationship {
 
-    private static final String CONCEPT_NEGATIVE_ID = Translations.getInstance().get("concept-negative-id");
+    private static final Translations translations = Translations.getInstance();
 
-    private static final AtomicInteger idIssuer = new AtomicInteger();
+    private static final String CONCEPT_NEGATIVE_ID = translations.get("concept-negative-id");
 
-    public final int id = idIssuer.getAndIncrement();
     public final int fromConcept;
     public final int toConcept;
     public final String name;
@@ -28,10 +27,23 @@ public class Relationship {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Relationship that = (Relationship) o;
+        return fromConcept == that.fromConcept && toConcept == that.toConcept;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fromConcept, toConcept);
+    }
+
+    @Override
     public String toString() {
         var prefix = StringUtils.isEmpty(name) ?
-                "Unnamed relationship with id " :
-                "Relationship „" + name + "” with id ";
-        return prefix + id + " from concept " + fromConcept + " to concept " + toConcept;
+                "Unnamed relationship" :
+                "Relationship „" + name + "”";
+        return prefix + " from concept " + fromConcept + " to concept " + toConcept;
     }
 }
