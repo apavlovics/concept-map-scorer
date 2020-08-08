@@ -80,7 +80,7 @@ public class ConceptMapParser {
         System.out.println("Started parsing IKAS XML file");
 
         var concepts = new HashSet<Concept>();
-        var conceptLowerCaseNames = new ListOrderedSet<String>();
+        var conceptLowerCaseNames = new ListOrderedSet<String>(); // Used to assign unique concept ids
         var elementNodes = document.getElementsByTagName("element");
         for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);

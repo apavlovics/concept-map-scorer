@@ -1,15 +1,13 @@
 package lv.continuum.scorer.logic;
 
-import lv.continuum.scorer.domain.*;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-
 import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.domain.ConceptMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConceptMapScorer {
+
     private ConceptMap studentMap;
     private ConceptMap teacherMap;
 
@@ -257,18 +255,9 @@ public class ConceptMapScorer {
         return returnString;
     }
 
-    // TODO Rewrite with new definition of concept similarity
     private boolean similarConcepts() {
         checkConceptMaps();
-        var studentOutgoingRelationships = studentMap.outgoingRelationships();
-        var teacherOutgoingRelationships = teacherMap.outgoingRelationships();
-
-        if (studentOutgoingRelationships.size() != teacherOutgoingRelationships.size()) {
-            return false;
-        }
-        int initialSize = studentOutgoingRelationships.size();
-        studentOutgoingRelationships.keySet().retainAll(teacherOutgoingRelationships.keySet());
-        return initialSize == studentOutgoingRelationships.size();
+        return studentMap.hasSimilarConcepts(teacherMap);
     }
 
     private void checkConceptMaps() {
