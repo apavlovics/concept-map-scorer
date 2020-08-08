@@ -5,6 +5,7 @@ import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.domain.Relationship;
+import org.apache.commons.collections4.set.ListOrderedSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -51,7 +52,7 @@ public class ConceptMapParser {
         for (var i = 0; i < conceptNodes.getLength(); i++) {
             var node = conceptNodes.item(i);
             var name = node.getTextContent();
-            if (containsDuplicateConcept(concepts.values(), name)) {
+            if (hasConceptWithDuplicateName(concepts.values(), name)) {
                 throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
             }
             var id = Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue());
@@ -79,15 +80,19 @@ public class ConceptMapParser {
         System.out.println("Started parsing IKAS XML file");
 
         var concepts = new HashSet<Concept>();
+        var conceptLowerCaseNames = new ListOrderedSet<String>();
         var elementNodes = document.getElementsByTagName("element");
         for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
-                var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
-                if (containsDuplicateConcept(concepts, nodeValue)) {
+                var name = node.getAttributes().getNamedItem("value").getNodeValue();
+                if (hasConceptWithDuplicateName(concepts, name)) {
                     throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
                 }
-                concepts.add(new Concept(nodeValue));
+                var lowerCaseName = name.toLowerCase();
+                conceptLowerCaseNames.add(lowerCaseName);
+                var id = conceptLowerCaseNames.indexOf(lowerCaseName);
+                concepts.add(new Concept(id, name));
             }
         }
 
@@ -129,7 +134,7 @@ public class ConceptMapParser {
         return conceptMap;
     }
 
-    private boolean containsDuplicateConcept(Collection<Concept> concepts, String name) {
-        return concepts.stream().anyMatch(c -> c.name.compareToIgnoreCase(name) == 0);
+    private boolean hasConceptWithDuplicateName(Collection<Concept> concepts, String name) {
+        return concepts.stream().anyMatch(c -> c.hasDuplicateName(name));
     }
 }

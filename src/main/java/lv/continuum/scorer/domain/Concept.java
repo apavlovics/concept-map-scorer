@@ -4,14 +4,11 @@ import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Objects;
 
-// TODO Define equality and similarity
 public class Concept {
 
     private static final Translations translations = Translations.getInstance();
-    private static final List<String> lowerCaseNames = new CopyOnWriteArrayList<>();
 
     private static final String CONCEPT_NEGATIVE_ID = translations.get("concept-negative-id");
     private static final String CONCEPT_NO_NAME = translations.get("concept-no-name");
@@ -30,19 +27,21 @@ public class Concept {
         this.name = name;
     }
 
-    public Concept(String name) throws InvalidDataException {
-        if (StringUtils.isEmpty(name)) {
-            throw new InvalidDataException(CONCEPT_NO_NAME);
-        } else {
-            var lowerCaseName = name.toLowerCase();
-            var id = lowerCaseNames.indexOf(lowerCaseName);
-            if (id == -1) {
-                lowerCaseNames.add(lowerCaseName);
-                id = lowerCaseNames.indexOf(lowerCaseName);
-            }
-            this.id = id;
-            this.name = name;
-        }
+    public boolean hasDuplicateName(String name) {
+        return this.name.compareToIgnoreCase(name) == 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Concept concept = (Concept) o;
+        return id == concept.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
