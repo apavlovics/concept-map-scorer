@@ -52,7 +52,7 @@ public class ConceptMapParser {
         for (var i = 0; i < conceptNodes.getLength(); i++) {
             var node = conceptNodes.item(i);
             var name = node.getTextContent();
-            if (hasConceptWithDuplicateName(concepts.values(), name)) {
+            if (hasSimilarConcept(concepts.values(), name)) {
                 throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
             }
             var id = Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue());
@@ -86,7 +86,7 @@ public class ConceptMapParser {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
                 var name = node.getAttributes().getNamedItem("value").getNodeValue();
-                if (hasConceptWithDuplicateName(concepts, name)) {
+                if (hasSimilarConcept(concepts, name)) {
                     throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
                 }
                 var lowerCaseName = name.toLowerCase();
@@ -134,7 +134,7 @@ public class ConceptMapParser {
         return conceptMap;
     }
 
-    private boolean hasConceptWithDuplicateName(Collection<Concept> concepts, String name) {
-        return concepts.stream().anyMatch(c -> c.hasDuplicateName(name));
+    private boolean hasSimilarConcept(Collection<Concept> concepts, String name) {
+        return concepts.stream().anyMatch(c -> c.isSimilar(name));
     }
 }

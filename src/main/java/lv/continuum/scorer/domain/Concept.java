@@ -27,7 +27,11 @@ public class Concept {
         this.name = name;
     }
 
-    public boolean hasDuplicateName(String name) {
+    public boolean isSimilar(Concept other) {
+        return isSimilar(other.name);
+    }
+
+    public boolean isSimilar(String name) {
         return this.name.compareToIgnoreCase(name) == 0;
     }
 

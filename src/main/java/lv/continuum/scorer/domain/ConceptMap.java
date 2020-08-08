@@ -209,11 +209,9 @@ public class ConceptMap {
         return longestPaths;
     }
 
-    public boolean hasSimilarConcepts(ConceptMap other) {
+    public boolean isSimilar(ConceptMap other) {
         return concepts.size() == other.concepts.size() &&
-                concepts.stream()
-                        .allMatch(c1 -> other.concepts.stream()
-                                .anyMatch(c2 -> c2.hasDuplicateName(c1.name)));
+                concepts.stream().allMatch(c -> other.concepts.stream().anyMatch(c::isSimilar));
     }
 
     public boolean containsRelationship(int fromConcept, int toConcept) {

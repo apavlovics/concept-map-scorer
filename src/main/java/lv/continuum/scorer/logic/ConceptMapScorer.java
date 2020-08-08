@@ -257,7 +257,7 @@ public class ConceptMapScorer {
 
     private boolean similarConcepts() {
         checkConceptMaps();
-        return studentMap.hasSimilarConcepts(teacherMap);
+        return studentMap.isSimilar(teacherMap);
     }
 
     private void checkConceptMaps() {
