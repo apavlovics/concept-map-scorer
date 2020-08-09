@@ -81,7 +81,6 @@ public class ConceptMap {
         return relationships.stream().filter(r -> r.name.matches(regex)).count();
     }
 
-    // TODO Debug and fix cycle count algorithm
     public int cycleCount() {
         var cycleCount = 0;
         var currentConcept = anyConcept();
@@ -97,13 +96,9 @@ public class ConceptMap {
                 for (var cor : currentOutgoingRelationships) {
                     if (!subnetConcepts.add(cor)) {
                         var currentIncomingRelationships = incomingRelationships.get(cor);
-                        for (var cir : currentIncomingRelationships) {
-                            if (!currentConcepts.contains(cir)
-                                    && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor)) {
-                                System.out.println("Subnet is " + subnetConcepts + ", increasing cycle count to " + cycleCount);
-                                cycleCount++;
-                            }
-                        }
+                        var containsCycle = currentIncomingRelationships.stream()
+                                .anyMatch(cir -> !currentConcepts.contains(cir) && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor));
+                        if (containsCycle) cycleCount++;
                     }
                 }
                 var index = subnetConcepts.indexOf(concept);
@@ -284,8 +279,8 @@ public class ConceptMap {
                 .append(conceptCount() == 1 ? " concept and " : " concepts and ")
                 .append(relationshipCount())
                 .append(relationshipCount() == 1 ? " relationship.\n" : " relationships\n");
-        for (var c : concepts) sb.append(c).append("\n");
-        for (var r : relationships) sb.append(r).append("\n");
-        return sb.substring(0, sb.length() - 1);
+        sb.append("Concepts: ").append(concepts).append("\n");
+        sb.append("Relationships: ").append(relationships);
+        return sb.toString();
     }
 }

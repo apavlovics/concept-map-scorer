@@ -57,7 +57,7 @@ public class ConceptMapScorer {
         var temp = new ArrayList<Concept>();
         for (var sar : studentAllRelationships.entrySet()) {
             for (var tar : teacherAllRelationships.entrySet()) {
-                if (sar.getKey() == tar.getKey()) {
+                if (sar.getKey().equals(tar.getKey())) {
                     similarConcepts.add(sar.getKey());
                     temp.clear();
                     temp.addAll(sar.getValue());
@@ -174,7 +174,7 @@ public class ConceptMapScorer {
             for (var sr : studentRelationships) {
                 relationshipFound = false;
                 for (var tr : teacherRelationships)
-                    if (sr == tr) {
+                    if (sr.equals(tr)) {
                         correctRelationships++;
                         relationshipFound = true;
                     }

@@ -40,9 +40,7 @@ public class Relationship {
 
     @Override
     public String toString() {
-        var prefix = StringUtils.isEmpty(name) ?
-                "Unnamed relationship" :
-                "Relationship „" + name + "”";
-        return prefix + " from " + fromConcept + " to " + toConcept;
+        var relationship = StringUtils.isBlank(name) ? "->" : name;
+        return fromConcept + " " + relationship + " " + toConcept;
     }
 }
