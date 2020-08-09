@@ -192,11 +192,11 @@ public class MainWindow extends JFrame {
             var teacherText = teacherTextField.getText();
 
             ConceptMapScorer scorer;
-            if (!studentText.isEmpty() && !teacherText.isEmpty()) {
+            if (!studentText.isBlank() && !teacherText.isBlank()) {
                 var studentMap = conceptMapParser.parse(studentText);
                 var teacherMap = conceptMapParser.parse(teacherText);
                 scorer = new ConceptMapScorer(studentMap, teacherMap);
-            } else if (!studentText.isEmpty()) {
+            } else if (!studentText.isBlank()) {
                 var studentMap = conceptMapParser.parse(studentText);
                 scorer = new ConceptMapScorer(studentMap);
             } else {
@@ -274,7 +274,7 @@ public class MainWindow extends JFrame {
         var studentText = studentTextField.getText();
         var teacherText = teacherTextField.getText();
         if (updateCheckBoxes) {
-            boolean selectedEnabled = !studentText.isEmpty() && !teacherText.isEmpty();
+            boolean selectedEnabled = !studentText.isBlank() && !teacherText.isBlank();
             checkBoxes.forEach(cb -> {
                 if (cb == elementsCheckBox) {
                     cb.setSelected(true);
@@ -284,7 +284,7 @@ public class MainWindow extends JFrame {
                 cb.setEnabled(selectedEnabled);
             });
         }
-        scoreButton.setEnabled(!studentText.isEmpty() && checkBoxes.stream().anyMatch(JCheckBox::isSelected));
+        scoreButton.setEnabled(!studentText.isBlank() && checkBoxes.stream().anyMatch(JCheckBox::isSelected));
     }
 
     public static void main(String[] args) {

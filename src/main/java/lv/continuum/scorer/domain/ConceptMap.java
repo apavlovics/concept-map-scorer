@@ -92,13 +92,12 @@ public class ConceptMap {
             while (currentConcept.isPresent()) {
                 var concept = currentConcept.get();
                 subnetConcepts.add(concept);
-                var currentOutgoingRelationships = outgoingRelationships.get(concept);
-                for (var cor : currentOutgoingRelationships) {
+                for (var cor : outgoingRelationships.get(concept)) {
                     if (!subnetConcepts.add(cor)) {
-                        var currentIncomingRelationships = incomingRelationships.get(cor);
-                        var containsCycle = currentIncomingRelationships.stream()
-                                .anyMatch(cir -> !currentConcepts.contains(cir) && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor));
-                        if (containsCycle) cycleCount++;
+                        var hasCycle = incomingRelationships.get(cor).stream()
+                                .anyMatch(cir -> !currentConcepts.contains(cir)
+                                        && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor));
+                        if (hasCycle) cycleCount++;
                     }
                 }
                 var index = subnetConcepts.indexOf(concept);
@@ -273,14 +272,8 @@ public class ConceptMap {
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
-        sb.append("Concept map with ")
-                .append(conceptCount())
-                .append(conceptCount() == 1 ? " concept and " : " concepts and ")
-                .append(relationshipCount())
-                .append(relationshipCount() == 1 ? " relationship.\n" : " relationships\n");
-        sb.append("Concepts: ").append(concepts).append("\n");
-        sb.append("Relationships: ").append(relationships);
-        return sb.toString();
+        return "Concept map with " + conceptCount() + " concepts and " + relationshipCount() + " relationships:\n" +
+                "  Concepts " + concepts + "\n" +
+                "  Relationships " + relationships;
     }
 }
