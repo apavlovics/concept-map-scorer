@@ -94,11 +94,9 @@ public class MainWindow extends JFrame {
         });
 
         scoreTextArea = new JTextArea();
-        scoreTextArea.setColumns(20);
+        scoreTextArea.setText(translations.get("default-text"));
         scoreTextArea.setEditable(false);
         scoreTextArea.setLineWrap(true);
-        scoreTextArea.setRows(5);
-        scoreTextArea.setText(translations.get("default-text"));
         scoreTextArea.setWrapStyleWord(true);
         scoreTextArea.setEnabled(false);
 

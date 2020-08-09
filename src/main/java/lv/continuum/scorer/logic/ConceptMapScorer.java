@@ -166,15 +166,14 @@ public class ConceptMapScorer {
 
         double resultIndex, w1, w2, weightedResultIndex;
         int totalRelationships = (int) Math.pow(studentOutgoingRelationships.keySet().size(), 2);
-        int correctRelationships = 0, incorrectRelationships = 0, missingRelationships = 0, noRelationships = 0;
-        boolean relationshipFound;
+        int correctRelationships = 0, incorrectRelationships = 0;
 
         for (var sor : studentOutgoingRelationships.entrySet()) {
             var studentRelationships = sor.getValue();
             var teacherRelationships = teacherOutgoingRelationships.get(sor.getKey());
 
             for (var sr : studentRelationships) {
-                relationshipFound = false;
+                var relationshipFound = false;
                 for (var tr : teacherRelationships)
                     if (sr.equals(tr)) {
                         correctRelationships++;
@@ -184,8 +183,8 @@ public class ConceptMapScorer {
             }
         }
 
-        missingRelationships = this.teacherMap.relationshipCount() - correctRelationships;
-        noRelationships = totalRelationships - correctRelationships - incorrectRelationships - missingRelationships;
+        var missingRelationships = this.teacherMap.relationshipCount() - correctRelationships;
+        var noRelationships = totalRelationships - correctRelationships - incorrectRelationships - missingRelationships;
 
         resultIndex = (double) (correctRelationships
                 + noRelationships

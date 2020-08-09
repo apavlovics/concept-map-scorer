@@ -31,16 +31,16 @@ public class ConceptMap {
         this.relationships = relationships;
     }
 
-    public int conceptCount() {
+    public long conceptCount() {
         return concepts.size();
     }
 
-    public int relationshipCount() {
+    public long relationshipCount() {
         return relationships.size();
     }
 
-    public int levelCount() {
-        var levelCount = 0;
+    public long levelCount() {
+        var levelCount = 0L;
         var incomingRelationships = incomingRelationships();
         if (incomingRelationships.containsValue(EMPTY)) {
             var explicitLevels = true;
@@ -81,8 +81,8 @@ public class ConceptMap {
         return relationships.stream().filter(r -> r.name.matches(regex)).count();
     }
 
-    public int cycleCount() {
-        var cycleCount = 0;
+    public long cycleCount() {
+        var cycleCount = 0L;
         var currentConcept = anyConcept();
         var currentConcepts = new HashSet<Concept>();
         var outgoingRelationships = outgoingRelationships();
@@ -111,8 +111,8 @@ public class ConceptMap {
         return cycleCount;
     }
 
-    public int subnetCount() {
-        var subnetCount = 0;
+    public long subnetCount() {
+        var subnetCount = 0L;
         var currentConcept = anyConcept();
         var currentConcepts = new ListOrderedSet<Concept>();
         var allRelationships = allRelationships();

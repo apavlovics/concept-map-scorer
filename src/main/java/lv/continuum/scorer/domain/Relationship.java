@@ -44,7 +44,7 @@ public class Relationship {
 
     @Override
     public String toString() {
-        var relationship = StringUtils.isBlank(name) ? " --> " : " -> " + name + " -> ";
+        var relationship = StringUtils.isBlank(name) ? " -> " : " -> " + name + " -> ";
         return fromConcept + relationship + toConcept;
     }
 }
