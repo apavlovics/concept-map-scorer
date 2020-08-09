@@ -11,25 +11,24 @@ import java.util.List;
 
 public class ConceptMapScorer {
 
-    private ConceptMap studentMap;
-    private ConceptMap teacherMap;
+    private static final Translations translations = Translations.getInstance();
 
-    final public static String NO_MAP = Translations.getInstance().get("no-map");
-    final public static String NO_STUDENT_MAP = Translations.getInstance().get("no-student-map");
-    final public static String NO_TEACHER_MAP = Translations.getInstance().get("no-teacher-map");
+    private static final String NO_STUDENT_MAP = translations.get("no-student-map");
+    private static final String NO_TEACHER_MAP = Translations.getInstance().get("no-teacher-map");
 
-    public ConceptMapScorer(ConceptMap studentMap) {
-        this.setStudentMap(studentMap);
+    private final ConceptMap studentMap;
+    private final ConceptMap teacherMap;
+
+    public ConceptMapScorer(ConceptMap studentMap) throws InvalidDataException {
+        this(studentMap, null);
     }
 
-    public ConceptMapScorer(ConceptMap studentMap, ConceptMap teacherMap) {
-        this(studentMap);
+    public ConceptMapScorer(ConceptMap studentMap, ConceptMap teacherMap) throws InvalidDataException {
+        if (studentMap == null) {
+            throw new InvalidDataException(NO_STUDENT_MAP);
+        }
+        this.studentMap = studentMap;
         this.teacherMap = teacherMap;
-    }
-
-    private void setStudentMap(ConceptMap studentMap) {
-        if (studentMap != null) this.studentMap = studentMap;
-        else throw new UnsupportedOperationException(NO_STUDENT_MAP);
     }
 
     public String countConceptMapsElements() {
@@ -202,8 +201,6 @@ public class ConceptMapScorer {
     }
 
     private String countConceptMapElements(ConceptMap map, String title) {
-        if (map == null) throw new UnsupportedOperationException(NO_MAP);
-
         String returnString = (title == null) ? Translations.getInstance().get("map-contains") : title;
         long value;
         String format;

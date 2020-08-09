@@ -16,6 +16,10 @@ public class Relationship {
     public final Concept toConcept;
     public final String name;
 
+    public Relationship(Concept fromConcept, Concept toConcept) throws InvalidDataException {
+        this(fromConcept, toConcept, null);
+    }
+
     public Relationship(Concept fromConcept, Concept toConcept, String name) throws InvalidDataException {
         if (fromConcept == null || toConcept == null) {
             throw new InvalidDataException(RELATIONSHIP_MISSING_CONCEPTS);
@@ -23,10 +27,6 @@ public class Relationship {
         this.fromConcept = fromConcept;
         this.toConcept = toConcept;
         this.name = name;
-    }
-
-    public Relationship(Concept fromConcept, Concept toConcept) throws InvalidDataException {
-        this(fromConcept, toConcept, null);
     }
 
     @Override
