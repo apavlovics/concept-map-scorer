@@ -10,19 +10,18 @@ public class Relationship {
 
     private static final Translations translations = Translations.getInstance();
 
-    private static final String CONCEPT_NEGATIVE_ID = translations.get("concept-negative-id");
+    private static final String RELATIONSHIP_MISSING_CONCEPTS = translations.get("relationship-missing-concepts");
 
-    public final int fromConcept;
-    public final int toConcept;
+    public final Concept fromConcept;
+    public final Concept toConcept;
     public final String name;
 
-    public Relationship(int fromConcept, int toConcept, String name) throws InvalidDataException {
-        if (fromConcept < 0 || toConcept < 0) {
-            throw new InvalidDataException(CONCEPT_NEGATIVE_ID);
-        } else {
-            this.fromConcept = fromConcept;
-            this.toConcept = toConcept;
+    public Relationship(Concept fromConcept, Concept toConcept, String name) throws InvalidDataException {
+        if (fromConcept == null || toConcept == null) {
+            throw new InvalidDataException(RELATIONSHIP_MISSING_CONCEPTS);
         }
+        this.fromConcept = fromConcept;
+        this.toConcept = toConcept;
         this.name = name;
     }
 
@@ -31,7 +30,7 @@ public class Relationship {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Relationship that = (Relationship) o;
-        return fromConcept == that.fromConcept && toConcept == that.toConcept;
+        return fromConcept.equals(that.fromConcept) && toConcept.equals(that.toConcept);
     }
 
     @Override
@@ -44,6 +43,6 @@ public class Relationship {
         var prefix = StringUtils.isEmpty(name) ?
                 "Unnamed relationship" :
                 "Relationship „" + name + "”";
-        return prefix + " from concept " + fromConcept + " to concept " + toConcept;
+        return prefix + " from " + fromConcept + " to " + toConcept;
     }
 }

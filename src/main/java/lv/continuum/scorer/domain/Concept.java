@@ -10,29 +10,25 @@ public class Concept {
 
     private static final Translations translations = Translations.getInstance();
 
-    private static final String CONCEPT_NEGATIVE_ID = translations.get("concept-negative-id");
     private static final String CONCEPT_NO_NAME = translations.get("concept-no-name");
 
-    public final int id;
+    public final String id;
     public final String name;
 
-    public Concept(int id, String name) throws InvalidDataException {
-        if (id < 0) {
-            throw new InvalidDataException(CONCEPT_NEGATIVE_ID);
-        }
-        if (StringUtils.isEmpty(name)) {
+    public Concept(String name) throws InvalidDataException {
+        if (StringUtils.isBlank(name)) {
             throw new InvalidDataException(CONCEPT_NO_NAME);
         }
-        this.id = id;
+        this.id = deriveId(name);
         this.name = name;
     }
 
-    public boolean isSimilar(Concept other) {
-        return isSimilar(other.name);
+    public static String deriveId(String name) {
+        return name.trim().toLowerCase().replace(' ', '-');
     }
 
-    public boolean isSimilar(String name) {
-        return this.name.compareToIgnoreCase(name) == 0;
+    public boolean equals(String id) {
+        return this.id.equals(id);
     }
 
     @Override
@@ -40,7 +36,7 @@ public class Concept {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Concept concept = (Concept) o;
-        return id == concept.id;
+        return id.equals(concept.id);
     }
 
     @Override

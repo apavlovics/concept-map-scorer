@@ -1,6 +1,7 @@
 package lv.continuum.scorer.logic;
 
 import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
 
 import java.util.ArrayList;
@@ -45,20 +46,20 @@ public class ConceptMapScorer {
     }
 
     public String compareConceptMapsUsingClosenessIndexes() {
-        this.checkConceptMaps();
-        var studentAllRelationships = this.studentMap.allRelationships();
-        var teacherAllRelationships = this.teacherMap.allRelationships();
+        checkConceptMaps();
+        var studentAllRelationships = studentMap.allRelationships();
+        var teacherAllRelationships = teacherMap.allRelationships();
 
         double resultIndex = 0.0, closenessIndex;
         int sizeIntersection, sizeUnion;
         List<Double> closenessIndexes = new ArrayList<Double>();
-        List<Integer> similarConcepts = new ArrayList<Integer>();
-        List<Integer> temp = new ArrayList<Integer>();
+        var similarConcepts = new ArrayList<Concept>();
+        var temp = new ArrayList<Concept>();
         for (var sar : studentAllRelationships.entrySet()) {
             for (var tar : teacherAllRelationships.entrySet()) {
                 if (sar.getKey() == tar.getKey()) {
                     similarConcepts.add(sar.getKey());
-                    temp.removeAll(temp);
+                    temp.clear();
                     temp.addAll(sar.getValue());
 
                     temp.retainAll(tar.getValue());
@@ -74,7 +75,7 @@ public class ConceptMapScorer {
                 }
             }
         }
-        for (Integer sc : similarConcepts) {
+        for (var sc : similarConcepts) {
             studentAllRelationships.remove(sc);
             teacherAllRelationships.remove(sc);
         }
@@ -170,9 +171,9 @@ public class ConceptMapScorer {
             var studentRelationships = sor.getValue();
             var teacherRelationships = teacherOutgoingRelationships.get(sor.getKey());
 
-            for (Integer sr : studentRelationships) {
+            for (var sr : studentRelationships) {
                 relationshipFound = false;
-                for (Integer tr : teacherRelationships)
+                for (var tr : teacherRelationships)
                     if (sr == tr) {
                         correctRelationships++;
                         relationshipFound = true;

@@ -10,12 +10,12 @@
         <concept id="6">G</concept>
     </concepts>
     <relationships>
-        <relationship id="0" from="0" to="1">is</relationship>
-        <relationship id="1" from="0" to="2">almost is</relationship>
-        <relationship id="2" from="1" to="4">is not</relationship>
-        <relationship id="2" from="2" to="4">is</relationship>
-        <relationship id="1" from="4" to="6">almost is</relationship>
-        <relationship id="1" from="5" to="6">almost is not</relationship>
-        <relationship id="1" from="3" to="5">almost is not</relationship>
+        <relationship from="0" to="1">is</relationship>
+        <relationship from="0" to="2">almost is</relationship>
+        <relationship from="1" to="4">is not</relationship>
+        <relationship from="2" to="4">is</relationship>
+        <relationship from="4" to="6">almost is</relationship>
+        <relationship from="5" to="6">almost is not</relationship>
+        <relationship from="3" to="5">almost is not</relationship>
     </relationships>
 </conceptmap>

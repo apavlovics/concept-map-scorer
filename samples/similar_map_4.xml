@@ -8,9 +8,9 @@
         <concept id="4">E</concept>
     </concepts>
     <relationships>
-        <relationship id="0" from="1" to="0">is</relationship>
-        <relationship id="1" from="3" to="1">almost is</relationship>
-        <relationship id="2" from="2" to="0">is not</relationship>
-        <relationship id="3" from="4" to="1">is</relationship>
+        <relationship from="1" to="0">is</relationship>
+        <relationship from="3" to="1">almost is</relationship>
+        <relationship from="2" to="0">is not</relationship>
+        <relationship from="4" to="1">is</relationship>
     </relationships>
 </conceptmap>

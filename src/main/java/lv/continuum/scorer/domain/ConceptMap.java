@@ -15,7 +15,7 @@ public class ConceptMap {
 
     private static final String MAP_NO_CONCEPTS = translations.get("map-no-concepts");
     private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
-    private static final Set<Integer> EMPTY = Set.of();
+    private static final Set<Concept> EMPTY = Set.of();
 
     private final Set<Concept> concepts;
     private final Set<Relationship> relationships;
@@ -81,68 +81,75 @@ public class ConceptMap {
         return relationships.stream().filter(r -> r.name.matches(regex)).count();
     }
 
-    // TODO This algorithm contains mistake
+    // TODO Debug and fix cycle count algorithm
     public int cycleCount() {
         var cycleCount = 0;
-        var currentId = anyConceptId();
-        var currentConcepts = new HashSet<Integer>();
+        var currentConcept = anyConcept();
+        var currentConcepts = new HashSet<Concept>();
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
         while (currentConcepts.size() < conceptCount()) {
-            var subnetConcepts = new ListOrderedSet<Integer>();
-            while (currentId >= 0) {
-                subnetConcepts.add(currentId);
-                var currentOutgoingRelationships = outgoingRelationships.get(currentId);
+            var subnetConcepts = new ListOrderedSet<Concept>();
+            while (currentConcept.isPresent()) {
+                var concept = currentConcept.get();
+                subnetConcepts.add(concept);
+                var currentOutgoingRelationships = outgoingRelationships.get(concept);
                 for (var cor : currentOutgoingRelationships) {
                     if (!subnetConcepts.add(cor)) {
                         var currentIncomingRelationships = incomingRelationships.get(cor);
                         for (var cir : currentIncomingRelationships) {
                             if (!currentConcepts.contains(cir)
                                     && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor)) {
-                                System.out.println("Subnet is " + subnetConcepts + ", will increse cycle count to " + cycleCount);
+                                System.out.println("Subnet is " + subnetConcepts + ", increasing cycle count to " + cycleCount);
                                 cycleCount++;
                             }
                         }
                     }
                 }
-                var index = subnetConcepts.indexOf(currentId);
-                currentId = index < subnetConcepts.size() - 1 ? subnetConcepts.get(index + 1) : -1;
+                var index = subnetConcepts.indexOf(concept);
+                currentConcept = index < subnetConcepts.size() - 1 ?
+                        Optional.of(subnetConcepts.get(index + 1)) :
+                        Optional.empty();
             }
             currentConcepts.addAll(subnetConcepts);
-            currentId = findFirstConceptIdNotIn(currentConcepts, currentId);
+            currentConcept = anyConceptNotIn(currentConcepts, currentConcept);
         }
         return cycleCount;
     }
 
     public int subnetCount() {
         var subnetCount = 0;
-        var currentId = anyConceptId();
-        var currentConcepts = new ListOrderedSet<Integer>();
+        var currentConcept = anyConcept();
+        var currentConcepts = new ListOrderedSet<Concept>();
         var allRelationships = allRelationships();
         while (currentConcepts.size() < conceptCount()) {
-            while (currentId >= 0) {
-                currentConcepts.add(currentId);
-                currentConcepts.addAll(allRelationships.get(currentId));
-                var index = currentConcepts.indexOf(currentId);
-                currentId = index < currentConcepts.size() - 1 ? currentConcepts.get(index + 1) : -1;
+            while (currentConcept.isPresent()) {
+                var concept = currentConcept.get();
+                currentConcepts.add(concept);
+                currentConcepts.addAll(allRelationships.get(concept));
+                var index = currentConcepts.indexOf(concept);
+                currentConcept = index < currentConcepts.size() - 1 ?
+                        Optional.of(currentConcepts.get(index + 1)) :
+                        Optional.empty();
             }
-            currentId = findFirstConceptIdNotIn(currentConcepts, currentId);
+            currentConcept = anyConceptNotIn(currentConcepts, currentConcept);
             subnetCount++;
         }
         return subnetCount;
     }
 
+    // TODO Consider replacing String with Relationship
     public Map<String, Set<String>> allPaths() {
         var allPaths = new HashMap<String, Set<String>>();
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
         for (var r : relationships) {
             var valuePaths = new HashSet<String>();
-            var keyPath = r.fromConcept + " " + r.toConcept;
+            var keyPath = r.fromConcept.id + " " + r.toConcept.id;
             valuePaths.add(keyPath);
 
-            var currentOutgoingConcepts = new ListOrderedSet<Integer>();
-            var currentIncomingConcepts = new ListOrderedSet<Integer>();
+            var currentOutgoingConcepts = new ListOrderedSet<Concept>();
+            var currentIncomingConcepts = new ListOrderedSet<Concept>();
             currentOutgoingConcepts.add(r.toConcept);
             currentIncomingConcepts.add(r.fromConcept);
 
@@ -151,7 +158,7 @@ public class ConceptMap {
                 var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(o++));
                 for (var cor : currentOutgoingRelationships) {
                     currentOutgoingConcepts.add(cor);
-                    valuePaths.add(r.fromConcept + " " + cor);
+                    valuePaths.add(r.fromConcept.id + " " + cor.id);
                 }
             }
 
@@ -161,7 +168,7 @@ public class ConceptMap {
                 for (var cir : currentIncomingRelationships) {
                     currentIncomingConcepts.add(cir);
                     for (var coc : currentOutgoingConcepts) {
-                        valuePaths.add(cir + " " + coc);
+                        valuePaths.add(cir.id + " " + coc.id);
                     }
                 }
             }
@@ -170,21 +177,21 @@ public class ConceptMap {
         return allPaths;
     }
 
-    public Set<List<Integer>> longestPaths() {
-        var longestPaths = new HashSet<List<Integer>>();
+    public Set<List<Concept>> longestPaths() {
+        var longestPaths = new HashSet<List<Concept>>();
         if (cycleCount() == 0) {
             var outgoingRelationships = outgoingRelationships();
             var incomingRelationships = incomingRelationships();
             for (var ir : incomingRelationships.entrySet()) {
                 if (ir.getValue().isEmpty()) {
-                    var currentConcepts = new ArrayList<Integer>();
+                    var currentConcepts = new ArrayList<Concept>();
                     currentConcepts.add(ir.getKey());
                     var i = 0;
                     while (i < currentConcepts.size()) {
                         var currentConcept = currentConcepts.get(i);
                         var currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
-                        var pathsToAdd = new HashSet<List<Integer>>();
-                        var pathsToRemove = new HashSet<List<Integer>>();
+                        var pathsToAdd = new HashSet<List<Concept>>();
+                        var pathsToRemove = new HashSet<List<Concept>>();
                         for (var cor : currentOutgoingRelationships) {
                             currentConcepts.add(cor);
                             if (i == 0) {
@@ -209,14 +216,18 @@ public class ConceptMap {
         return longestPaths;
     }
 
+    /**
+     * Checks if the other {@link ConceptMap} is similar to this one.
+     * <p>
+     * Two concept maps are considered similar if they contain equal concepts.
+     */
     public boolean isSimilar(ConceptMap other) {
-        return concepts.size() == other.concepts.size() &&
-                concepts.stream().allMatch(c -> other.concepts.stream().anyMatch(c::isSimilar));
+        return concepts.containsAll(other.concepts);
     }
 
-    public boolean containsRelationship(int fromConcept, int toConcept) {
+    public boolean containsRelationship(Concept fromConcept, Concept toConcept) {
         return relationships.stream()
-                .anyMatch(r -> r.fromConcept == fromConcept && r.toConcept == toConcept);
+                .anyMatch(r -> r.fromConcept.equals(fromConcept) && r.toConcept.equals(toConcept));
     }
 
     /**
@@ -226,22 +237,22 @@ public class ConceptMap {
         OUTGOING, INCOMING;
     }
 
-    public Map<Integer, Set<Integer>> outgoingRelationships() {
+    public Map<Concept, Set<Concept>> outgoingRelationships() {
         return relationships(Set.of(Direction.OUTGOING));
     }
 
-    public Map<Integer, Set<Integer>> incomingRelationships() {
+    public Map<Concept, Set<Concept>> incomingRelationships() {
         return relationships(Set.of(Direction.INCOMING));
     }
 
-    public Map<Integer, Set<Integer>> allRelationships() {
+    public Map<Concept, Set<Concept>> allRelationships() {
         return relationships(Set.of(Direction.OUTGOING, Direction.INCOMING));
     }
 
-    private Map<Integer, Set<Integer>> relationships(Set<Direction> directions) {
-        var allRelationships = new HashMap<Integer, Set<Integer>>();
+    private Map<Concept, Set<Concept>> relationships(Set<Direction> directions) {
+        var allRelationships = new HashMap<Concept, Set<Concept>>();
         for (var c : concepts) {
-            allRelationships.put(c.id, new HashSet<>());
+            allRelationships.put(c, new HashSet<>());
         }
         for (var r : relationships) {
             if (directions.contains(Direction.OUTGOING)) {
@@ -254,16 +265,15 @@ public class ConceptMap {
         return allRelationships;
     }
 
-    private int anyConceptId() {
-        return concepts.iterator().next().id;
+    private Optional<Concept> anyConcept() {
+        return concepts.stream().findAny();
     }
 
-    private int findFirstConceptIdNotIn(Set<Integer> conceptIds, int defaultId) {
+    private Optional<Concept> anyConceptNotIn(Set<Concept> subset, Optional<Concept> or) {
         return concepts.stream()
-                .filter(c -> !conceptIds.contains(c.id))
+                .filter(c -> !subset.contains(c))
                 .findFirst()
-                .map(c -> c.id)
-                .orElse(defaultId);
+                .or(() -> or);
     }
 
     @Override
