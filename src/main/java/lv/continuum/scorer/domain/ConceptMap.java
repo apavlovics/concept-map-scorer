@@ -132,15 +132,13 @@ public class ConceptMap {
         return subnetCount;
     }
 
-    // TODO Consider replacing String with Relationship
-    public Map<String, Set<String>> allPaths() {
-        var allPaths = new HashMap<String, Set<String>>();
+    public Map<Relationship, Set<Relationship>> allPaths() throws InvalidDataException {
+        var allPaths = new HashMap<Relationship, Set<Relationship>>();
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
         for (var r : relationships) {
-            var valuePaths = new HashSet<String>();
-            var keyPath = r.fromConcept.id + " " + r.toConcept.id;
-            valuePaths.add(keyPath);
+            var paths = new HashSet<Relationship>();
+            paths.add(r);
 
             var currentOutgoingConcepts = new ListOrderedSet<Concept>();
             var currentIncomingConcepts = new ListOrderedSet<Concept>();
@@ -152,7 +150,7 @@ public class ConceptMap {
                 var currentOutgoingRelationships = outgoingRelationships.get(currentOutgoingConcepts.get(o++));
                 for (var cor : currentOutgoingRelationships) {
                     currentOutgoingConcepts.add(cor);
-                    valuePaths.add(r.fromConcept.id + " " + cor.id);
+                    paths.add(new Relationship(r.fromConcept, cor));
                 }
             }
 
@@ -162,11 +160,11 @@ public class ConceptMap {
                 for (var cir : currentIncomingRelationships) {
                     currentIncomingConcepts.add(cir);
                     for (var coc : currentOutgoingConcepts) {
-                        valuePaths.add(cir.id + " " + coc.id);
+                        paths.add(new Relationship(cir, coc));
                     }
                 }
             }
-            allPaths.put(keyPath, valuePaths);
+            allPaths.put(r, paths);
         }
         return allPaths;
     }

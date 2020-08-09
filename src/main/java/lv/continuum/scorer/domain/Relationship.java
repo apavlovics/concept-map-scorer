@@ -25,6 +25,10 @@ public class Relationship {
         this.name = name;
     }
 
+    public Relationship(Concept fromConcept, Concept toConcept) throws InvalidDataException {
+        this(fromConcept, toConcept, null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

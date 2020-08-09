@@ -1,8 +1,10 @@
 package lv.continuum.scorer.logic;
 
+import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
+import lv.continuum.scorer.domain.Relationship;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +88,7 @@ public class ConceptMapScorer {
         return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), resultIndex);
     }
 
-    public String compareConceptMapsUsingImportanceIndexes() {
+    public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
         this.checkConceptMaps();
         if (!this.similarConcepts())
             return Translations.getInstance().get("maps-different-concepts-importance-indexes");
@@ -95,8 +97,8 @@ public class ConceptMapScorer {
         int sumIntersection = 0, sumUnion = 0;
         var studentAllPaths = this.studentMap.allPaths();
         var teacherAllPaths = this.teacherMap.allPaths();
-        List<String> similarRelationships = new ArrayList<String>();
-        List<String> temp = new ArrayList<String>();
+        var similarRelationships = new ArrayList<Relationship>();
+        var temp = new ArrayList<Relationship>();
 
         for (var sap : studentAllPaths.entrySet()) {
             for (var tap : teacherAllPaths.entrySet()) {
@@ -114,7 +116,7 @@ public class ConceptMapScorer {
                 }
             }
         }
-        for (String sr : similarRelationships) {
+        for (var sr : similarRelationships) {
             studentAllPaths.remove(sr);
             teacherAllPaths.remove(sr);
         }
