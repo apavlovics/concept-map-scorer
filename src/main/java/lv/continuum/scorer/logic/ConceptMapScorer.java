@@ -43,34 +43,33 @@ public class ConceptMapScorer {
         var studentAllRelationships = studentMap.allRelationships();
         var teacherAllRelationships = teacherMap.allRelationships();
 
+        var keyIntersection = new HashSet<>(studentAllRelationships.keySet());
+        keyIntersection.retainAll(teacherAllRelationships.keySet());
+
         var closenessIndexes = new ArrayList<Double>();
-        var equalConcepts = new HashSet<Concept>();
-        for (var sar : studentAllRelationships.entrySet()) {
-            for (var tar : teacherAllRelationships.entrySet()) {
-                if (sar.getKey().equals(tar.getKey())) {
-                    equalConcepts.add(sar.getKey());
+        for (var key : keyIntersection) {
+            var studentKeyRelationships = studentAllRelationships.get(key);
+            var teacherKeyRelationships = teacherAllRelationships.get(key);
 
-                    var intersection = new HashSet<>(sar.getValue());
-                    intersection.retainAll(tar.getValue());
-                    double intersectionCount = intersection.size();
+            var intersection = new HashSet<>(studentKeyRelationships);
+            intersection.retainAll(teacherKeyRelationships);
+            double intersectionCount = intersection.size();
 
-                    var union = new HashSet<>(sar.getValue());
-                    union.addAll(tar.getValue());
-                    double unionCount = union.size();
+            var union = new HashSet<>(studentKeyRelationships);
+            union.addAll(teacherKeyRelationships);
+            double unionCount = union.size();
 
-                    var closenessIndex = intersectionCount == 0 && unionCount == 0 ? 1D : intersectionCount / unionCount;
-                    closenessIndexes.add(closenessIndex);
-                }
-            }
+            var closenessIndex = intersectionCount == 0 && unionCount == 0 ? 1D : intersectionCount / unionCount;
+            closenessIndexes.add(closenessIndex);
         }
-        studentAllRelationships.keySet().removeAll(equalConcepts);
-        teacherAllRelationships.keySet().removeAll(equalConcepts);
+        studentAllRelationships.keySet().removeAll(keyIntersection);
+        teacherAllRelationships.keySet().removeAll(keyIntersection);
         var differentConceptCount = studentAllRelationships.size() + teacherAllRelationships.size();
         IntStream.range(0, differentConceptCount).forEach(i -> closenessIndexes.add(0.0));
 
         var closenessIndexSum = closenessIndexes.stream().mapToDouble(Double::doubleValue).sum();
-        var similarity = closenessIndexSum / closenessIndexes.size();
-        return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), similarity);
+        var similarityDegree = closenessIndexSum / closenessIndexes.size();
+        return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), similarityDegree);
     }
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
