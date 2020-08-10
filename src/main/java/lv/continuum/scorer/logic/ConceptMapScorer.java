@@ -81,25 +81,25 @@ public class ConceptMapScorer {
         var keyIntersection = new HashSet<>(studentAllPaths.keySet());
         keyIntersection.retainAll(teacherAllPaths.keySet());
 
-        double sumIntersection = 0, sumUnion = 0;
+        double intersectionCount = 0, unionCount = 0;
         for (var key : keyIntersection) {
             var studentKeyPaths = studentAllPaths.get(key);
             var teacherKeyPaths = teacherAllPaths.get(key);
 
             var intersection = new HashSet<>(studentKeyPaths);
             intersection.retainAll(teacherKeyPaths);
-            sumIntersection += intersection.size();
+            intersectionCount += intersection.size();
 
             var union = new HashSet<>(studentKeyPaths);
             union.addAll(teacherKeyPaths);
-            sumUnion += union.size();
+            unionCount += union.size();
         }
         studentAllPaths.keySet().removeAll(keyIntersection);
         teacherAllPaths.keySet().removeAll(keyIntersection);
-        sumUnion += studentAllPaths.values().stream().mapToInt(Set::size).sum();
-        sumUnion += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
+        unionCount += studentAllPaths.values().stream().mapToInt(Set::size).sum();
+        unionCount += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
 
-        var similarityDegree = sumIntersection / sumUnion;
+        var similarityDegree = intersectionCount / unionCount;
         return String.format(translations.get("maps-similarity-importance-indexes"), similarityDegree);
     }
 
@@ -114,15 +114,15 @@ public class ConceptMapScorer {
             return translations.get("maps-cycles-proposition-chains");
         }
 
-        double teacherMapScore = 0, studentMapScore = 0, breakScore = 0;
+        double teacherScore = 0, studentScore = 0, breakScore = 0;
         for (var tlp : teacherLongestPaths) {
             var tlpChainLength = tlp.size() - 1;
-            teacherMapScore += tlpChainLength;
+            teacherScore += tlpChainLength;
 
             double currentBreakScore = 0, approvedCurrentBreakScore = 0;
             for (var i = 0; i < tlpChainLength; i++) {
                 if (studentMap.containsRelationship(tlp.get(i), tlp.get(i + 1))) {
-                    studentMapScore++;
+                    studentScore++;
                     approvedCurrentBreakScore += currentBreakScore;
                     currentBreakScore = 0;
                 } else {
@@ -131,7 +131,7 @@ public class ConceptMapScorer {
             }
             breakScore += approvedCurrentBreakScore / tlpChainLength;
         }
-        var similarityDegree = (studentMapScore - breakScore) / teacherMapScore;
+        var similarityDegree = (studentScore - breakScore) / teacherScore;
         return String.format(translations.get("maps-similarity-proposition-chains"), similarityDegree);
     }
 
@@ -144,7 +144,7 @@ public class ConceptMapScorer {
         var studentOutgoingRelationships = studentMap.outgoingRelationships();
         var teacherOutgoingRelationships = teacherMap.outgoingRelationships();
 
-        var totalRelationships = Math.pow(studentOutgoingRelationships.keySet().size(), 2);
+        double totalRelationships = Math.pow(studentOutgoingRelationships.size(), 2);
         double correctRelationships = 0, incorrectRelationships = 0;
         for (var sor : studentOutgoingRelationships.entrySet()) {
             var sorValue = sor.getValue();
@@ -171,7 +171,6 @@ public class ConceptMapScorer {
                 weight1 * noRelationships -
                 weight2 * incorrectRelationships -
                 weight1 * missingRelationships) / totalRelationships;
-
         return String.format(translations.get("maps-similarity-error-analysis"), similarityDegree)
                 + String.format(translations.get("maps-similarity-error-analysis-weighted"), weightedSimilarityDegree);
     }
