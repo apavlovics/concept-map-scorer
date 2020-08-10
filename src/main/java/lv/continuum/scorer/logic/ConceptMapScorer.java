@@ -52,13 +52,14 @@ public class ConceptMapScorer {
 
             var intersection = new HashSet<>(studentKeyRelationships);
             intersection.retainAll(teacherKeyRelationships);
-            double intersectionCount = intersection.size();
+            var intersectionCount = intersection.size();
 
             var union = new HashSet<>(studentKeyRelationships);
             union.addAll(teacherKeyRelationships);
-            double unionCount = union.size();
+            var unionCount = union.size();
 
-            var closenessIndex = intersectionCount == 0 && unionCount == 0 ? 1D : intersectionCount / unionCount;
+            var closenessIndex = intersectionCount == 0 && unionCount == 0 ?
+                    1D : ((double) intersectionCount) / unionCount;
             closenessIndexes.add(closenessIndex);
         }
         studentAllRelationships.keySet().removeAll(keyIntersection);
@@ -83,7 +84,7 @@ public class ConceptMapScorer {
         var keyIntersection = new HashSet<>(studentAllPaths.keySet());
         keyIntersection.retainAll(teacherAllPaths.keySet());
 
-        double sumIntersection = 0, sumUnion = 0;
+        int sumIntersection = 0, sumUnion = 0;
         for (var key : keyIntersection) {
             var studentKeyPaths = studentAllPaths.get(key);
             var teacherKeyPaths = teacherAllPaths.get(key);
@@ -100,7 +101,7 @@ public class ConceptMapScorer {
         teacherAllPaths.keySet().removeAll(keyIntersection);
         for (var sap : studentAllPaths.entrySet()) sumUnion += sap.getValue().size();
         for (var tap : teacherAllPaths.entrySet()) sumUnion += tap.getValue().size();
-        var resultIndex = sumIntersection / sumUnion;
+        var resultIndex = ((double) sumIntersection) / sumUnion;
         return String.format(translations.get("maps-similarity-importance-indexes"), resultIndex);
     }
 
@@ -180,57 +181,19 @@ public class ConceptMapScorer {
     }
 
     private String countConceptMapElements(ConceptMap map, String title) {
-        String returnString = title;
-        long value;
-        String format;
-        value = map.conceptCount();
-        format = translations.get("concepts");
-        if (value == 0) format = translations.get("concepts-0");
-        if (value == 1) format = translations.get("concepts-1");
-        format += "\n";
-        returnString += String.format(format, value);
+        return title +
+                formatCount(map.conceptCount(), "concepts") + "\n" +
+                formatCount(map.relationshipCount(), "relationships") + "\n" +
+                formatCount(map.levelCount(), "levels") + "\n" +
+                formatCount(map.branchCount(), "branches") + "\n" +
+                formatCount(map.exampleCount(), "examples") + "\n" +
+                formatCount(map.cycleCount(), "cycles") + "\n" +
+                formatCount(map.subnetCount(), "subnets");
+    }
 
-        value = map.relationshipCount();
-        format = translations.get("relationships");
-        if (value == 0) format = translations.get("relationships-0");
-        if (value == 1) format = translations.get("relationships-1");
-        format += "\n";
-        returnString += String.format(format, value);
-
-        value = map.levelCount();
-        format = translations.get("levels");
-        if (value == 0) format = translations.get("levels-0");
-        if (value == 1) format = translations.get("levels-1");
-        format += "\n";
-        returnString += String.format(format, value);
-
-        value = map.branchCount();
-        format = translations.get("branches");
-        if (value == 0) format = translations.get("branches-0");
-        if (value == 1) format = translations.get("branches-1");
-        format += "\n";
-        returnString += String.format(format, value);
-
-        value = map.exampleCount();
-        format = translations.get("examples");
-        if (value == 0) format = translations.get("examples-0");
-        if (value == 1) format = translations.get("examples-1");
-        format += "\n";
-        returnString += String.format(format, value);
-
-        value = map.cycleCount();
-        format = translations.get("cycles");
-        if (value == 0) format = translations.get("cycles-0");
-        if (value == 1) format = translations.get("cycles-1");
-        format += "\n";
-        returnString += String.format(format, value);
-
-        value = map.subnetCount();
-        format = translations.get("subnets");
-        if (value == 0) format = translations.get("subnets-0");
-        if (value == 1) format = translations.get("subnets-1");
-        returnString += String.format(format, value);
-        return returnString;
+    private String formatCount(long count, String keyPrefix) {
+        var keySuffix = count == 0 ? "-0" : count == 1 ? "-1" : "";
+        return String.format(translations.get(keyPrefix + keySuffix), count);
     }
 
     private boolean similarConcepts() throws InvalidDataException {
