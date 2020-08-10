@@ -90,7 +90,7 @@ public class MainWindow extends JFrame {
         });
 
         scoreTextArea = new JTextArea();
-        scoreTextArea.setText(translations.get("default-text"));
+        scoreTextArea.setText(translations.get("score-text-default"));
         scoreTextArea.setEditable(false);
         scoreTextArea.setLineWrap(true);
         scoreTextArea.setWrapStyleWord(true);

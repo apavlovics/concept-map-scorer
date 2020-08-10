@@ -20,10 +20,10 @@ public class ConceptMap {
 
     public ConceptMap(Set<Concept> concepts, Set<Relationship> relationships, String fileName) throws InvalidDataException {
         if (concepts.isEmpty()) {
-            throw new InvalidDataException(String.format(translations.get("map-no-concepts"), fileName));
+            throw new InvalidDataException(String.format(translations.get("concept-map-no-concepts"), fileName));
         }
         if (relationships.isEmpty()) {
-            throw new InvalidDataException(String.format(translations.get("map-no-relationships"), fileName));
+            throw new InvalidDataException(String.format(translations.get("concept-map-no-relationships"), fileName));
         }
         this.concepts = concepts;
         this.relationships = relationships;
