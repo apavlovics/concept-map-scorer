@@ -63,13 +63,13 @@ public class ConceptMapScorer {
 
         var closenessIndexSum = closenessIndexes.stream().mapToDouble(Double::doubleValue).sum();
         var similarityDegree = closenessIndexSum / closenessIndexes.size();
-        return String.format(translations.get("maps-similarity-closeness-indexes"), similarityDegree);
+        return String.format(translations.get("similarity-closeness-indexes"), similarityDegree);
     }
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
         checkTeacherConceptMap();
         if (conceptMapsAreNotSimilar()) {
-            return translations.get("maps-different-concepts-importance-indexes");
+            return translations.get("different-concepts-importance-indexes");
         }
         var studentAllPaths = studentConceptMap.allPaths();
         var teacherAllPaths = teacherConceptMap.allPaths();
@@ -96,18 +96,18 @@ public class ConceptMapScorer {
         unionCount += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
 
         var similarityDegree = intersectionCount / unionCount;
-        return String.format(translations.get("maps-similarity-importance-indexes"), similarityDegree);
+        return String.format(translations.get("similarity-importance-indexes"), similarityDegree);
     }
 
     public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
         checkTeacherConceptMap();
         if (conceptMapsAreNotSimilar()) {
-            return translations.get("maps-different-concepts-proposition-chains");
+            return translations.get("different-concepts-proposition-chains");
         }
         var studentLongestPaths = studentConceptMap.longestPaths();
         var teacherLongestPaths = teacherConceptMap.longestPaths();
         if (studentLongestPaths.isEmpty() || teacherLongestPaths.isEmpty()) {
-            return translations.get("maps-cycles-proposition-chains");
+            return translations.get("cycles-proposition-chains");
         }
 
         double teacherScore = 0, studentScore = 0, breakScore = 0;
@@ -128,13 +128,13 @@ public class ConceptMapScorer {
             breakScore += approvedCurrentBreakScore / tlpChainLength;
         }
         var similarityDegree = (studentScore - breakScore) / teacherScore;
-        return String.format(translations.get("maps-similarity-proposition-chains"), similarityDegree);
+        return String.format(translations.get("similarity-proposition-chains"), similarityDegree);
     }
 
     public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
         checkTeacherConceptMap();
         if (conceptMapsAreNotSimilar()) {
-            return translations.get("maps-different-concepts-error-analysis");
+            return translations.get("different-concepts-error-analysis");
         }
 
         var studentOutgoingRelationships = studentConceptMap.outgoingRelationships();
@@ -167,8 +167,8 @@ public class ConceptMapScorer {
                 weight1 * noRelationships -
                 weight2 * incorrectRelationships -
                 weight1 * missingRelationships) / totalRelationships;
-        return String.format(translations.get("maps-similarity-error-analysis"), similarityDegree)
-                + String.format(translations.get("maps-similarity-error-analysis-weighted"), weightedSimilarityDegree);
+        return String.format(translations.get("similarity-error-analysis"), similarityDegree)
+                + String.format(translations.get("similarity-error-analysis-weighted"), weightedSimilarityDegree);
     }
 
     private String countConceptMapElements(ConceptMap conceptMap, String prefix) {
