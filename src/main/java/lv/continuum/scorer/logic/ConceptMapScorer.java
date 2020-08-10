@@ -25,10 +25,10 @@ public class ConceptMapScorer {
 
     public String countConceptMapsElements() {
         if (teacherConceptMap == null) {
-            return countConceptMapElements(studentConceptMap, translations.get("map-contains"));
+            return countConceptMapElements(studentConceptMap, translations.get("concept-map-contains"));
         } else {
-            return countConceptMapElements(studentConceptMap, translations.get("student-map-contains")) +
-                    "\n\n" + countConceptMapElements(teacherConceptMap, translations.get("teacher-map-contains"));
+            return countConceptMapElements(studentConceptMap, translations.get("student-concept-map-contains")) +
+                    "\n\n" + countConceptMapElements(teacherConceptMap, translations.get("teacher-concept-map-contains"));
         }
     }
 
@@ -196,7 +196,7 @@ public class ConceptMapScorer {
 
     private void checkTeacherConceptMap() throws InvalidDataException {
         if (teacherConceptMap == null) {
-            throw new InvalidDataException(translations.get("no-teacher-map"));
+            throw new InvalidDataException(translations.get("no-teacher-concept-map"));
         }
     }
 }

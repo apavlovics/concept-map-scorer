@@ -187,12 +187,12 @@ public class MainWindow extends JFrame {
 
             ConceptMapScorer scorer;
             if (!studentText.isBlank() && !teacherText.isBlank()) {
-                var studentMap = conceptMapParser.parse(studentText);
-                var teacherMap = conceptMapParser.parse(teacherText);
-                scorer = new ConceptMapScorer(studentMap, teacherMap);
+                var studentConceptMap = conceptMapParser.parse(studentText);
+                var teacherConceptMap = conceptMapParser.parse(teacherText);
+                scorer = new ConceptMapScorer(studentConceptMap, teacherConceptMap);
             } else if (!studentText.isBlank()) {
-                var studentMap = conceptMapParser.parse(studentText);
-                scorer = new ConceptMapScorer(studentMap);
+                var studentConceptMap = conceptMapParser.parse(studentText);
+                scorer = new ConceptMapScorer(studentConceptMap);
             } else {
                 throw new UnsupportedOperationException(translations.get("invalid-file"));
             }
