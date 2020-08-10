@@ -98,8 +98,9 @@ public class ConceptMapScorer {
         teacherAllPaths.keySet().removeAll(keyIntersection);
         sumUnion += studentAllPaths.values().stream().mapToInt(Set::size).sum();
         sumUnion += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
-        var resultIndex = sumIntersection / sumUnion;
-        return String.format(translations.get("maps-similarity-importance-indexes"), resultIndex);
+
+        var similarityDegree = sumIntersection / sumUnion;
+        return String.format(translations.get("maps-similarity-importance-indexes"), similarityDegree);
     }
 
     public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
@@ -130,8 +131,8 @@ public class ConceptMapScorer {
             }
             breakScore += approvedCurrentBreakScore / tlpChainLength;
         }
-        var resultIndex =  (studentMapScore - breakScore) / teacherMapScore;
-        return String.format(translations.get("maps-similarity-proposition-chains"), resultIndex);
+        var similarityDegree = (studentMapScore - breakScore) / teacherMapScore;
+        return String.format(translations.get("maps-similarity-proposition-chains"), similarityDegree);
     }
 
     public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
@@ -143,10 +144,8 @@ public class ConceptMapScorer {
         var studentOutgoingRelationships = studentMap.outgoingRelationships();
         var teacherOutgoingRelationships = teacherMap.outgoingRelationships();
 
-        double resultIndex, w1, w2, weightedResultIndex;
-        int totalRelationships = (int) Math.pow(studentOutgoingRelationships.keySet().size(), 2);
-        int correctRelationships = 0, incorrectRelationships = 0;
-
+        var totalRelationships = Math.pow(studentOutgoingRelationships.keySet().size(), 2);
+        double correctRelationships = 0, incorrectRelationships = 0;
         for (var sor : studentOutgoingRelationships.entrySet()) {
             var studentRelationships = sor.getValue();
             var teacherRelationships = teacherOutgoingRelationships.get(sor.getKey());
@@ -161,23 +160,22 @@ public class ConceptMapScorer {
                 if (!relationshipFound) incorrectRelationships++;
             }
         }
-
-        var missingRelationships = this.teacherMap.relationshipCount() - correctRelationships;
+        var missingRelationships = teacherMap.relationshipCount() - correctRelationships;
         var noRelationships = totalRelationships - correctRelationships - incorrectRelationships - missingRelationships;
 
-        resultIndex = (double) (correctRelationships
-                + noRelationships
-                - incorrectRelationships
-                - missingRelationships) / (double) totalRelationships;
-        w1 = (double) (correctRelationships + missingRelationships) / (double) (incorrectRelationships + noRelationships);
-        w2 = 1.0 / w1;
-        weightedResultIndex = (w2 * (double) correctRelationships
-                + w1 * (double) noRelationships
-                - w2 * (double) incorrectRelationships
-                - w1 * (double) missingRelationships) / (double) totalRelationships;
+        var similarityDegree = (correctRelationships +
+                noRelationships -
+                incorrectRelationships -
+                missingRelationships) / totalRelationships;
+        var weight1 = (correctRelationships + missingRelationships) / (incorrectRelationships + noRelationships);
+        var weight2 = 1D / weight1;
+        var weightedSimilarityDegree = (weight2 * correctRelationships +
+                weight1 * noRelationships -
+                weight2 * incorrectRelationships -
+                weight1 * missingRelationships) / totalRelationships;
 
-        return String.format(translations.get("maps-similarity-error-analysis"), resultIndex)
-                + String.format(translations.get("maps-similarity-error-analysis-weighted"), weightedResultIndex);
+        return String.format(translations.get("maps-similarity-error-analysis"), similarityDegree)
+                + String.format(translations.get("maps-similarity-error-analysis-weighted"), weightedSimilarityDegree);
     }
 
     private String countConceptMapElements(ConceptMap conceptMap, String prefix) {
