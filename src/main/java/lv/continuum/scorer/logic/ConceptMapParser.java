@@ -78,16 +78,16 @@ public class ConceptMapParser {
     private ConceptMap parseIkas(Document document, String fileName) throws InvalidDataException {
         System.out.println("Started parsing IKAS XML file");
 
-        var concepts = new HashSet<Concept>();
+        var concepts = new HashMap<String, Concept>();
         var elementNodes = document.getElementsByTagName("element");
         for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
                 var name = node.getAttributes().getNamedItem("value").getNodeValue();
-                if (hasDuplicateConcept(concepts, name)) {
+                if (hasDuplicateConcept(concepts.values(), name)) {
                     throw new InvalidDataException(String.format(MAP_DUPLICATE_CONCEPTS, fileName));
                 }
-                concepts.add(new Concept(name));
+                concepts.put(name, new Concept(name));
             }
         }
 
@@ -95,7 +95,7 @@ public class ConceptMapParser {
         for (var i = 0; i < elementNodes.getLength(); i++) {
             var node = elementNodes.item(i);
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("relation")) {
-                String from = null, to = null;
+                String fromConceptName = null, toConceptName = null;
                 var nodeValue = node.getAttributes().getNamedItem("value").getNodeValue();
                 var relationshipNodes = ((Element) node).getElementsByTagName("element");
                 for (var j = 0; j < relationshipNodes.getLength(); j++) {
@@ -103,25 +103,22 @@ public class ConceptMapParser {
                     var relationshipNodeName = relationshipNode.getAttributes().getNamedItem("name").getNodeValue();
                     var relationshipNodeValue = relationshipNode.getAttributes().getNamedItem("value").getNodeValue();
                     if (relationshipNodeName.equals("source")) {
-                        from = relationshipNodeValue;
+                        fromConceptName = relationshipNodeValue;
                     } else if (relationshipNodeName.equals("target")) {
-                        to = relationshipNodeValue;
+                        toConceptName = relationshipNodeValue;
                     }
                 }
-                if (from == null || to == null) {
+                if (fromConceptName == null || toConceptName == null) {
                     throw new InvalidDataException(String.format(MAP_INVALID_RELATIONSHIP, fileName));
                 }
 
-                Concept fromConcept = null, toConcept = null;
-                for (var c : concepts) {
-                    if (c.name.equals(from)) fromConcept = c;
-                    if (c.name.equals(to)) toConcept = c;
-                }
+                var fromConcept = concepts.get(fromConceptName);
+                var toConcept = concepts.get(toConceptName);
                 relationships.add(new Relationship(fromConcept, toConcept, nodeValue));
             }
         }
 
-        var conceptMap = new ConceptMap(concepts, relationships, fileName);
+        var conceptMap = new ConceptMap(new HashSet<>(concepts.values()), relationships, fileName);
         System.out.println("Finished parsing IKAS XML file");
         System.out.println(conceptMap);
         return conceptMap;
