@@ -50,14 +50,13 @@ public class ConceptMapScorer {
 
             var intersection = new HashSet<>(studentKeyRelationships);
             intersection.retainAll(teacherKeyRelationships);
-            var intersectionCount = intersection.size();
+            double intersectionCount = intersection.size();
 
             var union = new HashSet<>(studentKeyRelationships);
             union.addAll(teacherKeyRelationships);
-            var unionCount = union.size();
+            double unionCount = union.size();
 
-            var closenessIndex = intersectionCount == 0 && unionCount == 0 ?
-                    1D : ((double) intersectionCount) / unionCount;
+            double closenessIndex = intersectionCount == 0 && unionCount == 0 ? 1 : intersectionCount / unionCount;
             closenessIndexes.add(closenessIndex);
         }
         studentAllRelationships.keySet().removeAll(keyIntersection);
@@ -82,7 +81,7 @@ public class ConceptMapScorer {
         var keyIntersection = new HashSet<>(studentAllPaths.keySet());
         keyIntersection.retainAll(teacherAllPaths.keySet());
 
-        int sumIntersection = 0, sumUnion = 0;
+        double sumIntersection = 0, sumUnion = 0;
         for (var key : keyIntersection) {
             var studentKeyPaths = studentAllPaths.get(key);
             var teacherKeyPaths = teacherAllPaths.get(key);
@@ -99,7 +98,7 @@ public class ConceptMapScorer {
         teacherAllPaths.keySet().removeAll(keyIntersection);
         sumUnion += studentAllPaths.values().stream().mapToInt(Set::size).sum();
         sumUnion += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
-        var resultIndex = ((double) sumIntersection) / sumUnion;
+        var resultIndex = sumIntersection / sumUnion;
         return String.format(translations.get("maps-similarity-importance-indexes"), resultIndex);
     }
 
@@ -114,21 +113,24 @@ public class ConceptMapScorer {
             return translations.get("maps-cycles-proposition-chains");
         }
 
-        int teacherMapScore = 0, studentMapScore = 0;
-        double breakScore = 0.0;
+        double teacherMapScore = 0, studentMapScore = 0, breakScore = 0;
         for (var tlp : teacherLongestPaths) {
-            teacherMapScore += tlp.size() - 1;
-            var currentBreakScore = 0;
-            var approvedCurrentBreakScore = 0;
-            for (int i = 0; i < tlp.size() - 1; i++)
-                if (this.studentMap.containsRelationship(tlp.get(i), tlp.get(i + 1))) {
+            var tlpChainLength = tlp.size() - 1;
+            teacherMapScore += tlpChainLength;
+
+            double currentBreakScore = 0, approvedCurrentBreakScore = 0;
+            for (var i = 0; i < tlpChainLength; i++) {
+                if (studentMap.containsRelationship(tlp.get(i), tlp.get(i + 1))) {
                     studentMapScore++;
                     approvedCurrentBreakScore += currentBreakScore;
                     currentBreakScore = 0;
-                } else currentBreakScore++;
-            breakScore += (double) approvedCurrentBreakScore / (double) (tlp.size() - 1);
+                } else {
+                    currentBreakScore++;
+                }
+            }
+            breakScore += approvedCurrentBreakScore / tlpChainLength;
         }
-        var resultIndex = (double) (studentMapScore - breakScore) / (double) teacherMapScore;
+        var resultIndex =  (studentMapScore - breakScore) / teacherMapScore;
         return String.format(translations.get("maps-similarity-proposition-chains"), resultIndex);
     }
 

@@ -215,11 +215,9 @@ public class MainWindow extends JFrame {
                 sb.append(scorer.compareConceptMapsUsingPropositionChains()).append("\n\n");
             }
             if (errorAnalysisCheckBox.isSelected()) {
-                sb.append(scorer.compareConceptMapsUsingErrorAnalysis()).append("\n\n");
+                sb.append(scorer.compareConceptMapsUsingErrorAnalysis());
             }
-            var score = sb.substring(0, sb.length() - 2);
-
-            scoreTextArea.setText(score);
+            scoreTextArea.setText(sb.toString());
             scoreTextArea.setEnabled(true);
             System.out.println("Scored concept map");
         } catch (InvalidDataException | UnsupportedOperationException e) {
