@@ -59,7 +59,6 @@ public class MainWindow extends JFrame {
         scoreButton = new JButton();
         scoreButton.setText(translations.get("score"));
         scoreButton.setEnabled(false);
-        scoreButton.setSize(new Dimension(83, 23));
         scoreButton.addActionListener(e -> scoreButtonActionPerformed());
 
         elementsCheckBox = new JCheckBox();
