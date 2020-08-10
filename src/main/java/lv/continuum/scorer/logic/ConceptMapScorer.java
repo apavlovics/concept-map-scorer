@@ -3,10 +3,11 @@ package lv.continuum.scorer.logic;
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.ConceptMap;
-import lv.continuum.scorer.domain.Relationship;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 public class ConceptMapScorer {
@@ -16,15 +17,12 @@ public class ConceptMapScorer {
     private final ConceptMap studentMap;
     private final ConceptMap teacherMap;
 
-    public ConceptMapScorer(ConceptMap studentMap) throws InvalidDataException {
+    public ConceptMapScorer(ConceptMap studentMap) {
         this(studentMap, null);
     }
 
-    public ConceptMapScorer(ConceptMap studentMap, ConceptMap teacherMap) throws InvalidDataException {
-        if (studentMap == null) {
-            throw new InvalidDataException(translations.get("no-student-map"));
-        }
-        this.studentMap = studentMap;
+    public ConceptMapScorer(ConceptMap studentMap, ConceptMap teacherMap) {
+        this.studentMap = Objects.requireNonNull(studentMap);
         this.teacherMap = teacherMap;
     }
 
@@ -74,7 +72,7 @@ public class ConceptMapScorer {
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
         checkTeacherConceptMap();
-        if (!similarConcepts()) {
+        if (!areConceptMapsSimilar()) {
             return translations.get("maps-different-concepts-importance-indexes");
         }
 
@@ -99,30 +97,29 @@ public class ConceptMapScorer {
         }
         studentAllPaths.keySet().removeAll(keyIntersection);
         teacherAllPaths.keySet().removeAll(keyIntersection);
-        for (var sap : studentAllPaths.entrySet()) sumUnion += sap.getValue().size();
-        for (var tap : teacherAllPaths.entrySet()) sumUnion += tap.getValue().size();
+        sumUnion += studentAllPaths.values().stream().mapToInt(Set::size).sum();
+        sumUnion += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
         var resultIndex = ((double) sumIntersection) / sumUnion;
         return String.format(translations.get("maps-similarity-importance-indexes"), resultIndex);
     }
 
     public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
-        this.checkTeacherConceptMap();
-        if (!this.similarConcepts())
+        checkTeacherConceptMap();
+        if (!areConceptMapsSimilar()) {
             return translations.get("maps-different-concepts-proposition-chains");
-
-        double resultIndex = 0.0;
-        var studentLongestPaths = this.studentMap.longestPaths();
-        var teacherLongestPaths = this.teacherMap.longestPaths();
-        if (studentLongestPaths.isEmpty() || teacherLongestPaths.isEmpty())
+        }
+        var studentLongestPaths = studentMap.longestPaths();
+        var teacherLongestPaths = teacherMap.longestPaths();
+        if (studentLongestPaths.isEmpty() || teacherLongestPaths.isEmpty()) {
             return translations.get("maps-cycles-proposition-chains");
+        }
 
         int teacherMapScore = 0, studentMapScore = 0;
         double breakScore = 0.0;
-        int currentBreakScore, approvedCurrentBreakScore;
         for (var tlp : teacherLongestPaths) {
             teacherMapScore += tlp.size() - 1;
-            currentBreakScore = 0;
-            approvedCurrentBreakScore = 0;
+            var currentBreakScore = 0;
+            var approvedCurrentBreakScore = 0;
             for (int i = 0; i < tlp.size() - 1; i++)
                 if (this.studentMap.containsRelationship(tlp.get(i), tlp.get(i + 1))) {
                     studentMapScore++;
@@ -131,13 +128,13 @@ public class ConceptMapScorer {
                 } else currentBreakScore++;
             breakScore += (double) approvedCurrentBreakScore / (double) (tlp.size() - 1);
         }
-        resultIndex = (double) (studentMapScore - breakScore) / (double) teacherMapScore;
+        var resultIndex = (double) (studentMapScore - breakScore) / (double) teacherMapScore;
         return String.format(translations.get("maps-similarity-proposition-chains"), resultIndex);
     }
 
     public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
         this.checkTeacherConceptMap();
-        if (!this.similarConcepts())
+        if (!this.areConceptMapsSimilar())
             return translations.get("maps-different-concepts-error-analysis");
 
         var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
@@ -180,15 +177,15 @@ public class ConceptMapScorer {
                 + String.format(translations.get("maps-similarity-error-analysis-weighted"), weightedResultIndex);
     }
 
-    private String countConceptMapElements(ConceptMap map, String title) {
-        return title +
-                formatCount(map.conceptCount(), "concepts") + "\n" +
-                formatCount(map.relationshipCount(), "relationships") + "\n" +
-                formatCount(map.levelCount(), "levels") + "\n" +
-                formatCount(map.branchCount(), "branches") + "\n" +
-                formatCount(map.exampleCount(), "examples") + "\n" +
-                formatCount(map.cycleCount(), "cycles") + "\n" +
-                formatCount(map.subnetCount(), "subnets");
+    private String countConceptMapElements(ConceptMap conceptMap, String prefix) {
+        return prefix +
+                formatCount(conceptMap.conceptCount(), "concepts") + "\n" +
+                formatCount(conceptMap.relationshipCount(), "relationships") + "\n" +
+                formatCount(conceptMap.levelCount(), "levels") + "\n" +
+                formatCount(conceptMap.branchCount(), "branches") + "\n" +
+                formatCount(conceptMap.exampleCount(), "examples") + "\n" +
+                formatCount(conceptMap.cycleCount(), "cycles") + "\n" +
+                formatCount(conceptMap.subnetCount(), "subnets");
     }
 
     private String formatCount(long count, String keyPrefix) {
@@ -196,7 +193,7 @@ public class ConceptMapScorer {
         return String.format(translations.get(keyPrefix + keySuffix), count);
     }
 
-    private boolean similarConcepts() throws InvalidDataException {
+    private boolean areConceptMapsSimilar() throws InvalidDataException {
         checkTeacherConceptMap();
         return studentMap.isSimilar(teacherMap);
     }

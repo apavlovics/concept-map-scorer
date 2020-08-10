@@ -222,14 +222,14 @@ public class MainWindow extends JFrame {
             scoreTextArea.setText(score);
             scoreTextArea.setEnabled(true);
             System.out.println("Scored concept map");
-        } catch (UnsupportedOperationException e) {
+        } catch (InvalidDataException | UnsupportedOperationException e) {
             JOptionPane.showMessageDialog(
                     this,
                     e.getMessage(),
                     translations.get("error"),
                     JOptionPane.ERROR_MESSAGE
             );
-        } catch (IOException | ParserConfigurationException | SAXException | InvalidDataException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(
                     this,
                     translations.get("invalid-file"),

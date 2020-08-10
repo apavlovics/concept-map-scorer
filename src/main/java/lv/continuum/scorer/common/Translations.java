@@ -19,7 +19,7 @@ public class Translations {
             try (var fis = new FileInputStream(file)) {
                 properties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
             }
-        } catch (IOException | NullPointerException e) {
+        } catch (Exception e) {
             throw new TranslationException("Translation properties cannot be initialised", e);
         }
     }

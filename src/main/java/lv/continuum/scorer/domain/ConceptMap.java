@@ -130,7 +130,7 @@ public class ConceptMap {
         return subnetCount;
     }
 
-    public Map<Relationship, Set<Relationship>> allPaths() throws InvalidDataException {
+    public Map<Relationship, Set<Relationship>> allPaths() {
         var allPaths = new HashMap<Relationship, Set<Relationship>>();
         var outgoingRelationships = outgoingRelationships();
         var incomingRelationships = incomingRelationships();
@@ -216,8 +216,7 @@ public class ConceptMap {
     }
 
     public boolean containsRelationship(Concept fromConcept, Concept toConcept) {
-        return relationships.stream()
-                .anyMatch(r -> r.fromConcept.equals(fromConcept) && r.toConcept.equals(toConcept));
+        return relationships.contains(new Relationship(fromConcept, toConcept));
     }
 
     /**
