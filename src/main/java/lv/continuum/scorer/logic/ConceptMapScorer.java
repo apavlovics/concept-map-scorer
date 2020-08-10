@@ -13,9 +13,6 @@ public class ConceptMapScorer {
 
     private static final Translations translations = Translations.getInstance();
 
-    private static final String NO_STUDENT_MAP = translations.get("no-student-map");
-    private static final String NO_TEACHER_MAP = Translations.getInstance().get("no-teacher-map");
-
     private final ConceptMap studentMap;
     private final ConceptMap teacherMap;
 
@@ -25,16 +22,16 @@ public class ConceptMapScorer {
 
     public ConceptMapScorer(ConceptMap studentMap, ConceptMap teacherMap) throws InvalidDataException {
         if (studentMap == null) {
-            throw new InvalidDataException(NO_STUDENT_MAP);
+            throw new InvalidDataException(translations.get("no-student-map"));
         }
         this.studentMap = studentMap;
         this.teacherMap = teacherMap;
     }
 
     public String countConceptMapsElements() {
-        if (this.teacherMap == null)
-            return this.countConceptMapElements(this.studentMap, null);
-        else
+        if (teacherMap == null) {
+            return this.countConceptMapElements(this.studentMap, translations.get("map-contains"));
+        } else {
             return this.countConceptMapElements(
                     this.studentMap,
                     Translations.getInstance().get("student-map-contains")
@@ -44,6 +41,7 @@ public class ConceptMapScorer {
                     this.teacherMap,
                     Translations.getInstance().get("teacher-map-contains")
             );
+        }
     }
 
     public String compareConceptMapsUsingClosenessIndexes() {
@@ -260,8 +258,9 @@ public class ConceptMapScorer {
     }
 
     private void checkConceptMaps() {
-        if (this.teacherMap == null) throw new UnsupportedOperationException(NO_TEACHER_MAP);
-        if (this.studentMap == null) throw new UnsupportedOperationException(NO_STUDENT_MAP);
+        if (this.teacherMap == null) {
+            throw new UnsupportedOperationException(translations.get("no-teacher-map"));
+        }
     }
 
     @Override

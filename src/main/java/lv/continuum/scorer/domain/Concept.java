@@ -10,14 +10,12 @@ public class Concept {
 
     private static final Translations translations = Translations.getInstance();
 
-    private static final String CONCEPT_NO_NAME = translations.get("concept-no-name");
-
     public final String id;
     public final String name;
 
     public Concept(String name) throws InvalidDataException {
         if (StringUtils.isBlank(name)) {
-            throw new InvalidDataException(CONCEPT_NO_NAME);
+            throw new InvalidDataException(translations.get("concept-no-name"));
         }
         this.id = deriveId(name);
         this.name = name;

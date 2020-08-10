@@ -10,8 +10,6 @@ public class Relationship {
 
     private static final Translations translations = Translations.getInstance();
 
-    private static final String RELATIONSHIP_MISSING_CONCEPTS = translations.get("relationship-missing-concepts");
-
     public final Concept fromConcept;
     public final Concept toConcept;
     public final String name;
@@ -22,7 +20,7 @@ public class Relationship {
 
     public Relationship(Concept fromConcept, Concept toConcept, String name) throws InvalidDataException {
         if (fromConcept == null || toConcept == null) {
-            throw new InvalidDataException(RELATIONSHIP_MISSING_CONCEPTS);
+            throw new InvalidDataException(translations.get("relationship-missing-concepts"));
         }
         this.fromConcept = fromConcept;
         this.toConcept = toConcept;

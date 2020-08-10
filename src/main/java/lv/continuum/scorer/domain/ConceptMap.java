@@ -13,8 +13,6 @@ public class ConceptMap {
 
     private static final Translations translations = Translations.getInstance();
 
-    private static final String MAP_NO_CONCEPTS = translations.get("map-no-concepts");
-    private static final String MAP_NO_RELATIONSHIPS = translations.get("map-no-relationships");
     private static final Set<Concept> EMPTY = Set.of();
 
     private final Set<Concept> concepts;
@@ -22,10 +20,10 @@ public class ConceptMap {
 
     public ConceptMap(Set<Concept> concepts, Set<Relationship> relationships, String fileName) throws InvalidDataException {
         if (concepts.isEmpty()) {
-            throw new InvalidDataException(String.format(MAP_NO_CONCEPTS, fileName));
+            throw new InvalidDataException(String.format(translations.get("map-no-concepts"), fileName));
         }
         if (relationships.isEmpty()) {
-            throw new InvalidDataException(String.format(MAP_NO_RELATIONSHIPS, fileName));
+            throw new InvalidDataException(String.format(translations.get("map-no-relationships"), fileName));
         }
         this.concepts = concepts;
         this.relationships = relationships;
