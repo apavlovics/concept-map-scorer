@@ -36,7 +36,6 @@ public class Scorer extends JFrame {
     public Scorer() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle(translations.get("title"));
-        setBounds(new Rectangle(100, 100, 0, 0));
         setResizable(false);
 
         var keyAdapter = new KeyAdapter() {
@@ -181,6 +180,8 @@ public class Scorer extends JFrame {
                 .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
         );
         pack();
+        setLocationRelativeTo(null); // Center window on screen
+        setVisible(true);
     }
 
     private void scoreButtonActionPerformed() {
@@ -286,7 +287,7 @@ public class Scorer extends JFrame {
         EventQueue.invokeLater(() -> {
             try {
                 Translations.getInstance();
-                new Scorer().setVisible(true);
+                new Scorer();
                 System.out.println("Created main application window");
             } catch (TranslationException e) {
                 JOptionPane.showMessageDialog(
