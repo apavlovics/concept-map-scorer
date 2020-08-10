@@ -30,46 +30,34 @@ public class ConceptMapScorer {
 
     public String countConceptMapsElements() {
         if (teacherMap == null) {
-            return this.countConceptMapElements(this.studentMap, translations.get("map-contains"));
+            return countConceptMapElements(studentMap, translations.get("map-contains"));
         } else {
-            return this.countConceptMapElements(
-                    this.studentMap,
-                    Translations.getInstance().get("student-map-contains")
-            )
-                    + "\n\n"
-                    + this.countConceptMapElements(
-                    this.teacherMap,
-                    Translations.getInstance().get("teacher-map-contains")
-            );
+            return countConceptMapElements(studentMap, translations.get("student-map-contains")) +
+                    "\n\n" + countConceptMapElements(teacherMap, translations.get("teacher-map-contains"));
         }
     }
 
-    public String compareConceptMapsUsingClosenessIndexes() {
-        checkConceptMaps();
+    public String compareConceptMapsUsingClosenessIndexes() throws InvalidDataException {
+        checkTeacherConceptMap();
         var studentAllRelationships = studentMap.allRelationships();
         var teacherAllRelationships = teacherMap.allRelationships();
 
-        double resultIndex = 0.0, closenessIndex;
-        int sizeIntersection, sizeUnion;
-        List<Double> closenessIndexes = new ArrayList<Double>();
+        var closenessIndexes = new ArrayList<Double>();
         var similarConcepts = new ArrayList<Concept>();
-        var temp = new ArrayList<Concept>();
         for (var sar : studentAllRelationships.entrySet()) {
             for (var tar : teacherAllRelationships.entrySet()) {
                 if (sar.getKey().equals(tar.getKey())) {
                     similarConcepts.add(sar.getKey());
-                    temp.clear();
-                    temp.addAll(sar.getValue());
+                    var temp = new ArrayList<>(sar.getValue());
 
                     temp.retainAll(tar.getValue());
-                    sizeIntersection = temp.size();
+                    double sizeIntersection = temp.size();
 
                     tar.getValue().removeAll(sar.getValue());
                     sar.getValue().addAll(tar.getValue());
-                    sizeUnion = sar.getValue().size();
+                    double sizeUnion = sar.getValue().size();
 
-                    if (sizeIntersection == 0 && sizeUnion == 0) closenessIndex = 1;
-                    else closenessIndex = (double) sizeIntersection / (double) sizeUnion;
+                    var closenessIndex = sizeIntersection == 0 && sizeUnion == 0 ? 1D : sizeIntersection / sizeUnion;
                     closenessIndexes.add(closenessIndex);
                 }
             }
@@ -80,13 +68,15 @@ public class ConceptMapScorer {
         }
         for (var sar : studentAllRelationships.entrySet()) closenessIndexes.add(0.0);
         for (var par : teacherAllRelationships.entrySet()) closenessIndexes.add(0.0);
+
+        double resultIndex = 0.0;
         for (Double ci : closenessIndexes) resultIndex += ci;
         resultIndex = resultIndex / closenessIndexes.size();
         return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), resultIndex);
     }
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
-        this.checkConceptMaps();
+        this.checkTeacherConceptMap();
         if (!this.similarConcepts())
             return Translations.getInstance().get("maps-different-concepts-importance-indexes");
 
@@ -123,8 +113,8 @@ public class ConceptMapScorer {
         return String.format(Translations.getInstance().get("maps-similarity-importance-indexes"), resultIndex);
     }
 
-    public String compareConceptMapsUsingPropositionChains() {
-        this.checkConceptMaps();
+    public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
+        this.checkTeacherConceptMap();
         if (!this.similarConcepts())
             return Translations.getInstance().get("maps-different-concepts-proposition-chains");
 
@@ -153,8 +143,8 @@ public class ConceptMapScorer {
         return String.format(Translations.getInstance().get("maps-similarity-proposition-chains"), resultIndex);
     }
 
-    public String compareConceptMapsUsingErrorAnalysis() {
-        this.checkConceptMaps();
+    public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
+        this.checkTeacherConceptMap();
         if (!this.similarConcepts())
             return Translations.getInstance().get("maps-different-concepts-error-analysis");
 
@@ -252,14 +242,14 @@ public class ConceptMapScorer {
         return returnString;
     }
 
-    private boolean similarConcepts() {
-        checkConceptMaps();
+    private boolean similarConcepts() throws InvalidDataException {
+        checkTeacherConceptMap();
         return studentMap.isSimilar(teacherMap);
     }
 
-    private void checkConceptMaps() {
-        if (this.teacherMap == null) {
-            throw new UnsupportedOperationException(translations.get("no-teacher-map"));
+    private void checkTeacherConceptMap() throws InvalidDataException {
+        if (teacherMap == null) {
+            throw new InvalidDataException(translations.get("no-teacher-map"));
         }
     }
 
