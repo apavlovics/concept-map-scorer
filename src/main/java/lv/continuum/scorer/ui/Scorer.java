@@ -12,7 +12,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class MainWindow extends JFrame {
+/**
+ * The main class is named {@code Scorer} because Swing uses it as the application name.
+ */
+public class Scorer extends JFrame {
 
     private final JTextField studentTextField;
     private final JTextField teacherTextField;
@@ -30,7 +33,7 @@ public class MainWindow extends JFrame {
     private final Translations translations = Translations.getInstance();
     private final ConceptMapParser conceptMapParser = new ConceptMapParser();
 
-    public MainWindow() {
+    public Scorer() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle(translations.get("title"));
         setBounds(new Rectangle(100, 100, 0, 0));
@@ -283,7 +286,7 @@ public class MainWindow extends JFrame {
         EventQueue.invokeLater(() -> {
             try {
                 Translations.getInstance();
-                new MainWindow().setVisible(true);
+                new Scorer().setVisible(true);
                 System.out.println("Created main application window");
             } catch (TranslationException e) {
                 JOptionPane.showMessageDialog(
