@@ -108,10 +108,10 @@ public class MainWindow extends JFrame {
         teacherButton.addActionListener(e -> teacherButtonActionPerformed());
 
         var studentLabel = new JLabel();
-        studentLabel.setText(translations.get("select-student-map"));
+        studentLabel.setText(translations.get("select-student-concept-map"));
 
         var teacherLabel = new JLabel();
-        teacherLabel.setText(translations.get("select-teacher-map"));
+        teacherLabel.setText(translations.get("select-teacher-concept-map"));
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

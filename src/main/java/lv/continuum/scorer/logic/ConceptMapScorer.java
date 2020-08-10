@@ -167,8 +167,8 @@ public class ConceptMapScorer {
                 weight1 * noRelationships -
                 weight2 * incorrectRelationships -
                 weight1 * missingRelationships) / totalRelationships;
-        return String.format(translations.get("similarity-error-analysis"), similarityDegree)
-                + String.format(translations.get("similarity-error-analysis-weighted"), weightedSimilarityDegree);
+        return String.format(translations.get("similarity-error-analysis"), similarityDegree) + "\n" +
+                String.format(translations.get("similarity-error-analysis-weighted"), weightedSimilarityDegree);
     }
 
     private String countConceptMapElements(ConceptMap conceptMap, String prefix) {
@@ -181,7 +181,7 @@ public class ConceptMapScorer {
                 formatCount(conceptMap.cycleCount(), "cycles"),
                 formatCount(conceptMap.subnetCount(), "subnets")
         );
-        return prefix + String.join("\n", formattedCounts);
+        return prefix + "\n" + String.join("\n", formattedCounts);
     }
 
     private String formatCount(long count, String keyPrefix) {
