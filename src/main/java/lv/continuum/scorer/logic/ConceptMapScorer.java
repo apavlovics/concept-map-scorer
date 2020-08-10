@@ -7,7 +7,8 @@ import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.domain.Relationship;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.stream.IntStream;
 
 public class ConceptMapScorer {
 
@@ -43,36 +44,33 @@ public class ConceptMapScorer {
         var teacherAllRelationships = teacherMap.allRelationships();
 
         var closenessIndexes = new ArrayList<Double>();
-        var similarConcepts = new ArrayList<Concept>();
+        var equalConcepts = new HashSet<Concept>();
         for (var sar : studentAllRelationships.entrySet()) {
             for (var tar : teacherAllRelationships.entrySet()) {
                 if (sar.getKey().equals(tar.getKey())) {
-                    similarConcepts.add(sar.getKey());
-                    var temp = new ArrayList<>(sar.getValue());
+                    equalConcepts.add(sar.getKey());
 
-                    temp.retainAll(tar.getValue());
-                    double sizeIntersection = temp.size();
+                    var intersection = new HashSet<>(sar.getValue());
+                    intersection.retainAll(tar.getValue());
+                    double intersectionCount = intersection.size();
 
-                    tar.getValue().removeAll(sar.getValue());
-                    sar.getValue().addAll(tar.getValue());
-                    double sizeUnion = sar.getValue().size();
+                    var union = new HashSet<>(sar.getValue());
+                    union.addAll(tar.getValue());
+                    double unionCount = union.size();
 
-                    var closenessIndex = sizeIntersection == 0 && sizeUnion == 0 ? 1D : sizeIntersection / sizeUnion;
+                    var closenessIndex = intersectionCount == 0 && unionCount == 0 ? 1D : intersectionCount / unionCount;
                     closenessIndexes.add(closenessIndex);
                 }
             }
         }
-        for (var sc : similarConcepts) {
-            studentAllRelationships.remove(sc);
-            teacherAllRelationships.remove(sc);
-        }
-        for (var sar : studentAllRelationships.entrySet()) closenessIndexes.add(0.0);
-        for (var par : teacherAllRelationships.entrySet()) closenessIndexes.add(0.0);
+        studentAllRelationships.keySet().removeAll(equalConcepts);
+        teacherAllRelationships.keySet().removeAll(equalConcepts);
+        var differentConceptCount = studentAllRelationships.size() + teacherAllRelationships.size();
+        IntStream.range(0, differentConceptCount).forEach(i -> closenessIndexes.add(0.0));
 
-        double resultIndex = 0.0;
-        for (Double ci : closenessIndexes) resultIndex += ci;
-        resultIndex = resultIndex / closenessIndexes.size();
-        return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), resultIndex);
+        var closenessIndexSum = closenessIndexes.stream().mapToDouble(Double::doubleValue).sum();
+        var similarity = closenessIndexSum / closenessIndexes.size();
+        return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), similarity);
     }
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
