@@ -1,7 +1,6 @@
 package lv.continuum.scorer.common;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
