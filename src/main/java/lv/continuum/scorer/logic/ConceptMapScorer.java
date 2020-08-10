@@ -135,12 +135,13 @@ public class ConceptMapScorer {
     }
 
     public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
-        this.checkTeacherConceptMap();
-        if (!this.areConceptMapsSimilar())
+        checkTeacherConceptMap();
+        if (!areConceptMapsSimilar()) {
             return translations.get("maps-different-concepts-error-analysis");
+        }
 
-        var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
-        var teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
+        var studentOutgoingRelationships = studentMap.outgoingRelationships();
+        var teacherOutgoingRelationships = teacherMap.outgoingRelationships();
 
         double resultIndex, w1, w2, weightedResultIndex;
         int totalRelationships = (int) Math.pow(studentOutgoingRelationships.keySet().size(), 2);
