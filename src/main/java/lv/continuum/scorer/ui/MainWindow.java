@@ -1,18 +1,15 @@
 package lv.continuum.scorer.ui;
 
 import lv.continuum.scorer.common.InvalidDataException;
-import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.common.TranslationException;
+import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.logic.ConceptMapParser;
 import lv.continuum.scorer.logic.ConceptMapScorer;
-import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.util.Set;
 
 public class MainWindow extends JFrame {
