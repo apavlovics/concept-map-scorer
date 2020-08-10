@@ -147,18 +147,16 @@ public class ConceptMapScorer {
         var totalRelationships = Math.pow(studentOutgoingRelationships.keySet().size(), 2);
         double correctRelationships = 0, incorrectRelationships = 0;
         for (var sor : studentOutgoingRelationships.entrySet()) {
-            var studentRelationships = sor.getValue();
-            var teacherRelationships = teacherOutgoingRelationships.get(sor.getKey());
+            var sorValue = sor.getValue();
+            var torValue = teacherOutgoingRelationships.get(sor.getKey());
 
-            for (var sr : studentRelationships) {
-                var relationshipFound = false;
-                for (var tr : teacherRelationships)
-                    if (sr.equals(tr)) {
-                        correctRelationships++;
-                        relationshipFound = true;
-                    }
-                if (!relationshipFound) incorrectRelationships++;
-            }
+            var intersection = new HashSet<>(sorValue);
+            intersection.retainAll(torValue);
+            correctRelationships += intersection.size();
+
+            var difference = new HashSet<>(sorValue);
+            difference.removeAll(torValue);
+            incorrectRelationships += difference.size();
         }
         var missingRelationships = teacherMap.relationshipCount() - correctRelationships;
         var noRelationships = totalRelationships - correctRelationships - incorrectRelationships - missingRelationships;
