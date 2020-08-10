@@ -2,7 +2,6 @@ package lv.continuum.scorer.logic;
 
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
-import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.domain.Relationship;
 
@@ -69,57 +68,52 @@ public class ConceptMapScorer {
 
         var closenessIndexSum = closenessIndexes.stream().mapToDouble(Double::doubleValue).sum();
         var similarityDegree = closenessIndexSum / closenessIndexes.size();
-        return String.format(Translations.getInstance().get("maps-similarity-closeness-indexes"), similarityDegree);
+        return String.format(translations.get("maps-similarity-closeness-indexes"), similarityDegree);
     }
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
-        this.checkTeacherConceptMap();
-        if (!this.similarConcepts())
-            return Translations.getInstance().get("maps-different-concepts-importance-indexes");
-
-        double resultIndex = 0.0;
-        int sumIntersection = 0, sumUnion = 0;
-        var studentAllPaths = this.studentMap.allPaths();
-        var teacherAllPaths = this.teacherMap.allPaths();
-        var similarRelationships = new ArrayList<Relationship>();
-        var temp = new ArrayList<Relationship>();
-
-        for (var sap : studentAllPaths.entrySet()) {
-            for (var tap : teacherAllPaths.entrySet()) {
-                if (sap.getKey().equals(tap.getKey())) {
-                    similarRelationships.add(sap.getKey());
-                    temp.clear();
-                    temp.addAll(sap.getValue());
-
-                    temp.retainAll(tap.getValue());
-                    sumIntersection += temp.size();
-
-                    tap.getValue().removeAll(sap.getValue());
-                    sap.getValue().addAll(tap.getValue());
-                    sumUnion += sap.getValue().size();
-                }
-            }
+        checkTeacherConceptMap();
+        if (!similarConcepts()) {
+            return translations.get("maps-different-concepts-importance-indexes");
         }
-        for (var sr : similarRelationships) {
-            studentAllPaths.remove(sr);
-            teacherAllPaths.remove(sr);
+
+        var studentAllPaths = studentMap.allPaths();
+        var teacherAllPaths = teacherMap.allPaths();
+
+        var keyIntersection = new HashSet<>(studentAllPaths.keySet());
+        keyIntersection.retainAll(teacherAllPaths.keySet());
+
+        double sumIntersection = 0, sumUnion = 0;
+        for (var key : keyIntersection) {
+            var studentKeyPaths = studentAllPaths.get(key);
+            var teacherKeyPaths = teacherAllPaths.get(key);
+
+            var intersection = new HashSet<>(studentKeyPaths);
+            intersection.retainAll(teacherKeyPaths);
+            sumIntersection += intersection.size();
+
+            var union = new HashSet<>(studentKeyPaths);
+            union.addAll(teacherKeyPaths);
+            sumUnion += union.size();
         }
+        studentAllPaths.keySet().removeAll(keyIntersection);
+        teacherAllPaths.keySet().removeAll(keyIntersection);
         for (var sap : studentAllPaths.entrySet()) sumUnion += sap.getValue().size();
         for (var tap : teacherAllPaths.entrySet()) sumUnion += tap.getValue().size();
-        resultIndex = (double) sumIntersection / (double) sumUnion;
-        return String.format(Translations.getInstance().get("maps-similarity-importance-indexes"), resultIndex);
+        var resultIndex = sumIntersection / sumUnion;
+        return String.format(translations.get("maps-similarity-importance-indexes"), resultIndex);
     }
 
     public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
         this.checkTeacherConceptMap();
         if (!this.similarConcepts())
-            return Translations.getInstance().get("maps-different-concepts-proposition-chains");
+            return translations.get("maps-different-concepts-proposition-chains");
 
         double resultIndex = 0.0;
         var studentLongestPaths = this.studentMap.longestPaths();
         var teacherLongestPaths = this.teacherMap.longestPaths();
         if (studentLongestPaths.isEmpty() || teacherLongestPaths.isEmpty())
-            return Translations.getInstance().get("maps-cycles-proposition-chains");
+            return translations.get("maps-cycles-proposition-chains");
 
         int teacherMapScore = 0, studentMapScore = 0;
         double breakScore = 0.0;
@@ -137,13 +131,13 @@ public class ConceptMapScorer {
             breakScore += (double) approvedCurrentBreakScore / (double) (tlp.size() - 1);
         }
         resultIndex = (double) (studentMapScore - breakScore) / (double) teacherMapScore;
-        return String.format(Translations.getInstance().get("maps-similarity-proposition-chains"), resultIndex);
+        return String.format(translations.get("maps-similarity-proposition-chains"), resultIndex);
     }
 
     public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
         this.checkTeacherConceptMap();
         if (!this.similarConcepts())
-            return Translations.getInstance().get("maps-different-concepts-error-analysis");
+            return translations.get("maps-different-concepts-error-analysis");
 
         var studentOutgoingRelationships = this.studentMap.outgoingRelationships();
         var teacherOutgoingRelationships = this.teacherMap.outgoingRelationships();
@@ -181,60 +175,60 @@ public class ConceptMapScorer {
                 - w2 * (double) incorrectRelationships
                 - w1 * (double) missingRelationships) / (double) totalRelationships;
 
-        return String.format(Translations.getInstance().get("maps-similarity-error-analysis"), resultIndex)
-                + String.format(Translations.getInstance().get("maps-similarity-error-analysis-weighted"), weightedResultIndex);
+        return String.format(translations.get("maps-similarity-error-analysis"), resultIndex)
+                + String.format(translations.get("maps-similarity-error-analysis-weighted"), weightedResultIndex);
     }
 
     private String countConceptMapElements(ConceptMap map, String title) {
-        String returnString = (title == null) ? Translations.getInstance().get("map-contains") : title;
+        String returnString = title;
         long value;
         String format;
         value = map.conceptCount();
-        format = Translations.getInstance().get("concepts");
-        if (value == 0) format = Translations.getInstance().get("concepts-0");
-        if (value == 1) format = Translations.getInstance().get("concepts-1");
+        format = translations.get("concepts");
+        if (value == 0) format = translations.get("concepts-0");
+        if (value == 1) format = translations.get("concepts-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.relationshipCount();
-        format = Translations.getInstance().get("relationships");
-        if (value == 0) format = Translations.getInstance().get("relationships-0");
-        if (value == 1) format = Translations.getInstance().get("relationships-1");
+        format = translations.get("relationships");
+        if (value == 0) format = translations.get("relationships-0");
+        if (value == 1) format = translations.get("relationships-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.levelCount();
-        format = Translations.getInstance().get("levels");
-        if (value == 0) format = Translations.getInstance().get("levels-0");
-        if (value == 1) format = Translations.getInstance().get("levels-1");
+        format = translations.get("levels");
+        if (value == 0) format = translations.get("levels-0");
+        if (value == 1) format = translations.get("levels-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.branchCount();
-        format = Translations.getInstance().get("branches");
-        if (value == 0) format = Translations.getInstance().get("branches-0");
-        if (value == 1) format = Translations.getInstance().get("branches-1");
+        format = translations.get("branches");
+        if (value == 0) format = translations.get("branches-0");
+        if (value == 1) format = translations.get("branches-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.exampleCount();
-        format = Translations.getInstance().get("examples");
-        if (value == 0) format = Translations.getInstance().get("examples-0");
-        if (value == 1) format = Translations.getInstance().get("examples-1");
+        format = translations.get("examples");
+        if (value == 0) format = translations.get("examples-0");
+        if (value == 1) format = translations.get("examples-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.cycleCount();
-        format = Translations.getInstance().get("cycles");
-        if (value == 0) format = Translations.getInstance().get("cycles-0");
-        if (value == 1) format = Translations.getInstance().get("cycles-1");
+        format = translations.get("cycles");
+        if (value == 0) format = translations.get("cycles-0");
+        if (value == 1) format = translations.get("cycles-1");
         format += "\n";
         returnString += String.format(format, value);
 
         value = map.subnetCount();
-        format = Translations.getInstance().get("subnets");
-        if (value == 0) format = Translations.getInstance().get("subnets-0");
-        if (value == 1) format = Translations.getInstance().get("subnets-1");
+        format = translations.get("subnets");
+        if (value == 0) format = translations.get("subnets-0");
+        if (value == 1) format = translations.get("subnets-1");
         returnString += String.format(format, value);
         return returnString;
     }
@@ -248,12 +242,5 @@ public class ConceptMapScorer {
         if (teacherMap == null) {
             throw new InvalidDataException(translations.get("no-teacher-map"));
         }
-    }
-
-    @Override
-    public String toString() {
-        return this.teacherMap != null ?
-                "Student and teacher concept map scoring and comparison mode" :
-                "Student concept map scoring mode";
     }
 }
