@@ -13,11 +13,11 @@ class XmlFileFilter extends FileFilter {
     }
 
     public boolean accept(File file) {
-        var result = true;
         if (!file.isDirectory()) {
             var path = file.getAbsolutePath().toLowerCase();
-            result = EXTENSIONS.stream().anyMatch(e -> path.endsWith("." + e));
+            return EXTENSIONS.stream().anyMatch(e -> path.endsWith("." + e));
+        } else {
+            return true;
         }
-        return result;
     }
 }
