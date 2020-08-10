@@ -71,36 +71,35 @@ public class ConceptMapScorer {
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
         checkTeacherConceptMap();
-        if (areConceptMapsSimilar()) {
-            var studentAllPaths = studentMap.allPaths();
-            var teacherAllPaths = teacherMap.allPaths();
-
-            var keyIntersection = new HashSet<>(studentAllPaths.keySet());
-            keyIntersection.retainAll(teacherAllPaths.keySet());
-
-            double intersectionCount = 0, unionCount = 0;
-            for (var key : keyIntersection) {
-                var studentKeyPaths = studentAllPaths.get(key);
-                var teacherKeyPaths = teacherAllPaths.get(key);
-
-                var intersection = new HashSet<>(studentKeyPaths);
-                intersection.retainAll(teacherKeyPaths);
-                intersectionCount += intersection.size();
-
-                var union = new HashSet<>(studentKeyPaths);
-                union.addAll(teacherKeyPaths);
-                unionCount += union.size();
-            }
-            studentAllPaths.keySet().removeAll(keyIntersection);
-            teacherAllPaths.keySet().removeAll(keyIntersection);
-            unionCount += studentAllPaths.values().stream().mapToInt(Set::size).sum();
-            unionCount += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
-
-            var similarityDegree = intersectionCount / unionCount;
-            return String.format(translations.get("maps-similarity-importance-indexes"), similarityDegree);
-        } else {
+        if (!areConceptMapsSimilar()) {
             return translations.get("maps-different-concepts-importance-indexes");
         }
+        var studentAllPaths = studentMap.allPaths();
+        var teacherAllPaths = teacherMap.allPaths();
+
+        var keyIntersection = new HashSet<>(studentAllPaths.keySet());
+        keyIntersection.retainAll(teacherAllPaths.keySet());
+
+        double intersectionCount = 0, unionCount = 0;
+        for (var key : keyIntersection) {
+            var studentKeyPaths = studentAllPaths.get(key);
+            var teacherKeyPaths = teacherAllPaths.get(key);
+
+            var intersection = new HashSet<>(studentKeyPaths);
+            intersection.retainAll(teacherKeyPaths);
+            intersectionCount += intersection.size();
+
+            var union = new HashSet<>(studentKeyPaths);
+            union.addAll(teacherKeyPaths);
+            unionCount += union.size();
+        }
+        studentAllPaths.keySet().removeAll(keyIntersection);
+        teacherAllPaths.keySet().removeAll(keyIntersection);
+        unionCount += studentAllPaths.values().stream().mapToInt(Set::size).sum();
+        unionCount += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
+
+        var similarityDegree = intersectionCount / unionCount;
+        return String.format(translations.get("maps-similarity-importance-indexes"), similarityDegree);
     }
 
     public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
