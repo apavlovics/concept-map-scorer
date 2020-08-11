@@ -1,5 +1,6 @@
 package lv.continuum.scorer.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.TranslationException;
 import lv.continuum.scorer.common.Translations;
@@ -16,6 +17,7 @@ import java.util.Set;
 /**
  * The main class is named {@code Scorer} because Swing uses it as the application name.
  */
+@Slf4j
 public class Scorer extends JFrame {
 
     private final JTextField studentTextField;
@@ -220,7 +222,7 @@ public class Scorer extends JFrame {
             }
             scoreTextArea.setText(sb.toString());
             scoreTextArea.setEnabled(true);
-            System.out.println("Scored concept map");
+            log.debug("Scored concept map");
         } catch (InvalidDataException | UnsupportedOperationException e) {
             JOptionPane.showMessageDialog(
                     this,
@@ -282,7 +284,7 @@ public class Scorer extends JFrame {
             try {
                 Translations.getInstance();
                 new Scorer();
-                System.out.println("Created main application window");
+                log.debug("Created main application window");
             } catch (TranslationException e) {
                 JOptionPane.showMessageDialog(
                         null,

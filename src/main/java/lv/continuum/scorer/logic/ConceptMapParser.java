@@ -1,5 +1,6 @@
 package lv.continuum.scorer.logic;
 
+import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.Concept;
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+@Slf4j
 public class ConceptMapParser {
 
     private static final Translations translations = Translations.getInstance();
@@ -33,14 +35,16 @@ public class ConceptMapParser {
                 return parseStandard(document, fileName);
             } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
                 return parseIkas(document, fileName);
-            } else throw new InvalidDataException(String.format(translations.get("invalid-xml"), file.getName()));
+            } else {
+                throw new InvalidDataException(String.format(translations.get("invalid-xml"), file.getName()));
+            }
         } catch (NumberFormatException | NullPointerException e) {
             throw new InvalidDataException(String.format(translations.get("invalid-xml"), file.getName()));
         }
     }
 
     private ConceptMap parseStandard(Document document, String fileName) throws InvalidDataException {
-        System.out.println("Started parsing standard XML file");
+        log.debug("Started parsing standard XML file");
 
         var conceptNodes = document.getElementsByTagName("concept");
         var concepts = new HashMap<Integer, Concept>();
@@ -66,13 +70,12 @@ public class ConceptMapParser {
         }
 
         var conceptMap = new ConceptMap(new HashSet<>(concepts.values()), relationships, fileName);
-        System.out.println("Finished parsing standard XML file");
-        System.out.println(conceptMap);
+        log.debug("Finished parsing standard XML file\n{}", conceptMap);
         return conceptMap;
     }
 
     private ConceptMap parseIkas(Document document, String fileName) throws InvalidDataException {
-        System.out.println("Started parsing IKAS XML file");
+        log.debug("Started parsing IKAS XML file");
 
         var concepts = new HashMap<String, Concept>();
         var elementNodes = document.getElementsByTagName("element");
@@ -115,12 +118,11 @@ public class ConceptMapParser {
         }
 
         var conceptMap = new ConceptMap(new HashSet<>(concepts.values()), relationships, fileName);
-        System.out.println("Finished parsing IKAS XML file");
-        System.out.println(conceptMap);
+        log.debug("Finished parsing IKAS XML file\n{}", conceptMap);
         return conceptMap;
     }
 
     private boolean hasDuplicateConcept(Collection<Concept> concepts, String name) {
-        return concepts.stream().anyMatch(c -> c.equals(Concept.deriveId(name)));
+        return concepts.stream().anyMatch(c -> c.id.equals(Concept.deriveId(name)));
     }
 }

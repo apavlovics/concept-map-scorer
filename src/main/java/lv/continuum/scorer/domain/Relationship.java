@@ -1,36 +1,25 @@
 package lv.continuum.scorer.domain;
 
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
-
+@RequiredArgsConstructor
+@EqualsAndHashCode
 public class Relationship {
 
+    @NonNull
     public final Concept fromConcept;
+
+    @NonNull
     public final Concept toConcept;
+
+    @EqualsAndHashCode.Exclude
     public final String name;
 
     public Relationship(Concept fromConcept, Concept toConcept) {
         this(fromConcept, toConcept, null);
-    }
-
-    public Relationship(Concept fromConcept, Concept toConcept, String name) {
-        this.fromConcept = Objects.requireNonNull(fromConcept);
-        this.toConcept = Objects.requireNonNull(toConcept);
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Relationship that = (Relationship) o;
-        return fromConcept.equals(that.fromConcept) && toConcept.equals(that.toConcept);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fromConcept, toConcept);
     }
 
     @Override

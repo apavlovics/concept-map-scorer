@@ -95,6 +95,8 @@ public class ConceptMap {
                         var hasCycle = incomingRelationships.get(cor).stream()
                                 .anyMatch(cir -> !currentConcepts.contains(cir)
                                         && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor));
+
+                        // TODO Subnet may have multiple inner cycles that are not registered
                         if (hasCycle) cycleCount++;
                     }
                 }
