@@ -101,13 +101,13 @@ public class Scorer extends JFrame {
         var scoreScrollPane = new JScrollPane();
         scoreScrollPane.setViewportView(scoreTextArea);
 
-        var studentButton = new JButton();
-        studentButton.setText(translations.get("browse"));
-        studentButton.addActionListener(e -> studentButtonActionPerformed());
+        var studentBrowseButton = new JButton();
+        studentBrowseButton.setText(translations.get("browse"));
+        studentBrowseButton.addActionListener(e -> browseButtonActionPerformed(studentTextField));
 
-        var teacherButton = new JButton();
-        teacherButton.setText(translations.get("browse"));
-        teacherButton.addActionListener(e -> teacherButtonActionPerformed());
+        var teacherBrowseButton = new JButton();
+        teacherBrowseButton.setText(translations.get("browse"));
+        teacherBrowseButton.addActionListener(e -> browseButtonActionPerformed(teacherTextField));
 
         var studentLabel = new JLabel();
         studentLabel.setText(translations.get("select-student-concept-map"));
@@ -121,11 +121,11 @@ public class Scorer extends JFrame {
         var studentTextFieldHorizontalGroup = layout.createSequentialGroup()
                 .addComponent(studentTextField)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(studentButton);
+                .addComponent(studentBrowseButton);
         var teacherTextFieldHorizontalGroup = layout.createSequentialGroup()
                 .addComponent(teacherTextField)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(teacherButton);
+                .addComponent(teacherBrowseButton);
         var checkBoxesHorizontalGroup = layout.createParallelGroup()
                 .addComponent(importanceIndexesCheckBox)
                 .addComponent(closenessIndexesCheckBox)
@@ -139,10 +139,10 @@ public class Scorer extends JFrame {
 
         var studentTextFieldVerticalGroup = layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(studentTextField)
-                .addComponent(studentButton);
+                .addComponent(studentBrowseButton);
         var teacherTextFieldVerticalGroup = layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(teacherTextField)
-                .addComponent(teacherButton);
+                .addComponent(teacherBrowseButton);
         var checkBoxesVerticalGroup = layout.createSequentialGroup()
                 .addComponent(elementsCheckBox)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
@@ -242,18 +242,10 @@ public class Scorer extends JFrame {
         return state == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile().getAbsolutePath() : null;
     }
 
-    private void studentButtonActionPerformed() {
+    private void browseButtonActionPerformed(JTextField textField) {
         String fileName = getSelectedFileName();
         if (fileName != null) {
-            studentTextField.setText(fileName);
-            textFieldChanged();
-        }
-    }
-
-    private void teacherButtonActionPerformed() {
-        String fileName = getSelectedFileName();
-        if (fileName != null) {
-            teacherTextField.setText(fileName);
+            textField.setText(fileName);
             textFieldChanged();
         }
     }
