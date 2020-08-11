@@ -29,6 +29,7 @@
 
     <build>
         <plugins>
+            <!-- Create executable JAR with dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -53,6 +54,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Do not create JAR without dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
