@@ -1,6 +1,5 @@
 package lv.continuum.scorer.common;
 
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -13,11 +12,8 @@ public class Translations {
     private static Translations instance;
 
     private Translations() throws TranslationException {
-        try {
-            var file = getClass().getClassLoader().getResource(PROPERTIES_PATH).getFile();
-            try (var fis = new FileInputStream(file)) {
-                properties.load(new InputStreamReader(fis, StandardCharsets.UTF_8));
-            }
+        try (var inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTIES_PATH)) {
+            properties.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new TranslationException("Translation properties cannot be initialised", e);
         }
