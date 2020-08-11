@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -237,17 +238,18 @@ public class Scorer extends JFrame {
         }
     }
 
-    private String getSelectedFileName() {
+    private Optional<String> getSelectedFileName() {
         var state = fileChooser.showOpenDialog(this);
-        return state == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile().getAbsolutePath() : null;
+        return state == JFileChooser.APPROVE_OPTION ?
+                Optional.of(fileChooser.getSelectedFile().getAbsolutePath()) :
+                Optional.empty();
     }
 
     private void browseButtonActionPerformed(JTextField textField) {
-        String fileName = getSelectedFileName();
-        if (fileName != null) {
+        getSelectedFileName().ifPresent(fileName -> {
             textField.setText(fileName);
             textFieldChanged();
-        }
+        });
     }
 
     private void textFieldChanged() {
