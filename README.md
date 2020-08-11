@@ -20,4 +20,4 @@ To build the application, go to its root folder and execute:
     mvn package
 
 Once built, the application can be run via the generated executable JAR file. It is typically named
-*concept-map-scorer-0.0.1.jar* and located in the *target* folder.
+*concept-map-scorer-{version}.jar* and located in the *target* folder.
