@@ -1,5 +1,6 @@
 package lv.continuum.scorer.domain;
 
+import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
 import org.apache.commons.collections4.set.ListOrderedSet;
@@ -9,6 +10,7 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
+@Slf4j
 public class ConceptMap {
 
     private static final Translations translations = Translations.getInstance();
@@ -82,22 +84,18 @@ public class ConceptMap {
     public long cycleCount() {
         var cycleCount = 0L;
         var currentConcept = anyConcept();
-        var currentConcepts = new HashSet<Concept>();
+        var processedConcepts = new HashSet<Concept>();
         var outgoingRelationships = outgoingRelationships();
-        var incomingRelationships = incomingRelationships();
-        while (currentConcepts.size() < conceptCount()) {
+        while (processedConcepts.size() < conceptCount()) {
             var subnetConcepts = new ListOrderedSet<Concept>();
             while (currentConcept.isPresent()) {
                 var concept = currentConcept.get();
                 subnetConcepts.add(concept);
                 for (var cor : outgoingRelationships.get(concept)) {
                     if (!subnetConcepts.add(cor)) {
-                        var hasCycle = incomingRelationships.get(cor).stream()
-                                .anyMatch(cir -> !currentConcepts.contains(cir)
-                                        && subnetConcepts.indexOf(cir) >= subnetConcepts.indexOf(cor));
-
-                        // TODO Subnet may have multiple inner cycles that are not registered
-                        if (hasCycle) cycleCount++;
+                        cycleCount += 1;
+                        log.debug("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}",
+                                cycleCount, processedConcepts, subnetConcepts, new Relationship(concept, cor));
                     }
                 }
                 var index = subnetConcepts.indexOf(concept);
@@ -105,8 +103,8 @@ public class ConceptMap {
                         Optional.of(subnetConcepts.get(index + 1)) :
                         Optional.empty();
             }
-            currentConcepts.addAll(subnetConcepts);
-            currentConcept = anyConceptNotIn(currentConcepts, currentConcept);
+            processedConcepts.addAll(subnetConcepts);
+            currentConcept = anyConceptNotIn(processedConcepts, currentConcept);
         }
         return cycleCount;
     }
