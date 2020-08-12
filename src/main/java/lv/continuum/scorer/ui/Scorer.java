@@ -224,6 +224,7 @@ public class Scorer extends JFrame {
             scoreTextArea.setEnabled(true);
             log.debug("Scored concept map");
         } catch (InvalidDataException | UnsupportedOperationException e) {
+            log.debug("Issue while scoring concept map", e);
             JOptionPane.showMessageDialog(
                     this,
                     e.getMessage(),
@@ -231,6 +232,7 @@ public class Scorer extends JFrame {
                     JOptionPane.ERROR_MESSAGE
             );
         } catch (Exception e) {
+            log.debug("Issue while scoring concept map", e);
             JOptionPane.showMessageDialog(
                     this,
                     translations.get("invalid-file"),
@@ -286,6 +288,7 @@ public class Scorer extends JFrame {
                 new Scorer();
                 log.debug("Created main application window");
             } catch (TranslationException e) {
+                log.error("Issue while creating main application window", e);
                 JOptionPane.showMessageDialog(
                         null,
                         e.getMessage() + ".",
