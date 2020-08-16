@@ -3,20 +3,29 @@ package lv.continuum.scorer.domain;
 import lv.continuum.scorer.common.InvalidDataException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ConceptTest {
+class ConceptTest {
 
     @Test
-    public void constructValid() throws InvalidDataException {
+    void constructValid() throws InvalidDataException {
         new Concept("name");
     }
 
     @Test
-    public void constructInvalid() {
+    void constructInvalid() {
         String[] invalidNames = {"", " ", null};
         for (var invalidName : invalidNames) {
             assertThrows(InvalidDataException.class, () -> new Concept(invalidName));
         }
+    }
+
+    @Test
+    void deriveId() {
+        var namesToIds = Map.of("Name", "name", "Another Concept", "another-concept", "Piemērs", "piemērs");
+        namesToIds.forEach((name, id) -> assertEquals(id, Concept.deriveId(name)));
     }
 }
