@@ -25,7 +25,7 @@ class ConceptTest {
 
     @Test
     void deriveId() {
-        var namesToIds = Map.of("Name", "name", "Another Concept", "another-concept", "Piemērs", "piemērs");
+        var namesToIds = Map.of("Name", "name", "Another Name", "another-name", " Piemērs ", "piemērs");
         namesToIds.forEach((name, id) -> assertEquals(id, Concept.deriveId(name)));
     }
 }
