@@ -18,7 +18,7 @@ class RelationshipTest {
     @Test
     void constructValid() {
         new Relationship(from, to, "Name");
-        new Relationship(from, to, null);
+        new Relationship(from, to);
     }
 
     @Test
