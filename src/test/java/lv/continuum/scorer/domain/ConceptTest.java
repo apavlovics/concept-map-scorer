@@ -12,7 +12,7 @@ class ConceptTest {
 
     @Test
     void constructValid() throws InvalidDataException {
-        new Concept("name");
+        new Concept("Name");
     }
 
     @Test
