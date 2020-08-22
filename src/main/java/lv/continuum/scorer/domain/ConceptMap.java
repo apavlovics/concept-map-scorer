@@ -28,6 +28,8 @@ public class ConceptMap {
             throw new InvalidDataException(String.format(translations.get("concept-map-no-relationships"), fileName));
         }
         this.concepts = concepts;
+
+        // TODO Check that relationships do not have unknown concepts
         this.relationships = relationships;
     }
 
@@ -78,7 +80,7 @@ public class ConceptMap {
 
     public long exampleCount() {
         var regex = "(?i).*(piemēr|piemer|eksemplār|eksemplar|example|instance).*";
-        return relationships.stream().filter(r -> r.name.matches(regex)).count();
+        return relationships.stream().filter(r -> r.name != null && r.name.matches(regex)).count();
     }
 
     public long cycleCount() {
