@@ -97,7 +97,7 @@ public class ConceptMap {
                     if (!subnetConcepts.add(cor)) {
                         var cycle = Set.copyOf(subnetConcepts.asList().subList(subnetConcepts.indexOf(cor), subnetConcepts.indexOf(concept) + 1));
                         cycles.add(cycle);
-                        log.debug("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}\n  Cycles {}",
+                        log.trace("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}\n  Cycles {}",
                                 cycles.size(), processedConcepts, subnetConcepts, new Relationship(concept, cor), cycles);
                     }
                 }
@@ -215,7 +215,7 @@ public class ConceptMap {
      * Two concept maps are considered similar if they contain equal concepts.
      */
     public boolean isSimilar(ConceptMap other) {
-        return concepts.containsAll(other.concepts);
+        return concepts.size() == other.concepts.size() && concepts.containsAll(other.concepts);
     }
 
     public boolean containsRelationship(Concept fromConcept, Concept toConcept) {
