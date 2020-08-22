@@ -84,7 +84,7 @@ public class ConceptMap {
     }
 
     public long cycleCount() {
-        var cycleCount = 0L;
+        var cycles = new HashSet<Set<Concept>>();
         var currentConcept = anyConcept();
         var processedConcepts = new HashSet<Concept>();
         var outgoingRelationships = outgoingRelationships();
@@ -95,9 +95,10 @@ public class ConceptMap {
                 subnetConcepts.add(concept);
                 for (var cor : outgoingRelationships.get(concept)) {
                     if (!subnetConcepts.add(cor)) {
-                        cycleCount += 1;
-                        log.debug("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}",
-                                cycleCount, processedConcepts, subnetConcepts, new Relationship(concept, cor));
+                        var cycle = Set.copyOf(subnetConcepts.asList().subList(subnetConcepts.indexOf(cor), subnetConcepts.indexOf(concept) + 1));
+                        cycles.add(cycle);
+                        log.debug("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}\n  Cycles {}",
+                                cycles.size(), processedConcepts, subnetConcepts, new Relationship(concept, cor), cycles);
                     }
                 }
                 var index = subnetConcepts.indexOf(concept);
@@ -108,7 +109,7 @@ public class ConceptMap {
             processedConcepts.addAll(subnetConcepts);
             currentConcept = anyConceptNotIn(processedConcepts, currentConcept);
         }
-        return cycleCount;
+        return cycles.size();
     }
 
     public long subnetCount() {
