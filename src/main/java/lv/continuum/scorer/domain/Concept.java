@@ -20,7 +20,7 @@ public class Concept {
             throw new InvalidDataException(translations.get("concept-no-name"));
         }
         this.id = deriveId(name);
-        this.name = name;
+        this.name = name.trim();
     }
 
     public static String deriveId(String name) {

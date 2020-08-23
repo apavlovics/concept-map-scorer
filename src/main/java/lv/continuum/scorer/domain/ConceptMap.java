@@ -80,7 +80,7 @@ public class ConceptMap {
 
     public long exampleCount() {
         var regex = "(?i).*(piemēr|piemer|eksemplār|eksemplar|example|instance).*";
-        return relationships.stream().filter(r -> r.name != null && r.name.matches(regex)).count();
+        return relationships.stream().filter(r -> r.matches(regex)).count();
     }
 
     public long cycleCount() {
