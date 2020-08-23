@@ -89,4 +89,10 @@ class ConceptMapTest {
         assertFalse(data.conceptMapOther.containsRelationship(data.a, data.c));
         assertFalse(data.conceptMapOther.containsRelationship(data.b, data.a));
     }
+
+    @Test
+    void outgoingRelationships() {
+        assertEquals(data.outgoingRelationshipsWithLevels, data.conceptMapWithLevels.outgoingRelationships());
+        // TODO Complete implementation
+    }
 }

@@ -6,6 +6,7 @@ import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.domain.Relationship;
 
+import java.util.Map;
 import java.util.Set;
 
 @Value
@@ -46,6 +47,16 @@ public class TestData {
     );
     public Set<Relationship> relationshipsOther = Set.of(
             new Relationship(a, b)
+    );
+
+    public Map<Concept, Set<Concept>> outgoingRelationshipsWithLevels = Map.of(
+            a, Set.of(b, c),
+            b, Set.of(d),
+            c, Set.of(e, f),
+            d, Set.of(),
+            e, Set.of(),
+            f, Set.of(g),
+            g, Set.of()
     );
 
     public String fileName = "concept-map.xml";

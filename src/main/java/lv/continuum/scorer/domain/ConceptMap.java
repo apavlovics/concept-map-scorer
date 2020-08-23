@@ -94,10 +94,11 @@ public class ConceptMap {
                 var concept = currentConcept.get();
                 subnetConcepts.add(concept);
                 for (var cor : outgoingRelationships.get(concept)) {
+                    // TODO Fix a bug where subsequent subnet concepts may not form relationships
                     if (!subnetConcepts.add(cor)) {
                         var cycle = Set.copyOf(subnetConcepts.asList().subList(subnetConcepts.indexOf(cor), subnetConcepts.indexOf(concept) + 1));
                         cycles.add(cycle);
-                        log.trace("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}\n  Cycles {}",
+                        log.debug("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}\n  Cycles {}",
                                 cycles.size(), processedConcepts, subnetConcepts, new Relationship(concept, cor), cycles);
                     }
                 }
