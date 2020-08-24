@@ -100,6 +100,18 @@ class ConceptMapTest {
     }
 
     @Test
+    void allPaths() {
+        // TODO Complete implementation
+    }
+
+    @Test
+    void longestPaths() {
+        assertEquals(data.longestPathsWithLevels, data.conceptMapWithLevels.longestPaths());
+        assertEquals(data.longestPathsWithCycles, data.conceptMapWithCycles.longestPaths());
+        assertEquals(data.longestPathsOther, data.conceptMapOther.longestPaths());
+    }
+
+    @Test
     void isSimilar() {
         assertTrue(data.conceptMapWithLevels.isSimilar(data.conceptMapWithCycles));
         assertTrue(data.conceptMapWithCycles.isSimilar(data.conceptMapWithLevels));

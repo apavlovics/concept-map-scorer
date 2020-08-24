@@ -6,13 +6,16 @@ import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.domain.Relationship;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 @Value
 public class TestData {
 
-    private TestData() throws InvalidDataException {}
+    private TestData() throws InvalidDataException {
+        // Do nothing
+    }
 
     private static TestData instance;
 
@@ -141,4 +144,14 @@ public class TestData {
     public ConceptMap conceptMapWithLevels = new ConceptMap(concepts, relationshipsWithLevels, fileName);
     public ConceptMap conceptMapWithCycles = new ConceptMap(concepts, relationshipsWithCycles, fileName);
     public ConceptMap conceptMapOther = new ConceptMap(conceptsOther, relationshipsOther, fileName);
+
+    public Set<List<Concept>> longestPathsWithLevels = Set.of(
+            List.of(a, b, d),
+            List.of(a, c, e),
+            List.of(a, c, f, g)
+    );
+    public Set<List<Concept>> longestPathsWithCycles = Set.of();
+    public Set<List<Concept>> longestPathsOther = Set.of(
+            List.of(a, b)
+    );
 }
