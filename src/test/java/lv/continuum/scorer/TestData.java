@@ -114,6 +114,30 @@ public class TestData {
             c, Set.of()
     );
 
+    public Map<Concept, Set<Concept>> allRelationshipsWithLevels = Map.of(
+            a, Set.of(b, c),
+            b, Set.of(a, d),
+            c, Set.of(a, e, f),
+            d, Set.of(b),
+            e, Set.of(c),
+            f, Set.of(c, g),
+            g, Set.of(f)
+    );
+    public Map<Concept, Set<Concept>> allRelationshipsWithCycles = Map.of(
+            a, Set.of(a, b, c),
+            b, Set.of(a, b, c),
+            c, Set.of(a, b),
+            d, Set.of(e),
+            e, Set.of(d, f, g),
+            f, Set.of(e, g),
+            g, Set.of(e, f)
+    );
+    public Map<Concept, Set<Concept>> allRelationshipsOther = Map.of(
+            a, Set.of(b),
+            b, Set.of(a),
+            c, Set.of()
+    );
+
     public ConceptMap conceptMapWithLevels = new ConceptMap(concepts, relationshipsWithLevels, fileName);
     public ConceptMap conceptMapWithCycles = new ConceptMap(concepts, relationshipsWithCycles, fileName);
     public ConceptMap conceptMapOther = new ConceptMap(conceptsOther, relationshipsOther, fileName);

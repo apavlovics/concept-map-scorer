@@ -45,7 +45,9 @@ class ConceptMapTest {
 
     @Test
     void allRelationships() {
-        // TODO Complete implementation
+        assertEquals(data.allRelationshipsWithLevels, data.conceptMapWithLevels.allRelationships);
+        assertEquals(data.allRelationshipsWithCycles, data.conceptMapWithCycles.allRelationships);
+        assertEquals(data.allRelationshipsOther, data.conceptMapOther.allRelationships);
     }
 
     @Test
