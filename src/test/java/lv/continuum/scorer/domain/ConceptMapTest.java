@@ -21,12 +21,29 @@ class ConceptMapTest {
     @Test
     void constructInvalid() {
 
-        // Should not be possible to construct concept map with no concepts or relationships
+        // No concepts or relationships
         assertThrows(InvalidDataException.class, () -> new ConceptMap(data.concepts, Set.of(), data.fileName));
         assertThrows(InvalidDataException.class, () -> new ConceptMap(Set.of(), data.relationshipsWithCycles, data.fileName));
 
-        // Should not be possible to construct concept map with relationships containing unknown concepts
+        // Relationships containing unknown concepts
         assertThrows(InvalidDataException.class, () -> new ConceptMap(data.conceptsOther, data.relationshipsWithCycles, data.fileName));
+    }
+
+    @Test
+    void outgoingRelationships() {
+        assertEquals(data.outgoingRelationshipsWithLevels, data.conceptMapWithLevels.outgoingRelationships);
+        assertEquals(data.outgoingRelationshipsWithCycles, data.conceptMapWithCycles.outgoingRelationships);
+        assertEquals(data.outgoingRelationshipsOther, data.conceptMapOther.outgoingRelationships);
+    }
+
+    @Test
+    void incomingRelationships() {
+        // TODO Complete implementation
+    }
+
+    @Test
+    void allRelationships() {
+        // TODO Complete implementation
     }
 
     @Test
@@ -91,12 +108,5 @@ class ConceptMapTest {
         assertTrue(data.conceptMapOther.containsRelationship(data.a, data.b));
         assertFalse(data.conceptMapOther.containsRelationship(data.a, data.c));
         assertFalse(data.conceptMapOther.containsRelationship(data.b, data.a));
-    }
-
-    @Test
-    void outgoingRelationships() {
-        assertEquals(data.outgoingRelationshipsWithLevels, data.conceptMapWithLevels.outgoingRelationships);
-        assertEquals(data.outgoingRelationshipsWithCycles, data.conceptMapWithCycles.outgoingRelationships);
-        assertEquals(data.outgoingRelationshipsOther, data.conceptMapOther.outgoingRelationships);
     }
 }
