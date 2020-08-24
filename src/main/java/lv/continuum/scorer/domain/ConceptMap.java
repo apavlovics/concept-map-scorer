@@ -142,6 +142,9 @@ public class ConceptMap {
         return subnetCount;
     }
 
+    /**
+     * For each relationship in the concept map calculates all paths that include it.
+     */
     public Map<Relationship, Set<Relationship>> allPaths() {
         var allPaths = new HashMap<Relationship, Set<Relationship>>();
         for (var r : relationships) {

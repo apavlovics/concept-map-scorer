@@ -101,7 +101,9 @@ class ConceptMapTest {
 
     @Test
     void allPaths() {
-        // TODO Complete implementation
+        assertEquals(data.allPathsWithLevels, data.conceptMapWithLevels.allPaths());
+        assertEquals(data.allPathsWithCycles, data.conceptMapWithCycles.allPaths());
+        assertEquals(data.allPathsOther, data.conceptMapOther.allPaths());
     }
 
     @Test
