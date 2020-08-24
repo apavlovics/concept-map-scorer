@@ -20,6 +20,10 @@ public class ConceptMap {
     private final Set<Concept> concepts;
     private final Set<Relationship> relationships;
 
+    public final Map<Concept, Set<Concept>> outgoingRelationships;
+    public final Map<Concept, Set<Concept>> incomingRelationships;
+    public final Map<Concept, Set<Concept>> allRelationships;
+
     public ConceptMap(Set<Concept> concepts, Set<Relationship> relationships, String fileName) throws InvalidDataException {
         if (concepts.isEmpty()) {
             throw new InvalidDataException(String.format(translations.get("concept-map-no-concepts"), fileName));
@@ -31,6 +35,10 @@ public class ConceptMap {
 
         // TODO Check that relationships do not have unknown concepts
         this.relationships = relationships;
+
+        outgoingRelationships = calculateRelationships(Set.of(Direction.OUTGOING));
+        incomingRelationships = calculateRelationships(Set.of(Direction.INCOMING));
+        allRelationships = calculateRelationships(Set.of(Direction.OUTGOING, Direction.INCOMING));
     }
 
     public long conceptCount() {
@@ -43,7 +51,7 @@ public class ConceptMap {
 
     public long levelCount() {
         var levelCount = 0L;
-        var incomingRelationships = incomingRelationships();
+        var incomingRelationships = new HashMap<>(this.incomingRelationships);
         if (incomingRelationships.containsValue(EMPTY)) {
             var explicitLevels = true;
             var conceptsNoIncoming = EMPTY;
@@ -87,7 +95,6 @@ public class ConceptMap {
         var cycles = new HashSet<Set<Concept>>();
         var currentConcept = anyConcept();
         var processedConcepts = new HashSet<Concept>();
-        var outgoingRelationships = outgoingRelationships();
         while (processedConcepts.size() < conceptCount()) {
             var subnetConcepts = new ListOrderedSet<Concept>();
             while (currentConcept.isPresent()) {
@@ -117,7 +124,6 @@ public class ConceptMap {
         var subnetCount = 0L;
         var currentConcept = anyConcept();
         var currentConcepts = new ListOrderedSet<Concept>();
-        var allRelationships = allRelationships();
         while (currentConcepts.size() < conceptCount()) {
             while (currentConcept.isPresent()) {
                 var concept = currentConcept.get();
@@ -136,8 +142,6 @@ public class ConceptMap {
 
     public Map<Relationship, Set<Relationship>> allPaths() {
         var allPaths = new HashMap<Relationship, Set<Relationship>>();
-        var outgoingRelationships = outgoingRelationships();
-        var incomingRelationships = incomingRelationships();
         for (var r : relationships) {
             var paths = new HashSet<Relationship>();
             paths.add(r);
@@ -174,8 +178,7 @@ public class ConceptMap {
     public Set<List<Concept>> longestPaths() {
         var longestPaths = new HashSet<List<Concept>>();
         if (cycleCount() == 0) {
-            var outgoingRelationships = outgoingRelationships();
-            incomingRelationships().entrySet().stream()
+            incomingRelationships.entrySet().stream()
                     .filter(ir -> ir.getValue().isEmpty())
                     .forEach(ir -> {
                         var currentConcepts = new ArrayList<Concept>();
@@ -230,32 +233,20 @@ public class ConceptMap {
         OUTGOING, INCOMING;
     }
 
-    public Map<Concept, Set<Concept>> outgoingRelationships() {
-        return relationships(Set.of(Direction.OUTGOING));
-    }
-
-    public Map<Concept, Set<Concept>> incomingRelationships() {
-        return relationships(Set.of(Direction.INCOMING));
-    }
-
-    public Map<Concept, Set<Concept>> allRelationships() {
-        return relationships(Set.of(Direction.OUTGOING, Direction.INCOMING));
-    }
-
-    private Map<Concept, Set<Concept>> relationships(Set<Direction> directions) {
-        var allRelationships = new HashMap<Concept, Set<Concept>>();
+    private Map<Concept, Set<Concept>> calculateRelationships(Set<Direction> directions) {
+        var relationships = new HashMap<Concept, Set<Concept>>();
         for (var c : concepts) {
-            allRelationships.put(c, new HashSet<>());
+            relationships.put(c, new HashSet<>());
         }
-        for (var r : relationships) {
+        for (var r : this.relationships) {
             if (directions.contains(Direction.OUTGOING)) {
-                allRelationships.get(r.fromConcept).add(r.toConcept);
+                relationships.get(r.fromConcept).add(r.toConcept);
             }
             if (directions.contains(Direction.INCOMING)) {
-                allRelationships.get(r.toConcept).add(r.fromConcept);
+                relationships.get(r.toConcept).add(r.fromConcept);
             }
         }
-        return allRelationships;
+        return Map.copyOf(relationships);
     }
 
     private Optional<Concept> anyConcept() {

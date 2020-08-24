@@ -34,8 +34,8 @@ public class ConceptMapScorer {
 
     public String compareConceptMapsUsingClosenessIndexes() throws InvalidDataException {
         checkTeacherConceptMap();
-        var studentAllRelationships = studentConceptMap.allRelationships();
-        var teacherAllRelationships = teacherConceptMap.allRelationships();
+        var studentAllRelationships = new HashMap<>(studentConceptMap.allRelationships);
+        var teacherAllRelationships = new HashMap<>(teacherConceptMap.allRelationships);
 
         var keyIntersection = new HashSet<>(studentAllRelationships.keySet());
         keyIntersection.retainAll(teacherAllRelationships.keySet());
@@ -137,8 +137,8 @@ public class ConceptMapScorer {
             return translations.get("different-concepts-error-analysis");
         }
 
-        var studentOutgoingRelationships = studentConceptMap.outgoingRelationships();
-        var teacherOutgoingRelationships = teacherConceptMap.outgoingRelationships();
+        var studentOutgoingRelationships = studentConceptMap.outgoingRelationships;
+        var teacherOutgoingRelationships = teacherConceptMap.outgoingRelationships;
 
         double totalRelationships = Math.pow(studentOutgoingRelationships.size(), 2);
         double correctRelationships = 0, incorrectRelationships = 0;

@@ -90,8 +90,8 @@ class ConceptMapTest {
 
     @Test
     void outgoingRelationships() {
-        assertEquals(data.outgoingRelationshipsWithLevels, data.conceptMapWithLevels.outgoingRelationships());
-        assertEquals(data.outgoingRelationshipsWithCycles, data.conceptMapWithCycles.outgoingRelationships());
-        assertEquals(data.outgoingRelationshipsOther, data.conceptMapOther.outgoingRelationships());
+        assertEquals(data.outgoingRelationshipsWithLevels, data.conceptMapWithLevels.outgoingRelationships);
+        assertEquals(data.outgoingRelationshipsWithCycles, data.conceptMapWithCycles.outgoingRelationships);
+        assertEquals(data.outgoingRelationshipsOther, data.conceptMapOther.outgoingRelationships);
     }
 }
