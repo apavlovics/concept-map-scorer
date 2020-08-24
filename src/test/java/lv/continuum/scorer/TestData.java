@@ -58,6 +58,20 @@ public class TestData {
             f, Set.of(g),
             g, Set.of()
     );
+    public Map<Concept, Set<Concept>> outgoingRelationshipsWithCycles = Map.of(
+            a, Set.of(a, b),
+            b, Set.of(b, c),
+            c, Set.of(a),
+            d, Set.of(e),
+            e, Set.of(f),
+            f, Set.of(e, g),
+            g, Set.of(e)
+    );
+    public Map<Concept, Set<Concept>> outgoingRelationshipsOther = Map.of(
+            a, Set.of(b),
+            b, Set.of(),
+            c, Set.of()
+    );
 
     public String fileName = "concept-map.xml";
 
