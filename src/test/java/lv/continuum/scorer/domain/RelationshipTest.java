@@ -3,7 +3,7 @@ package lv.continuum.scorer.domain;
 import lv.continuum.scorer.common.InvalidDataException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RelationshipTest {
 
@@ -17,13 +17,19 @@ class RelationshipTest {
 
     @Test
     void constructValid() {
-        new Relationship(from, to, "Name");
+        new Relationship(from, to, "relates to");
         new Relationship(from, to);
     }
 
     @Test
     void constructInvalid() {
-        assertThrows(NullPointerException.class, () -> new Relationship(null, to, "Name"));
-        assertThrows(NullPointerException.class, () -> new Relationship(from, null, "Name"));
+        assertThrows(NullPointerException.class, () -> new Relationship(null, to, "consists of"));
+        assertThrows(NullPointerException.class, () -> new Relationship(from, null, "consists of"));
+    }
+
+    @Test
+    void equals() {
+        assertEquals(new Relationship(from, to), new Relationship(from, to, "is example of"));
+        assertNotEquals(new Relationship(from, to, "belongs to"), new Relationship(to, from, "belongs to"));
     }
 }

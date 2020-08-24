@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ConceptTest {
 
@@ -27,5 +26,11 @@ class ConceptTest {
     void deriveId() {
         var namesToIds = Map.of("Name", "name", "Another Name", "another-name", " Piemērs ", "piemērs");
         namesToIds.forEach((name, id) -> assertEquals(id, Concept.deriveId(name)));
+    }
+
+    @Test
+    void equals() throws InvalidDataException {
+        assertEquals(new Concept("test"), new Concept(" TEST "));
+        assertNotEquals(new Concept("one"), new Concept("two"));
     }
 }
