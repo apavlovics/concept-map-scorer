@@ -64,6 +64,8 @@ public class TestData {
             new Relationship(a, b)
     );
 
+    public String fileName = "concept-map.xml";
+
     public Map<Concept, Set<Concept>> outgoingRelationshipsWithLevels = Map.of(
             a, Set.of(b, c),
             b, Set.of(d),
@@ -88,7 +90,29 @@ public class TestData {
             c, Set.of()
     );
 
-    public String fileName = "concept-map.xml";
+    public Map<Concept, Set<Concept>> incomingRelationshipsWithLevels = Map.of(
+            a, Set.of(),
+            b, Set.of(a),
+            c, Set.of(a),
+            d, Set.of(b),
+            e, Set.of(c),
+            f, Set.of(c),
+            g, Set.of(f)
+    );
+    public Map<Concept, Set<Concept>> incomingRelationshipsWithCycles = Map.of(
+            a, Set.of(a, c),
+            b, Set.of(a, b),
+            c, Set.of(b),
+            d, Set.of(),
+            e, Set.of(d, f, g),
+            f, Set.of(e),
+            g, Set.of(f)
+    );
+    public Map<Concept, Set<Concept>> incomingRelationshipsOther = Map.of(
+            a, Set.of(),
+            b, Set.of(a),
+            c, Set.of()
+    );
 
     public ConceptMap conceptMapWithLevels = new ConceptMap(concepts, relationshipsWithLevels, fileName);
     public ConceptMap conceptMapWithCycles = new ConceptMap(concepts, relationshipsWithCycles, fileName);
