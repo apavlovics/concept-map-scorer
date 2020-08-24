@@ -20,8 +20,13 @@ class ConceptMapTest {
 
     @Test
     void constructInvalid() {
+
+        // Should not be possible to construct concept map with no concepts or relationships
         assertThrows(InvalidDataException.class, () -> new ConceptMap(data.concepts, Set.of(), data.fileName));
         assertThrows(InvalidDataException.class, () -> new ConceptMap(Set.of(), data.relationshipsWithCycles, data.fileName));
+
+        // Should not be possible to construct concept map with relationships containing unknown concepts
+        assertThrows(InvalidDataException.class, () -> new ConceptMap(data.conceptsOther, data.relationshipsWithCycles, data.fileName));
     }
 
     @Test

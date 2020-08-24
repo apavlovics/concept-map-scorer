@@ -33,7 +33,9 @@ public class ConceptMap {
         }
         this.concepts = concepts;
 
-        // TODO Check that relationships do not have unknown concepts
+        if (relationships.stream().anyMatch(r -> !concepts.contains(r.fromConcept) || !concepts.contains(r.toConcept))) {
+            throw new InvalidDataException(String.format(translations.get("concept-map-invalid-relationship"), fileName));
+        }
         this.relationships = relationships;
 
         outgoingRelationships = calculateRelationships(Set.of(Direction.OUTGOING));
