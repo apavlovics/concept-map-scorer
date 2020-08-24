@@ -175,38 +175,38 @@ public class ConceptMap {
         var longestPaths = new HashSet<List<Concept>>();
         if (cycleCount() == 0) {
             var outgoingRelationships = outgoingRelationships();
-            var incomingRelationships = incomingRelationships();
-            for (var ir : incomingRelationships.entrySet()) {
-                if (ir.getValue().isEmpty()) {
-                    var currentConcepts = new ArrayList<Concept>();
-                    currentConcepts.add(ir.getKey());
-                    var i = 0;
-                    while (i < currentConcepts.size()) {
-                        var currentConcept = currentConcepts.get(i);
-                        var currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
-                        var pathsToAdd = new HashSet<List<Concept>>();
-                        var pathsToRemove = new HashSet<List<Concept>>();
-                        for (var cor : currentOutgoingRelationships) {
-                            currentConcepts.add(cor);
-                            if (i == 0) {
-                                var path = List.of(currentConcept, cor);
-                                longestPaths.add(path);
-                            } else for (var path : longestPaths) {
-                                if (path.indexOf(currentConcept) == path.size() - 1) {
-                                    var longerPath = new ArrayList<>(path);
-                                    longerPath.add(cor);
-                                    pathsToAdd.add(longerPath);
-                                    pathsToRemove.add(path);
+            incomingRelationships().entrySet().stream()
+                    .filter(ir -> ir.getValue().isEmpty())
+                    .forEach(ir -> {
+                        var currentConcepts = new ArrayList<Concept>();
+                        currentConcepts.add(ir.getKey());
+                        var i = 0;
+                        while (i < currentConcepts.size()) {
+                            var currentConcept = currentConcepts.get(i);
+                            var currentOutgoingRelationships = outgoingRelationships.get(currentConcept);
+                            var pathsToAdd = new HashSet<List<Concept>>();
+                            var pathsToRemove = new HashSet<List<Concept>>();
+                            for (var cor : currentOutgoingRelationships) {
+                                currentConcepts.add(cor);
+                                if (i == 0) {
+                                    var path = List.of(currentConcept, cor);
+                                    longestPaths.add(path);
+                                } else for (var path : longestPaths) {
+                                    if (path.indexOf(currentConcept) == path.size() - 1) {
+                                        var longerPath = new ArrayList<>(path);
+                                        longerPath.add(cor);
+                                        pathsToAdd.add(longerPath);
+                                        pathsToRemove.add(path);
+                                    }
                                 }
                             }
+                            longestPaths.addAll(pathsToAdd);
+                            longestPaths.removeAll(pathsToRemove);
+                            i++;
                         }
-                        longestPaths.addAll(pathsToAdd);
-                        longestPaths.removeAll(pathsToRemove);
-                        i++;
-                    }
-                }
-            }
+                    });
         }
+        log.debug("Longest paths {}", longestPaths);
         return longestPaths;
     }
 

@@ -9,7 +9,6 @@ public class Translations {
 
     private static final String PROPERTIES_PATH = "translations/en.properties";
     private static final Properties properties = new Properties();
-    private static Translations instance;
 
     private Translations() throws TranslationException {
         try (var inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTIES_PATH)) {
@@ -18,6 +17,8 @@ public class Translations {
             throw new TranslationException("Translation properties cannot be initialised", e);
         }
     }
+
+    private static Translations instance;
 
     /**
      * Initializes and provides access to the {@link Translations} singleton.

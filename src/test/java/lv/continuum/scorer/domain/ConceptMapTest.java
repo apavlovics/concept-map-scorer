@@ -10,9 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConceptMapTest {
 
-    private final TestData data = new TestData();
-
-    ConceptMapTest() throws InvalidDataException {}
+    private final TestData data = TestData.getInstance();
 
     @Test
     void constructValid() throws InvalidDataException {

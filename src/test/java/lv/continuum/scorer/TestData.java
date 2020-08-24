@@ -12,7 +12,22 @@ import java.util.Set;
 @Value
 public class TestData {
 
-    public TestData() throws InvalidDataException {}
+    private TestData() throws InvalidDataException {}
+
+    private static TestData instance;
+
+    public static TestData getInstance() {
+        if (instance == null) {
+            synchronized (TestData.class) {
+                try {
+                    if (instance == null) instance = new TestData();
+                } catch (InvalidDataException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return instance;
+    }
 
     public Concept a = new Concept("A");
     public Concept b = new Concept("B");
