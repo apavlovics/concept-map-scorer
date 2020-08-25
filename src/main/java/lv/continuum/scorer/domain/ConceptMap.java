@@ -94,32 +94,30 @@ public class ConceptMap {
     }
 
     public long cycleCount() {
-        var cycles = new HashSet<Set<Concept>>();
-        var currentConcept = anyConcept();
-        var processedConcepts = new HashSet<Concept>();
-        while (processedConcepts.size() < conceptCount()) {
-            var subnetConcepts = new ListOrderedSet<Concept>();
-            while (currentConcept.isPresent()) {
-                var concept = currentConcept.get();
-                subnetConcepts.add(concept);
-                for (var cor : outgoingRelationships.get(concept)) {
-                    // TODO Fix a bug where subsequent subnet concepts may not form relationships
-                    if (!subnetConcepts.add(cor)) {
-                        var cycle = Set.copyOf(subnetConcepts.asList().subList(subnetConcepts.indexOf(cor), subnetConcepts.indexOf(concept) + 1));
-                        cycles.add(cycle);
-                        log.debug("Cycle count increased to {}\n  Processed concepts {}\n  Subnet concepts {}\n  Relationship {}\n  Cycles {}",
-                                cycles.size(), processedConcepts, subnetConcepts, new Relationship(concept, cor), cycles);
-                    }
-                }
-                var index = subnetConcepts.indexOf(concept);
-                currentConcept = index < subnetConcepts.size() - 1 ?
-                        Optional.of(subnetConcepts.get(index + 1)) :
-                        Optional.empty();
-            }
-            processedConcepts.addAll(subnetConcepts);
-            currentConcept = anyConceptNotIn(processedConcepts, currentConcept);
+        var cycleCount = 0L;
+        var stack = new HashSet<Concept>();
+        var visited = new HashSet<Concept>();
+        for (var c : outgoingRelationships.keySet()) {
+            cycleCount += cycleCountInSubnet(c, visited, stack);
         }
-        return cycles.size();
+        return cycleCount;
+    }
+
+    private long cycleCountInSubnet(Concept concept, Set<Concept> stack, Set<Concept> visited) {
+        if (stack.contains(concept)) {
+            return 1;
+        } else if (visited.contains(concept)) {
+            return 0;
+        } else {
+            stack.add(concept);
+            visited.add(concept);
+            var cycleCountInSubnet = 0L;
+            for (var cor: outgoingRelationships.get(concept)) {
+                cycleCountInSubnet += cycleCountInSubnet(cor, stack, visited);
+            }
+            stack.remove(concept);
+            return cycleCountInSubnet;
+        }
     }
 
     public long subnetCount() {
