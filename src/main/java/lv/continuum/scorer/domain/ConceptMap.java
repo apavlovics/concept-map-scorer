@@ -251,6 +251,7 @@ public class ConceptMap {
                 relationships.get(r.toConcept).add(r.fromConcept);
             }
         }
+        // Use unmodifiable map to prevent undesired changes to its contents
         return Map.copyOf(relationships);
     }
 
