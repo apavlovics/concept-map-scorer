@@ -178,7 +178,7 @@ public class ConceptMapScorer {
                 formatCount("levels", conceptMap.levelCount()),
                 formatCount("branches", conceptMap.branchCount()),
                 formatCount("examples", conceptMap.exampleCount()),
-                formatCount("cycles", conceptMap.containsCycle()),
+                formatCount("cycles", conceptMap.containsCycles()),
                 formatCount("subnets", conceptMap.subnetCount())
         );
         return prefix + "\n" + String.join("\n", formattedCounts);

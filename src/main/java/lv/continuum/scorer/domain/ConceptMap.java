@@ -93,14 +93,14 @@ public class ConceptMap {
         return relationships.stream().filter(r -> r.matches(regex)).count();
     }
 
-    public boolean containsCycle() {
+    public boolean containsCycles() {
         var recursionStack = new HashSet<Concept>();
         var visited = new HashSet<Concept>();
         return outgoingRelationships.keySet().stream()
-                .anyMatch(c -> containsCycleInSubgraph(c, recursionStack, visited));
+                .anyMatch(c -> subgraphContainsCycles(c, recursionStack, visited));
     }
 
-    private boolean containsCycleInSubgraph(Concept concept, Set<Concept> recursionStack, Set<Concept> visited) {
+    private boolean subgraphContainsCycles(Concept concept, Set<Concept> recursionStack, Set<Concept> visited) {
         if (recursionStack.contains(concept)) {
             return true;
         } else if (visited.contains(concept)) {
@@ -109,7 +109,7 @@ public class ConceptMap {
             recursionStack.add(concept);
             visited.add(concept);
             var containsCycleInSubgraph = outgoingRelationships.get(concept).stream()
-                    .anyMatch(cor -> containsCycleInSubgraph(cor, recursionStack, visited));
+                    .anyMatch(cor -> subgraphContainsCycles(cor, recursionStack, visited));
             recursionStack.remove(concept);
             return containsCycleInSubgraph;
         }
@@ -175,7 +175,7 @@ public class ConceptMap {
 
     public Set<List<Concept>> longestPaths() {
         var longestPaths = new HashSet<List<Concept>>();
-        if (!containsCycle()) {
+        if (!containsCycles()) {
             incomingRelationships.entrySet().stream()
                     .filter(ir -> ir.getValue().isEmpty())
                     .forEach(ir -> {

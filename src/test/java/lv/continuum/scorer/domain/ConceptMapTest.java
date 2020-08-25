@@ -86,10 +86,10 @@ class ConceptMapTest {
     }
 
     @Test
-    void containsCycle() {
-        assertFalse(data.conceptMapWithLevels.containsCycle());
-        assertTrue(data.conceptMapWithCycles.containsCycle());
-        assertFalse(data.conceptMapOther.containsCycle());
+    void containsCycles() {
+        assertFalse(data.conceptMapWithLevels.containsCycles());
+        assertTrue(data.conceptMapWithCycles.containsCycles());
+        assertFalse(data.conceptMapOther.containsCycles());
     }
 
     @Test
