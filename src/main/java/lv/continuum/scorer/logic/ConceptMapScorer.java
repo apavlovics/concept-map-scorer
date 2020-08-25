@@ -173,23 +173,23 @@ public class ConceptMapScorer {
 
     private String countConceptMapElements(ConceptMap conceptMap, String prefix) {
         var formattedCounts = List.of(
-                formatCount(conceptMap.conceptCount(), "concepts"),
-                formatCount(conceptMap.relationshipCount(), "relationships"),
-                formatCount(conceptMap.levelCount(), "levels"),
-                formatCount(conceptMap.branchCount(), "branches"),
-                formatCount(conceptMap.exampleCount(), "examples"),
-                formatCount(conceptMap.containsCycle(), "cycles"),
-                formatCount(conceptMap.subnetCount(), "subnets")
+                formatCount("concepts", conceptMap.conceptCount()),
+                formatCount("relationships", conceptMap.relationshipCount()),
+                formatCount("levels", conceptMap.levelCount()),
+                formatCount("branches", conceptMap.branchCount()),
+                formatCount("examples", conceptMap.exampleCount()),
+                formatCount("cycles", conceptMap.containsCycle()),
+                formatCount("subnets", conceptMap.subnetCount())
         );
         return prefix + "\n" + String.join("\n", formattedCounts);
     }
 
-    private String formatCount(long count, String keyPrefix) {
+    private String formatCount(String keyPrefix, long count) {
         var keySuffix = count == 0 ? "-0" : count == 1 ? "-1" : "";
         return String.format(translations.get(keyPrefix + keySuffix), count);
     }
 
-    private String formatCount(boolean value, String keyPrefix) {
+    private String formatCount(String keyPrefix, boolean value) {
         return translations.get(keyPrefix + "-" + value);
     }
 
