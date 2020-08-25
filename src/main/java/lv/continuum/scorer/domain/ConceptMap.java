@@ -110,12 +110,12 @@ public class ConceptMap {
             return 0;
         } else {
             recursionStack.add(concept);
-            visited.add(concept);
             var cycleCountInSubgraph = 0L;
             for (var cor : outgoingRelationships.get(concept)) {
                 cycleCountInSubgraph += cycleCountInSubgraph(cor, recursionStack, visited);
             }
             recursionStack.remove(concept);
+            visited.add(concept);
             return cycleCountInSubgraph;
         }
     }
