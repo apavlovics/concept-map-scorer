@@ -16,7 +16,7 @@ class ConceptTest {
 
     @Test
     void constructInvalid() {
-        String[] invalidNames = {"", " ", null};
+        String[] invalidNames = {" ", "", null};
         for (var invalidName : invalidNames) {
             assertThrows(InvalidDataException.class, () -> new Concept(invalidName));
         }
