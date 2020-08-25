@@ -178,7 +178,7 @@ public class ConceptMapScorer {
                 formatCount(conceptMap.levelCount(), "levels"),
                 formatCount(conceptMap.branchCount(), "branches"),
                 formatCount(conceptMap.exampleCount(), "examples"),
-                formatCount(conceptMap.cycleCount(), "cycles"),
+                formatCount(conceptMap.containsCycle(), "cycles"),
                 formatCount(conceptMap.subnetCount(), "subnets")
         );
         return prefix + "\n" + String.join("\n", formattedCounts);
@@ -187,6 +187,10 @@ public class ConceptMapScorer {
     private String formatCount(long count, String keyPrefix) {
         var keySuffix = count == 0 ? "-0" : count == 1 ? "-1" : "";
         return String.format(translations.get(keyPrefix + keySuffix), count);
+    }
+
+    private String formatCount(boolean value, String keyPrefix) {
+        return translations.get(keyPrefix + "-" + value);
     }
 
     private boolean conceptMapsAreNotSimilar() throws InvalidDataException {

@@ -93,30 +93,25 @@ public class ConceptMap {
         return relationships.stream().filter(r -> r.matches(regex)).count();
     }
 
-    public long cycleCount() {
-        var cycleCount = 0L;
+    public boolean containsCycle() {
         var recursionStack = new HashSet<Concept>();
         var visited = new HashSet<Concept>();
-        for (var c : outgoingRelationships.keySet()) {
-            cycleCount += cycleCountInSubgraph(c, recursionStack, visited);
-        }
-        return cycleCount;
+        return outgoingRelationships.keySet().stream()
+                .anyMatch(c -> containsCycleInSubgraph(c, recursionStack, visited));
     }
 
-    private long cycleCountInSubgraph(Concept concept, Set<Concept> recursionStack, Set<Concept> visited) {
+    private boolean containsCycleInSubgraph(Concept concept, Set<Concept> recursionStack, Set<Concept> visited) {
         if (recursionStack.contains(concept)) {
-            return 1;
+            return true;
         } else if (visited.contains(concept)) {
-            return 0;
+            return false;
         } else {
             recursionStack.add(concept);
-            var cycleCountInSubgraph = 0L;
-            for (var cor : outgoingRelationships.get(concept)) {
-                cycleCountInSubgraph += cycleCountInSubgraph(cor, recursionStack, visited);
-            }
-            recursionStack.remove(concept);
             visited.add(concept);
-            return cycleCountInSubgraph;
+            var containsCycleInSubgraph = outgoingRelationships.get(concept).stream()
+                    .anyMatch(cor -> containsCycleInSubgraph(cor, recursionStack, visited));
+            recursionStack.remove(concept);
+            return containsCycleInSubgraph;
         }
     }
 
@@ -180,7 +175,7 @@ public class ConceptMap {
 
     public Set<List<Concept>> longestPaths() {
         var longestPaths = new HashSet<List<Concept>>();
-        if (cycleCount() == 0) {
+        if (!containsCycle()) {
             incomingRelationships.entrySet().stream()
                     .filter(ir -> ir.getValue().isEmpty())
                     .forEach(ir -> {
