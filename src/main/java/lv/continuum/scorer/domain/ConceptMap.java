@@ -108,10 +108,10 @@ public class ConceptMap {
         } else {
             recursionStack.add(concept);
             visited.add(concept);
-            var containsCycleInSubgraph = outgoingRelationships.get(concept).stream()
+            var subgraphContainsCycles = outgoingRelationships.get(concept).stream()
                     .anyMatch(cor -> subgraphContainsCycles(cor, recursionStack, visited));
             recursionStack.remove(concept);
-            return containsCycleInSubgraph;
+            return subgraphContainsCycles;
         }
     }
 
