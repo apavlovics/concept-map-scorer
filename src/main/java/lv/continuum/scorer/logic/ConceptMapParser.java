@@ -123,6 +123,7 @@ public class ConceptMapParser {
     }
 
     private boolean hasDuplicateConcept(Collection<Concept> concepts, String name) {
-        return concepts.stream().anyMatch(c -> c.id.equals(Concept.deriveId(name)));
+        var id = Concept.deriveId(name);
+        return concepts.stream().anyMatch(c -> c.id.equals(id));
     }
 }
