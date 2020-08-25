@@ -95,28 +95,28 @@ public class ConceptMap {
 
     public long cycleCount() {
         var cycleCount = 0L;
-        var stack = new HashSet<Concept>();
-        var visited = new HashSet<Concept>();
+        var recursionStack = new HashSet<Concept>();
+        var visitedConcepts = new HashSet<Concept>();
         for (var c : outgoingRelationships.keySet()) {
-            cycleCount += cycleCountInSubnet(c, visited, stack);
+            cycleCount += cycleCountInSubgraph(c, recursionStack, visitedConcepts);
         }
         return cycleCount;
     }
 
-    private long cycleCountInSubnet(Concept concept, Set<Concept> stack, Set<Concept> visited) {
-        if (stack.contains(concept)) {
+    private long cycleCountInSubgraph(Concept concept, Set<Concept> recursionStack, Set<Concept> visitedConcepts) {
+        if (recursionStack.contains(concept)) {
             return 1;
-        } else if (visited.contains(concept)) {
+        } else if (visitedConcepts.contains(concept)) {
             return 0;
         } else {
-            stack.add(concept);
-            visited.add(concept);
-            var cycleCountInSubnet = 0L;
-            for (var cor: outgoingRelationships.get(concept)) {
-                cycleCountInSubnet += cycleCountInSubnet(cor, stack, visited);
+            recursionStack.add(concept);
+            visitedConcepts.add(concept);
+            var cycleCountInSubgraph = 0L;
+            for (var cor : outgoingRelationships.get(concept)) {
+                cycleCountInSubgraph += cycleCountInSubgraph(cor, recursionStack, visitedConcepts);
             }
-            stack.remove(concept);
-            return cycleCountInSubnet;
+            recursionStack.remove(concept);
+            return cycleCountInSubgraph;
         }
     }
 
