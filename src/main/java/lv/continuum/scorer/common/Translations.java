@@ -8,10 +8,12 @@ import java.util.Properties;
 public class Translations {
 
     private static final String PROPERTIES_PATH = "translations/en.properties";
-    private static final Properties properties = new Properties();
 
-    private Translations() throws TranslationException {
-        try (var inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTIES_PATH)) {
+    private final Properties properties;
+
+    Translations(String propertiesPath) throws TranslationException {
+        try (var inputStream = getClass().getClassLoader().getResourceAsStream(propertiesPath)) {
+            properties = new Properties();
             properties.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new TranslationException("Translation properties cannot be initialised", e);
@@ -29,7 +31,7 @@ public class Translations {
     public static Translations getInstance() throws TranslationException {
         if (instance == null) {
             synchronized (Translations.class) {
-                if (instance == null) instance = new Translations();
+                if (instance == null) instance = new Translations(PROPERTIES_PATH);
             }
         }
         return instance;
