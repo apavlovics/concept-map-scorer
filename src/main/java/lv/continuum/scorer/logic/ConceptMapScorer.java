@@ -184,9 +184,9 @@ public class ConceptMapScorer {
         return prefix + "\n" + String.join("\n", formattedCounts);
     }
 
-    private String formatCount(String keyPrefix, long count) {
-        var keySuffix = count == 0 ? "-0" : count == 1 ? "-1" : "";
-        return String.format(translations.get(keyPrefix + keySuffix), count);
+    private String formatCount(String keyPrefix, long value) {
+        var keySuffix = value == 0 ? "-0" : value == 1 ? "-1" : "";
+        return String.format(translations.get(keyPrefix + keySuffix), value);
     }
 
     private String formatCount(String keyPrefix, boolean value) {
