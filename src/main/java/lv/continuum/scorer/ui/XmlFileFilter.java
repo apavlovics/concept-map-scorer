@@ -8,10 +8,12 @@ class XmlFileFilter extends FileFilter {
 
     private static final Set<String> EXTENSIONS = Set.of("xml");
 
+    @Override
     public String getDescription() {
         return "XML Files";
     }
 
+    @Override
     public boolean accept(File file) {
         if (!file.isDirectory()) {
             var path = file.getAbsolutePath().toLowerCase();

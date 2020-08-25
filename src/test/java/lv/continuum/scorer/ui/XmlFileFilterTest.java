@@ -1,5 +1,6 @@
 package lv.continuum.scorer.ui;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -7,9 +8,14 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class XmlFileFilterTest {
+class XmlFileFilterTest {
 
     private final XmlFileFilter xmlFileFilter = new XmlFileFilter();
+
+    @Test
+    void getDescription() {
+        assertTrue(StringUtils.isNotBlank(xmlFileFilter.getDescription()));
+    }
 
     @Test
     void accept() {
@@ -27,7 +33,7 @@ public class XmlFileFilterTest {
     void notAccept() {
         String[] fileNames = {
                 "test.doc",
-                "SomeFileXML",
+                "Some File XML",
                 "files/other-test-file.xmls"
         };
         for (var fileName : fileNames) {
