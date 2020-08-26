@@ -5,13 +5,15 @@ import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
 import lv.continuum.scorer.common.TranslationException;
 import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.domain.ConceptMap;
+import lv.continuum.scorer.logic.ConceptMapComparator;
 import lv.continuum.scorer.logic.ConceptMapParser;
-import lv.continuum.scorer.logic.ConceptMapScorer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,6 +22,10 @@ import java.util.Set;
  */
 @Slf4j
 public class Scorer extends JFrame {
+
+    private final Translations translations;
+    private final ConceptMapParser conceptMapParser;
+    private final ConceptMapFormatter conceptMapFormatter;
 
     private final JTextField studentTextField;
     private final JTextField teacherTextField;
@@ -34,10 +40,11 @@ public class Scorer extends JFrame {
     private final JCheckBox errorAnalysisCheckBox;
     private final Set<JCheckBox> checkBoxes;
 
-    private final Translations translations = Translations.getInstance();
-    private final ConceptMapParser conceptMapParser = new ConceptMapParser();
+    public Scorer(Translations translations) {
+        this.translations = translations;
+        this.conceptMapParser = new ConceptMapParser();
+        this.conceptMapFormatter = new ConceptMapFormatter(translations);
 
-    public Scorer() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle(translations.get("title"));
         setResizable(false);
@@ -193,35 +200,45 @@ public class Scorer extends JFrame {
             var studentText = studentTextField.getText();
             var teacherText = teacherTextField.getText();
 
-            ConceptMapScorer scorer;
+            ConceptMap studentConceptMap;
+            Optional<ConceptMap> teacherConceptMap;
             if (!studentText.isBlank() && !teacherText.isBlank()) {
-                var studentConceptMap = conceptMapParser.parse(studentText);
-                var teacherConceptMap = conceptMapParser.parse(teacherText);
-                scorer = new ConceptMapScorer(studentConceptMap, teacherConceptMap);
+                studentConceptMap = conceptMapParser.parse(studentText);
+                teacherConceptMap = Optional.of(conceptMapParser.parse(teacherText));
             } else if (!studentText.isBlank()) {
-                var studentConceptMap = conceptMapParser.parse(studentText);
-                scorer = new ConceptMapScorer(studentConceptMap);
+                studentConceptMap = conceptMapParser.parse(studentText);
+                teacherConceptMap = Optional.empty();
             } else {
                 throw new InvalidDataException(ErrorCode.INVALID_FILE);
             }
 
-            var sb = new StringBuilder();
+            var strings = new ArrayList<String>();
             if (elementsCheckBox.isSelected()) {
-                sb.append(scorer.countConceptMapsElements()).append("\n\n");
+                strings.add(conceptMapFormatter.formatCounts("student", studentConceptMap));
             }
-            if (closenessIndexesCheckBox.isSelected()) {
-                sb.append(scorer.compareConceptMapsUsingClosenessIndexes()).append("\n\n");
-            }
-            if (importanceIndexesCheckBox.isSelected()) {
-                sb.append(scorer.compareConceptMapsUsingImportanceIndexes()).append("\n\n");
-            }
-            if (propositionChainsCheckBox.isSelected()) {
-                sb.append(scorer.compareConceptMapsUsingPropositionChains()).append("\n\n");
-            }
-            if (errorAnalysisCheckBox.isSelected()) {
-                sb.append(scorer.compareConceptMapsUsingErrorAnalysis());
-            }
-            scoreTextArea.setText(sb.toString());
+            teacherConceptMap.ifPresent(tcm -> {
+                var comparator = new ConceptMapComparator(studentConceptMap, tcm);
+                if (elementsCheckBox.isSelected()) {
+                    strings.add(conceptMapFormatter.formatCounts("teacher", tcm));
+                }
+                if (closenessIndexesCheckBox.isSelected()) {
+                    strings.add(conceptMapFormatter.formatSimilarityDegree(
+                            "closeness-indexes", comparator::compareUsingClosenessIndexes));
+                }
+                if (importanceIndexesCheckBox.isSelected()) {
+                    strings.add(conceptMapFormatter.formatSimilarityDegree(
+                            "importance-indexes", comparator::compareUsingImportanceIndexes));
+                }
+                if (propositionChainsCheckBox.isSelected()) {
+                    strings.add(conceptMapFormatter.formatSimilarityDegree(
+                            "proposition-chains", comparator::compareUsingPropositionChains));
+                }
+                if (errorAnalysisCheckBox.isSelected()) {
+                    strings.add(conceptMapFormatter.formatSimilarityDegrees(
+                            "error-analysis", comparator::compareUsingErrorAnalysis));
+                }
+            });
+            scoreTextArea.setText(String.join("\n\n", strings));
             scoreTextArea.setEnabled(true);
             log.debug("Scored concept map");
         } catch (InvalidDataException e) {
@@ -288,8 +305,8 @@ public class Scorer extends JFrame {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                Translations.getInstance();
-                new Scorer();
+                var translations = Translations.getInstance();
+                new Scorer(translations);
                 log.debug("Created main application window");
             } catch (TranslationException e) {
                 log.error("Issue while creating main application window", e);

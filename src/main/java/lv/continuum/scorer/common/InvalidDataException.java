@@ -26,7 +26,10 @@ public class InvalidDataException extends Exception {
         CONCEPT_MAP_DUPLICATE_CONCEPTS("concept-map-duplicate-concepts"),
         CONCEPT_MAP_NO_RELATIONSHIPS("concept-map-no-relationships"),
         CONCEPT_MAP_INVALID_RELATIONSHIP("concept-map-invalid-relationship"),
-        NO_TEACHER_CONCEPT_MAP("no-teacher-concept-map");
+        DIFFERENT_CONCEPTS_IMPORTANCE_INDEXES("different-concepts-importance-indexes"),
+        DIFFERENT_CONCEPTS_PROPOSITION_CHAINS("different-concepts-proposition-chains"),
+        DIFFERENT_CONCEPTS_ERROR_ANALYSIS("different-concepts-error-analysis"),
+        CYCLES_PROPOSITION_CHAINS("cycles-proposition-chains");
 
         /**
          * Translation key intended to be passed to {@link Translations} instance.

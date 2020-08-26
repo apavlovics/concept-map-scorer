@@ -1,40 +1,28 @@
 package lv.continuum.scorer.logic;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
-import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.ConceptMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.IntStream;
 
-public class ConceptMapScorer {
+@RequiredArgsConstructor
+public class ConceptMapComparator {
 
-    private static final Translations translations = Translations.getInstance();
-
+    @NonNull
     private final ConceptMap studentConceptMap;
+
+    @NonNull
     private final ConceptMap teacherConceptMap;
 
-    public ConceptMapScorer(ConceptMap studentConceptMap) {
-        this(studentConceptMap, null);
-    }
-
-    public ConceptMapScorer(ConceptMap studentConceptMap, ConceptMap teacherConceptMap) {
-        this.studentConceptMap = Objects.requireNonNull(studentConceptMap);
-        this.teacherConceptMap = teacherConceptMap;
-    }
-
-    public String countConceptMapsElements() {
-        if (teacherConceptMap == null) {
-            return countConceptMapElements(studentConceptMap, translations.get("concept-map-contains"));
-        } else {
-            return countConceptMapElements(studentConceptMap, translations.get("student-concept-map-contains")) +
-                    "\n\n" + countConceptMapElements(teacherConceptMap, translations.get("teacher-concept-map-contains"));
-        }
-    }
-
-    public String compareConceptMapsUsingClosenessIndexes() throws InvalidDataException {
-        checkTeacherConceptMap();
+    public double compareUsingClosenessIndexes() {
         var studentAllRelationships = new HashMap<>(studentConceptMap.allRelationships);
         var teacherAllRelationships = new HashMap<>(teacherConceptMap.allRelationships);
 
@@ -63,15 +51,12 @@ public class ConceptMapScorer {
         IntStream.range(0, differentConceptCount).forEach(i -> closenessIndexes.add(0.0));
 
         var closenessIndexSum = closenessIndexes.stream().mapToDouble(Double::doubleValue).sum();
-        var similarityDegree = closenessIndexSum / closenessIndexes.size();
-        return translations.format("similarity-closeness-indexes", similarityDegree);
+        return closenessIndexSum / closenessIndexes.size();
     }
 
-    public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
-        checkTeacherConceptMap();
-        if (conceptMapsAreNotSimilar()) {
-            return translations.get("different-concepts-importance-indexes");
-        }
+    public double compareUsingImportanceIndexes() throws InvalidDataException {
+        checkAreSimilar(ErrorCode.DIFFERENT_CONCEPTS_IMPORTANCE_INDEXES);
+
         var studentAllPaths = studentConceptMap.allPaths();
         var teacherAllPaths = teacherConceptMap.allPaths();
 
@@ -96,19 +81,16 @@ public class ConceptMapScorer {
         unionCount += studentAllPaths.values().stream().mapToInt(Set::size).sum();
         unionCount += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
 
-        var similarityDegree = intersectionCount / unionCount;
-        return translations.format("similarity-importance-indexes", similarityDegree);
+        return intersectionCount / unionCount;
     }
 
-    public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
-        checkTeacherConceptMap();
-        if (conceptMapsAreNotSimilar()) {
-            return translations.get("different-concepts-proposition-chains");
-        }
+    public double compareUsingPropositionChains() throws InvalidDataException {
+        checkAreSimilar(ErrorCode.DIFFERENT_CONCEPTS_PROPOSITION_CHAINS);
+
         var studentLongestPaths = studentConceptMap.longestPaths();
         var teacherLongestPaths = teacherConceptMap.longestPaths();
         if (studentLongestPaths.isEmpty() || teacherLongestPaths.isEmpty()) {
-            return translations.get("cycles-proposition-chains");
+            throw new InvalidDataException(ErrorCode.CYCLES_PROPOSITION_CHAINS);
         }
 
         double teacherScore = 0, studentScore = 0, breakScore = 0;
@@ -128,15 +110,11 @@ public class ConceptMapScorer {
             }
             breakScore += approvedCurrentBreakScore / tlpChainLength;
         }
-        var similarityDegree = (studentScore - breakScore) / teacherScore;
-        return translations.format("similarity-proposition-chains", similarityDegree);
+        return (studentScore - breakScore) / teacherScore;
     }
 
-    public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
-        checkTeacherConceptMap();
-        if (conceptMapsAreNotSimilar()) {
-            return translations.get("different-concepts-error-analysis");
-        }
+    public SimilarityDegrees compareUsingErrorAnalysis() throws InvalidDataException {
+        checkAreSimilar(ErrorCode.DIFFERENT_CONCEPTS_ERROR_ANALYSIS);
 
         var studentOutgoingRelationships = studentConceptMap.outgoingRelationships;
         var teacherOutgoingRelationships = teacherConceptMap.outgoingRelationships;
@@ -168,40 +146,18 @@ public class ConceptMapScorer {
                 weight1 * noRelationships -
                 weight2 * incorrectRelationships -
                 weight1 * missingRelationships) / totalRelationships;
-        return translations.format("similarity-error-analysis", similarityDegree) + "\n" +
-                translations.format("similarity-error-analysis-weighted", weightedSimilarityDegree);
+        return new SimilarityDegrees(similarityDegree, weightedSimilarityDegree);
     }
 
-    private String countConceptMapElements(ConceptMap conceptMap, String prefix) {
-        var formattedCounts = List.of(
-                formatCount("concepts", conceptMap.conceptCount()),
-                formatCount("relationships", conceptMap.relationshipCount()),
-                formatCount("levels", conceptMap.levelCount()),
-                formatCount("branches", conceptMap.branchCount()),
-                formatCount("examples", conceptMap.exampleCount()),
-                formatCount("cycles", conceptMap.containsCycles()),
-                formatCount("subnets", conceptMap.subnetCount())
-        );
-        return prefix + "\n" + String.join("\n", formattedCounts);
-    }
-
-    private String formatCount(String keyPrefix, long value) {
-        var keySuffix = value == 0 ? "-0" : value == 1 ? "-1" : "";
-        return translations.format(keyPrefix + keySuffix, value);
-    }
-
-    private String formatCount(String keyPrefix, boolean value) {
-        return translations.get(keyPrefix + "-" + value);
-    }
-
-    private boolean conceptMapsAreNotSimilar() throws InvalidDataException {
-        checkTeacherConceptMap();
-        return !studentConceptMap.isSimilar(teacherConceptMap);
-    }
-
-    private void checkTeacherConceptMap() throws InvalidDataException {
-        if (teacherConceptMap == null) {
-            throw new InvalidDataException(ErrorCode.NO_TEACHER_CONCEPT_MAP);
+    private void checkAreSimilar(ErrorCode errorCode) throws InvalidDataException {
+        if (!studentConceptMap.isSimilar(teacherConceptMap)) {
+            throw new InvalidDataException(errorCode);
         }
+    }
+
+    @Value
+    public static class SimilarityDegrees {
+        public double similarityDegree;
+        public double weightedSimilarityDegree;
     }
 }
