@@ -39,20 +39,20 @@ public class ConceptMapFormatter {
         T calculate() throws InvalidDataException;
     }
 
-    public String formatSimilarityDegree(String key, Calculator<Double> calculator) {
+    public String formatSimilarityDegree(String keySuffix, Calculator<Double> calculator) {
         try {
             var similarityDegree = calculator.calculate();
-            return translations.format("similarity-" + key, similarityDegree);
+            return translations.format("similarity-" + keySuffix, similarityDegree);
         } catch (InvalidDataException e) {
             return translations.get(e.errorCode.translationKey);
         }
     }
 
-    public String formatSimilarityDegrees(String key, Calculator<SimilarityDegrees> calculator) {
+    public String formatSimilarityDegrees(String keySuffix, Calculator<SimilarityDegrees> calculator) {
         try {
             var similarityDegrees = calculator.calculate();
-            return translations.format("similarity-" + key, similarityDegrees.similarityDegree) + "\n" +
-                    translations.format("weighted-similarity-" + key, similarityDegrees.weightedSimilarityDegree);
+            return translations.format("similarity-" + keySuffix, similarityDegrees.similarityDegree) + "\n" +
+                    translations.format("weighted-similarity-" + keySuffix, similarityDegrees.weightedSimilarityDegree);
         } catch (InvalidDataException e) {
             return translations.get(e.errorCode.translationKey);
         }
