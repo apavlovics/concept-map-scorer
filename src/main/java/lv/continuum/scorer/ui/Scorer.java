@@ -226,10 +226,12 @@ public class Scorer extends JFrame {
             log.debug("Scored concept map");
         } catch (InvalidDataException e) {
             log.debug("Issue while scoring concept map", e);
-            var translation = translations.get(e.errorCode.key);
+            var message = e.fileName != null ?
+                    translations.format(e.errorCode.key, e.fileName) :
+                    translations.get(e.errorCode.key);
             JOptionPane.showMessageDialog(
                     this,
-                    e.fileName != null ? translations.format(translation, e.fileName) : translation,
+                    message,
                     translations.get("error"),
                     JOptionPane.ERROR_MESSAGE
             );

@@ -49,13 +49,13 @@ public class Translations {
         return Optional.ofNullable(properties.getProperty(key)).orElse(key);
     }
 
-    // TODO Cover with unit test
     public String format(String key, Object... args) {
+        var translation = get(key);
         try {
-            return String.format(key, args);
+            return String.format(translation, args);
         } catch (IllegalFormatException e) {
-            log.warn("Issue while formatting key " + key, e);
-            return key;
+            log.warn("Issue while formatting translation " + translation, e);
+            return translation;
         }
     }
 }

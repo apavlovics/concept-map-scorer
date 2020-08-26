@@ -19,7 +19,18 @@ class TranslationsTest {
 
     @Test
     void get() {
-        assertEquals("Known Value", translations.get("known-key"));
-        assertEquals("unknown-key", translations.get("unknown-key"));
+        assertEquals("Simple translation", translations.get("key-simple"));
+        assertEquals("key-not-found", translations.get("key-not-found"));
+    }
+
+    @Test
+    void formatValid() {
+        assertEquals("Perfect translation", translations.format("key-formatted", "Perfect"));
+    }
+
+    @Test
+    void formatInvalid() {
+        assertEquals("%s translation", translations.format("key-formatted"));
+        assertEquals("key-not-found", translations.format("key-not-found", 123));
     }
 }
