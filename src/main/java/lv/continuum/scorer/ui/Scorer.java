@@ -306,8 +306,7 @@ public class Scorer extends JFrame {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                var translations = Translations.getInstance();
-                new Scorer(translations);
+                new Scorer(new Translations());
                 log.debug("Created main application window");
             } catch (TranslationException e) {
                 log.error("Issue while creating main application window", e);

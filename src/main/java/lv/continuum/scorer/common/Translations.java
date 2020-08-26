@@ -16,11 +16,16 @@ public class Translations {
 
     private final Properties properties;
 
-    Translations(String propertiesPath) throws TranslationException {
-        if (StringUtils.isBlank(propertiesPath)) {
-            throw new TranslationException("Translation properties path must not be blank");
+    /**
+     * Initializes a new {@link Translations} instance with the data loaded from the given {@code propertiesResource}.
+     *
+     * @throws TranslationException if the initialization has failed.
+     */
+    public Translations(String propertiesResource) throws TranslationException {
+        if (StringUtils.isBlank(propertiesResource)) {
+            throw new TranslationException("Translation properties resource must not be blank");
         }
-        try (var inputStream = getClass().getClassLoader().getResourceAsStream(propertiesPath)) {
+        try (var inputStream = getClass().getClassLoader().getResourceAsStream(propertiesResource)) {
             properties = new Properties();
             properties.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         } catch (Exception e) {
@@ -28,21 +33,8 @@ public class Translations {
         }
     }
 
-    private static Translations instance;
-
-    /**
-     * Initializes and provides access to the {@link Translations} singleton.
-     *
-     * @return the {@link Translations} singleton.
-     * @throws TranslationException if initialization has failed.
-     */
-    public static Translations getInstance() throws TranslationException {
-        if (instance == null) {
-            synchronized (Translations.class) {
-                if (instance == null) instance = new Translations(PROPERTIES_PATH);
-            }
-        }
-        return instance;
+    public Translations() throws TranslationException {
+        this(PROPERTIES_PATH);
     }
 
     public String get(String key) {
