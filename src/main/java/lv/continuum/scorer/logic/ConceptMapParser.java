@@ -23,10 +23,10 @@ public class ConceptMapParser {
 
     private static final Translations translations = Translations.getInstance();
 
-    public ConceptMap parse(String xml) throws IOException, ParserConfigurationException, SAXException, InvalidDataException {
-        var documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        var file = new File(xml);
-        var document = documentBuilder.parse(file);
+    public ConceptMap parse(String conceptMapPath)
+            throws IOException, ParserConfigurationException, SAXException, InvalidDataException {
+        var file = new File(conceptMapPath);
+        var document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
         document.getDocumentElement().normalize();
 
         try {

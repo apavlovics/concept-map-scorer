@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<element name="root">
+    <element name="relation" value="is instance of">
+        <element name="source" value="A"/>
+        <element name="target" value="A"/>
+    </element>
+    <element name="relation" value="contains">
+        <element name="source" value="A"/>
+        <element name="target" value="B"/>
+    </element>
+    <element name="relation" value="corresponds to">
+        <element name="source" value="B"/>
+        <element name="target" value="B"/>
+    </element>
+    <element name="relation" value="ir eksemplārs">
+        <element name="source" value="B"/>
+        <element name="target" value="C"/>
+    </element>
+    <element name="relation" value="">
+        <element name="source" value="C"/>
+        <element name="target" value="A"/>
+    </element>
+    <element name="relation" value="">
+        <element name="source" value="D"/>
+        <element name="target" value="E"/>
+    </element>
+    <element name="relation" value="">
+        <element name="source" value="E"/>
+        <element name="target" value="F"/>
+    </element>
+    <element name="relation" value="">
+        <element name="source" value="F"/>
+        <element name="target" value="E"/>
+    </element>
+    <element name="relation" value="">
+        <element name="source" value="F"/>
+        <element name="target" value="G"/>
+    </element>
+    <element name="relation" value="">
+        <element name="source" value="G"/>
+        <element name="target" value="E"/>
+    </element>
+    <element name="node" value="A"/>
+    <element name="node" value="B"/>
+    <element name="node" value="C"/>
+    <element name="node" value="D"/>
+    <element name="node" value="E"/>
+    <element name="node" value="F"/>
+    <element name="node" value="G"/>
+</element>

@@ -1,5 +1,6 @@
 package lv.continuum.scorer.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.Translations;
@@ -10,6 +11,7 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Slf4j
 public class ConceptMap {
 
@@ -17,7 +19,10 @@ public class ConceptMap {
 
     private static final Set<Concept> EMPTY = Set.of();
 
+    @EqualsAndHashCode.Include
     private final Set<Concept> concepts;
+
+    @EqualsAndHashCode.Include
     private final Set<Relationship> relationships;
 
     public final Map<Concept, Set<Concept>> outgoingRelationships;
