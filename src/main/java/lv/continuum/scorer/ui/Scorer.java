@@ -48,7 +48,7 @@ public class Scorer extends JFrame {
         this.conceptMapFormatter = new ConceptMapFormatter(translations);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle(translations.format("title", VersionUtils.getVersionNumber());
+        setTitle(translations.format("title", VersionUtils.getVersionNumber()));
         setResizable(false);
 
         var keyAdapter = new KeyAdapter() {
