@@ -5,6 +5,7 @@ import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
 import lv.continuum.scorer.common.TranslationException;
 import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.common.VersionUtils;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.logic.ConceptMapComparator;
 import lv.continuum.scorer.logic.ConceptMapFormatter;
@@ -47,7 +48,7 @@ public class Scorer extends JFrame {
         this.conceptMapFormatter = new ConceptMapFormatter(translations);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle(translations.get("title"));
+        setTitle(translations.format("title", VersionUtils.getVersionNumber());
         setResizable(false);
 
         var keyAdapter = new KeyAdapter() {
