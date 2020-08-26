@@ -9,8 +9,8 @@ public class VersionUtils {
     /**
      * Gets the version number of the application, as defined in <i>pom.xml</i>.
      * <p>
-     * This method works only if Maven maven is used and {@code <manifest>} section of the package
-     * to be generated contains the following line:
+     * This method works if Maven is used and {@code <manifest>} section of the package to be generated
+     * contains the following line:
      * <p>
      * {@code <addDefaultImplementationEntries>true</addDefaultImplementationEntries>}
      *
