@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConceptMapParserTest {
 
-    private final ConceptMapParser conceptMapParser = new ConceptMapParser();
     private final TestData data = TestData.getInstance();
+    private final ConceptMapParser conceptMapParser = new ConceptMapParser();
 
     private String makePath(String fileName) {
         return "src/test/resources/samples/" + fileName;

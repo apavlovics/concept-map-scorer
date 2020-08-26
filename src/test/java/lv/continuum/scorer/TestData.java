@@ -75,11 +75,13 @@ public class TestData {
 
     public Set<Relationship> relationshipsWithLevels = Set.of(ab, ac, bd, ce, cf, fg);
     public Set<Relationship> relationshipsWithCycles = Set.of(aa, ab, bb, bc, ca, de, ef, fe, fg, ge);
+    public Set<Relationship> relationshipsSimilar1 = Set.of(ab, ac, bd, ce, cf, fg);
+    public Set<Relationship> relationshipsSimilar2 = Set.of(ab, ac, bd, ce, fe, gf);
     public Set<Relationship> relationshipsOther = Set.of(ab);
 
+    public String fileName = "concept-map.xml";
     public String fileNameWithLevels = "concept-map-with-levels.xml";
     public String fileNameWithCycles = "concept-map-with-cycles.xml";
-    public String fileNameOther = "concept-map-other.xml";
     public String fileNameInvalid = "concept-map-invalid.xml";
     public String fileNameNotFound = "whatever.xml";
 
@@ -157,7 +159,9 @@ public class TestData {
 
     public ConceptMap conceptMapWithLevels = new ConceptMap(concepts, relationshipsWithLevels, fileNameWithLevels);
     public ConceptMap conceptMapWithCycles = new ConceptMap(concepts, relationshipsWithCycles, fileNameWithCycles);
-    public ConceptMap conceptMapOther = new ConceptMap(conceptsOther, relationshipsOther, fileNameOther);
+    public ConceptMap conceptMapSimilar1 = new ConceptMap(concepts, relationshipsSimilar1, fileName);
+    public ConceptMap conceptMapSimilar2 = new ConceptMap(concepts, relationshipsSimilar2, fileName);
+    public ConceptMap conceptMapOther = new ConceptMap(conceptsOther, relationshipsOther, fileName);
 
     public Map<Relationship, Set<Relationship>> allPathsWithLevels = Map.of(
             ab, Set.of(ab, ad),
