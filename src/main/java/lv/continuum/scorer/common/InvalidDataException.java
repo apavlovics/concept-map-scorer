@@ -28,6 +28,7 @@ public class InvalidDataException extends Exception {
         CONCEPT_MAP_INVALID_RELATIONSHIP("concept-map-invalid-relationship"),
         NO_TEACHER_CONCEPT_MAP("no-teacher-concept-map");
 
-        public final String key;
+        /** Translation key intended to be passed to {@link Translations} instance. */
+        public final String translationKey;
     }
 }
