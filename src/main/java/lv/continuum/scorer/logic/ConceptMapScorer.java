@@ -64,7 +64,7 @@ public class ConceptMapScorer {
 
         var closenessIndexSum = closenessIndexes.stream().mapToDouble(Double::doubleValue).sum();
         var similarityDegree = closenessIndexSum / closenessIndexes.size();
-        return String.format(translations.get("similarity-closeness-indexes"), similarityDegree);
+        return translations.format("similarity-closeness-indexes", similarityDegree);
     }
 
     public String compareConceptMapsUsingImportanceIndexes() throws InvalidDataException {
@@ -97,7 +97,7 @@ public class ConceptMapScorer {
         unionCount += teacherAllPaths.values().stream().mapToInt(Set::size).sum();
 
         var similarityDegree = intersectionCount / unionCount;
-        return String.format(translations.get("similarity-importance-indexes"), similarityDegree);
+        return translations.format("similarity-importance-indexes", similarityDegree);
     }
 
     public String compareConceptMapsUsingPropositionChains() throws InvalidDataException {
@@ -129,7 +129,7 @@ public class ConceptMapScorer {
             breakScore += approvedCurrentBreakScore / tlpChainLength;
         }
         var similarityDegree = (studentScore - breakScore) / teacherScore;
-        return String.format(translations.get("similarity-proposition-chains"), similarityDegree);
+        return translations.format("similarity-proposition-chains", similarityDegree);
     }
 
     public String compareConceptMapsUsingErrorAnalysis() throws InvalidDataException {
@@ -168,8 +168,8 @@ public class ConceptMapScorer {
                 weight1 * noRelationships -
                 weight2 * incorrectRelationships -
                 weight1 * missingRelationships) / totalRelationships;
-        return String.format(translations.get("similarity-error-analysis"), similarityDegree) + "\n" +
-                String.format(translations.get("similarity-error-analysis-weighted"), weightedSimilarityDegree);
+        return translations.format("similarity-error-analysis", similarityDegree) + "\n" +
+                translations.format("similarity-error-analysis-weighted", weightedSimilarityDegree);
     }
 
     private String countConceptMapElements(ConceptMap conceptMap, String prefix) {
@@ -187,7 +187,7 @@ public class ConceptMapScorer {
 
     private String formatCount(String keyPrefix, long value) {
         var keySuffix = value == 0 ? "-0" : value == 1 ? "-1" : "";
-        return String.format(translations.get(keyPrefix + keySuffix), value);
+        return translations.format(keyPrefix + keySuffix, value);
     }
 
     private String formatCount(String keyPrefix, boolean value) {
