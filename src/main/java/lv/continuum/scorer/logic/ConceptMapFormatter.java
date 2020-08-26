@@ -1,4 +1,4 @@
-package lv.continuum.scorer.ui;
+package lv.continuum.scorer.logic;
 
 import lombok.RequiredArgsConstructor;
 import lv.continuum.scorer.common.InvalidDataException;

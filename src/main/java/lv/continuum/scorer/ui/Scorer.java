@@ -7,6 +7,7 @@ import lv.continuum.scorer.common.TranslationException;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.logic.ConceptMapComparator;
+import lv.continuum.scorer.logic.ConceptMapFormatter;
 import lv.continuum.scorer.logic.ConceptMapParser;
 
 import javax.swing.*;
