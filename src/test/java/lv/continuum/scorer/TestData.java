@@ -77,7 +77,11 @@ public class TestData {
     public Set<Relationship> relationshipsWithCycles = Set.of(aa, ab, bb, bc, ca, de, ef, fe, fg, ge);
     public Set<Relationship> relationshipsOther = Set.of(ab);
 
-    public String fileName = "concept-map.xml";
+    public String fileNameWithLevels = "concept-map-with-levels.xml";
+    public String fileNameWithCycles = "concept-map-with-cycles.xml";
+    public String fileNameOther = "concept-map-other.xml";
+    public String fileNameInvalid = "concept-map-invalid.xml";
+    public String fileNameNotFound = "whatever.xml";
 
     public Map<Concept, Set<Concept>> outgoingRelationshipsWithLevels = Map.of(
             a, Set.of(b, c),
@@ -151,9 +155,9 @@ public class TestData {
             c, Set.of()
     );
 
-    public ConceptMap conceptMapWithLevels = new ConceptMap(concepts, relationshipsWithLevels, fileName);
-    public ConceptMap conceptMapWithCycles = new ConceptMap(concepts, relationshipsWithCycles, fileName);
-    public ConceptMap conceptMapOther = new ConceptMap(conceptsOther, relationshipsOther, fileName);
+    public ConceptMap conceptMapWithLevels = new ConceptMap(concepts, relationshipsWithLevels, fileNameWithLevels);
+    public ConceptMap conceptMapWithCycles = new ConceptMap(concepts, relationshipsWithCycles, fileNameWithCycles);
+    public ConceptMap conceptMapOther = new ConceptMap(conceptsOther, relationshipsOther, fileNameOther);
 
     public Map<Relationship, Set<Relationship>> allPathsWithLevels = Map.of(
             ab, Set.of(ab, ad),

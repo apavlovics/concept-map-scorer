@@ -23,14 +23,14 @@ class ConceptTest {
     }
 
     @Test
-    void deriveId() {
-        var namesToIds = Map.of("Name", "name", "Another Name", "another-name", " Piemērs ", "piemērs");
-        namesToIds.forEach((name, id) -> assertEquals(id, Concept.deriveId(name)));
-    }
-
-    @Test
     void equals() throws InvalidDataException {
         assertEquals(new Concept("test"), new Concept(" TEST "));
         assertNotEquals(new Concept("one"), new Concept("two"));
+    }
+
+    @Test
+    void deriveId() {
+        var namesToIds = Map.of("Name", "name", "Another Name", "another-name", " Piemērs ", "piemērs");
+        namesToIds.forEach((name, id) -> assertEquals(id, Concept.deriveId(name)));
     }
 }

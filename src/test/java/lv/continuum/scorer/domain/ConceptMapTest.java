@@ -14,7 +14,7 @@ class ConceptMapTest {
 
     @Test
     void constructValid() throws InvalidDataException {
-        new ConceptMap(data.concepts, data.relationshipsWithLevels, data.fileName);
+        new ConceptMap(data.concepts, data.relationshipsWithLevels, data.fileNameWithLevels);
         new ConceptMap(data.concepts, data.relationshipsWithCycles, null);
     }
 
@@ -22,11 +22,20 @@ class ConceptMapTest {
     void constructInvalid() {
 
         // No concepts or relationships
-        assertThrows(InvalidDataException.class, () -> new ConceptMap(data.concepts, Set.of(), data.fileName));
-        assertThrows(InvalidDataException.class, () -> new ConceptMap(Set.of(), data.relationshipsWithCycles, data.fileName));
+        assertThrows(InvalidDataException.class, () -> new ConceptMap(data.concepts, Set.of(), data.fileNameWithLevels));
+        assertThrows(InvalidDataException.class, () -> new ConceptMap(Set.of(), data.relationshipsWithCycles, data.fileNameWithCycles));
 
         // Relationships containing unknown concepts
-        assertThrows(InvalidDataException.class, () -> new ConceptMap(data.conceptsOther, data.relationshipsWithCycles, data.fileName));
+        assertThrows(InvalidDataException.class, () -> new ConceptMap(data.conceptsOther, data.relationshipsWithCycles, data.fileNameOther));
+    }
+
+    @Test
+    void equals() throws InvalidDataException {
+        assertEquals(
+                new ConceptMap(data.concepts, data.relationshipsWithLevels, data.fileNameWithLevels),
+                new ConceptMap(data.concepts, data.relationshipsWithLevels, data.fileNameOther)
+        );
+        assertNotEquals(data.conceptMapWithLevels, data.conceptMapWithCycles);
     }
 
     @Test
