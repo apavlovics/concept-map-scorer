@@ -1,6 +1,7 @@
 package lv.continuum.scorer.logic;
 
 import lv.continuum.scorer.common.InvalidDataException;
+import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.domain.ConceptMap;
 
@@ -200,7 +201,7 @@ public class ConceptMapScorer {
 
     private void checkTeacherConceptMap() throws InvalidDataException {
         if (teacherConceptMap == null) {
-            throw new InvalidDataException(translations.get("no-teacher-concept-map"));
+            throw new InvalidDataException(ErrorCode.NO_TEACHER_CONCEPT_MAP);
         }
     }
 }

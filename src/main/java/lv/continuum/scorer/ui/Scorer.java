@@ -2,6 +2,7 @@ package lv.continuum.scorer.ui;
 
 import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
+import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
 import lv.continuum.scorer.common.TranslationException;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.logic.ConceptMapParser;
@@ -201,7 +202,7 @@ public class Scorer extends JFrame {
                 var studentConceptMap = conceptMapParser.parse(studentText);
                 scorer = new ConceptMapScorer(studentConceptMap);
             } else {
-                throw new UnsupportedOperationException(translations.get("invalid-file"));
+                throw new InvalidDataException(ErrorCode.INVALID_FILE);
             }
 
             var sb = new StringBuilder();
@@ -223,11 +224,12 @@ public class Scorer extends JFrame {
             scoreTextArea.setText(sb.toString());
             scoreTextArea.setEnabled(true);
             log.debug("Scored concept map");
-        } catch (InvalidDataException | UnsupportedOperationException e) {
+        } catch (InvalidDataException e) {
             log.debug("Issue while scoring concept map", e);
+            var translation = translations.get(e.errorCode.key);
             JOptionPane.showMessageDialog(
                     this,
-                    e.getMessage(),
+                    e.fileName != null ? translations.format(translation, e.fileName) : translation,
                     translations.get("error"),
                     JOptionPane.ERROR_MESSAGE
             );

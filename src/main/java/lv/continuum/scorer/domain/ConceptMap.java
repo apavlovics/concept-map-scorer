@@ -3,7 +3,7 @@ package lv.continuum.scorer.domain;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
-import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
 import org.apache.commons.collections4.set.ListOrderedSet;
 
 import java.util.*;
@@ -14,8 +14,6 @@ import static java.util.stream.Collectors.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Slf4j
 public class ConceptMap {
-
-    private static final Translations translations = Translations.getInstance();
 
     private static final Set<Concept> EMPTY = Set.of();
 
@@ -31,15 +29,15 @@ public class ConceptMap {
 
     public ConceptMap(Set<Concept> concepts, Set<Relationship> relationships, String fileName) throws InvalidDataException {
         if (concepts.isEmpty()) {
-            throw new InvalidDataException(String.format(translations.get("concept-map-no-concepts"), fileName));
+            throw new InvalidDataException(ErrorCode.CONCEPT_MAP_NO_CONCEPTS, fileName);
         }
         if (relationships.isEmpty()) {
-            throw new InvalidDataException(String.format(translations.get("concept-map-no-relationships"), fileName));
+            throw new InvalidDataException(ErrorCode.CONCEPT_MAP_NO_RELATIONSHIPS, fileName);
         }
         this.concepts = concepts;
 
         if (relationships.stream().anyMatch(r -> !concepts.contains(r.fromConcept) || !concepts.contains(r.toConcept))) {
-            throw new InvalidDataException(String.format(translations.get("concept-map-invalid-relationship"), fileName));
+            throw new InvalidDataException(ErrorCode.CONCEPT_MAP_INVALID_RELATIONSHIP, fileName);
         }
         this.relationships = relationships;
 

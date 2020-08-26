@@ -2,7 +2,7 @@ package lv.continuum.scorer.logic;
 
 import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
-import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
 import lv.continuum.scorer.domain.Concept;
 import lv.continuum.scorer.domain.ConceptMap;
 import lv.continuum.scorer.domain.Relationship;
@@ -21,8 +21,6 @@ import java.util.HashSet;
 @Slf4j
 public class ConceptMapParser {
 
-    private static final Translations translations = Translations.getInstance();
-
     public ConceptMap parse(String conceptMapPath)
             throws IOException, ParserConfigurationException, SAXException, InvalidDataException {
         var file = new File(conceptMapPath);
@@ -36,10 +34,10 @@ public class ConceptMapParser {
             } else if (document.getDocumentElement().getAttributes().getNamedItem("name").getNodeValue().equals("root")) {
                 return parseIkas(document, fileName);
             } else {
-                throw new InvalidDataException(String.format(translations.get("invalid-xml"), file.getName()));
+                throw new InvalidDataException(ErrorCode.INVALID_XML, file.getName());
             }
         } catch (NumberFormatException | NullPointerException e) {
-            throw new InvalidDataException(String.format(translations.get("invalid-xml"), file.getName()));
+            throw new InvalidDataException(ErrorCode.INVALID_XML, file.getName());
         }
     }
 
@@ -52,7 +50,7 @@ public class ConceptMapParser {
             var node = conceptNodes.item(i);
             var name = node.getTextContent();
             if (hasDuplicateConcept(concepts.values(), name)) {
-                throw new InvalidDataException(String.format(translations.get("concept-map-duplicate-concepts"), fileName));
+                throw new InvalidDataException(ErrorCode.CONCEPT_MAP_DUPLICATE_CONCEPTS, fileName);
             }
             var documentId = Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue());
             concepts.put(documentId, new Concept(name));
@@ -84,7 +82,7 @@ public class ConceptMapParser {
             if (node.getAttributes().getNamedItem("name").getNodeValue().equals("node")) {
                 var name = node.getAttributes().getNamedItem("value").getNodeValue();
                 if (hasDuplicateConcept(concepts.values(), name)) {
-                    throw new InvalidDataException(String.format(translations.get("concept-map-duplicate-concepts"), fileName));
+                    throw new InvalidDataException(ErrorCode.CONCEPT_MAP_DUPLICATE_CONCEPTS, fileName);
                 }
                 concepts.put(name, new Concept(name));
             }
@@ -108,7 +106,7 @@ public class ConceptMapParser {
                     }
                 }
                 if (fromConceptName == null || toConceptName == null) {
-                    throw new InvalidDataException(String.format(translations.get("concept-map-invalid-relationship"), fileName));
+                    throw new InvalidDataException(ErrorCode.CONCEPT_MAP_INVALID_RELATIONSHIP, fileName);
                 }
 
                 var fromConcept = concepts.get(fromConceptName);

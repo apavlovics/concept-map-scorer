@@ -2,13 +2,11 @@ package lv.continuum.scorer.domain;
 
 import lombok.EqualsAndHashCode;
 import lv.continuum.scorer.common.InvalidDataException;
-import lv.continuum.scorer.common.Translations;
+import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
 import org.apache.commons.lang3.StringUtils;
 
 @EqualsAndHashCode
 public class Concept {
-
-    private static final Translations translations = Translations.getInstance();
 
     public final String id;
 
@@ -17,7 +15,7 @@ public class Concept {
 
     public Concept(String name) throws InvalidDataException {
         if (StringUtils.isBlank(name)) {
-            throw new InvalidDataException(translations.get("concept-no-name"));
+            throw new InvalidDataException(ErrorCode.CONCEPT_NO_NAME);
         }
         this.id = deriveId(name);
         this.name = name.trim();

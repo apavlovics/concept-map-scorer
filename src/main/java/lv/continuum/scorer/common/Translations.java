@@ -1,12 +1,15 @@
 package lv.continuum.scorer.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.IllegalFormatException;
 import java.util.Optional;
 import java.util.Properties;
 
+@Slf4j
 public class Translations {
 
     private static final String PROPERTIES_PATH = "translations/en.properties";
@@ -44,5 +47,15 @@ public class Translations {
 
     public String get(String key) {
         return Optional.ofNullable(properties.getProperty(key)).orElse(key);
+    }
+
+    // TODO Cover with unit test
+    public String format(String key, Object... args) {
+        try {
+            return String.format(key, args);
+        } catch (IllegalFormatException e) {
+            log.warn("Issue while formatting key " + key, e);
+            return key;
+        }
     }
 }
