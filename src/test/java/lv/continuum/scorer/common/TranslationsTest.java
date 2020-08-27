@@ -27,7 +27,7 @@ class TranslationsTest {
 
     @Test
     void formatValid() {
-        assertEquals("Perfect translation", translations.format("key-formatted", "Perfect"));
+        assertEquals("Formatted translation", translations.format("key-formatted", "Formatted"));
     }
 
     @Test
