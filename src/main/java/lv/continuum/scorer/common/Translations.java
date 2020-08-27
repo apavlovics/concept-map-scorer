@@ -12,8 +12,7 @@ import java.util.Properties;
 @Slf4j
 public class Translations {
 
-    public static final String PROPERTIES_ENGLISH = "translations/en.properties";
-    public static final String PROPERTIES_TEST = "translations/test.properties";
+    private static final String PROPERTIES_DEFAULT = "translations/en.properties";
 
     private final Properties properties;
 
@@ -35,7 +34,7 @@ public class Translations {
     }
 
     public Translations() throws TranslationException {
-        this(PROPERTIES_ENGLISH);
+        this(PROPERTIES_DEFAULT);
     }
 
     public String get(String key) {

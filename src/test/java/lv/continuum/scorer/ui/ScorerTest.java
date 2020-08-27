@@ -4,13 +4,9 @@ import lv.continuum.scorer.common.Translations;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import static lv.continuum.scorer.common.Translations.PROPERTIES_TEST;
-
+@Tag("integration")
 class ScorerTest {
 
     private FrameFixture frameFixture;
@@ -22,14 +18,14 @@ class ScorerTest {
 
     @BeforeEach
     void beforeEach() {
-        Scorer scorer = GuiActionRunner.execute(() -> new Scorer(new Translations(PROPERTIES_TEST)));
+        Scorer scorer = GuiActionRunner.execute(() -> new Scorer(new Translations()));
         frameFixture = new FrameFixture(scorer);
         frameFixture.show();
     }
 
     @Test
     void sanityCheck() {
-        frameFixture.requireTitle("Concept Map Scorer");
+        frameFixture.requireTitle("Concept Map Scorer N/A");
     }
 
     @AfterEach

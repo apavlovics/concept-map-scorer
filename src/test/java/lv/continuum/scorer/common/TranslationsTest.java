@@ -2,11 +2,12 @@ package lv.continuum.scorer.common;
 
 import org.junit.jupiter.api.Test;
 
-import static lv.continuum.scorer.common.Translations.PROPERTIES_TEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TranslationsTest {
+
+    private static final String PROPERTIES_TEST = "translations/test.properties";
 
     private final Translations translations = new Translations(PROPERTIES_TEST);
 
