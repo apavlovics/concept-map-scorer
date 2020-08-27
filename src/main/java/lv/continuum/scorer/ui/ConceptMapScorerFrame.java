@@ -70,26 +70,17 @@ public class ConceptMapScorerFrame extends JFrame {
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
         fileChooser.setFileFilter(new XmlFileFilter());
 
-        scoreButton = new JButton();
-        scoreButton.setText(translations.get("score"));
+        scoreButton = new JButton(translations.get("score"));
         scoreButton.setEnabled(false);
         scoreButton.addActionListener(e -> scoreButtonActionPerformed());
 
-        elementsCheckBox = new JCheckBox();
-        elementsCheckBox.setText(translations.get("method-element-count"));
+        elementsCheckBox = new JCheckBox(translations.get("method-element-count"));
         elementsCheckBox.setSelected(true);
 
-        closenessIndexesCheckBox = new JCheckBox();
-        closenessIndexesCheckBox.setText(translations.get("method-closeness-indexes"));
-
-        importanceIndexesCheckBox = new JCheckBox();
-        importanceIndexesCheckBox.setText(translations.get("method-importance-indexes"));
-
-        propositionChainsCheckBox = new JCheckBox();
-        propositionChainsCheckBox.setText(translations.get("method-proposition-chains"));
-
-        errorAnalysisCheckBox = new JCheckBox();
-        errorAnalysisCheckBox.setText(translations.get("method-error-analysis"));
+        closenessIndexesCheckBox = new JCheckBox(translations.get("method-closeness-indexes"));
+        importanceIndexesCheckBox = new JCheckBox(translations.get("method-importance-indexes"));
+        propositionChainsCheckBox = new JCheckBox(translations.get("method-proposition-chains"));
+        errorAnalysisCheckBox = new JCheckBox(translations.get("method-error-analysis"));
 
         checkBoxes = Set.of(
                 elementsCheckBox,
@@ -103,8 +94,7 @@ public class ConceptMapScorerFrame extends JFrame {
             cb.addChangeListener(e -> checkBoxChanged());
         });
 
-        scoreTextArea = new JTextArea();
-        scoreTextArea.setText(translations.get("score-text-default"));
+        scoreTextArea = new JTextArea(translations.get("score-text-default"));
         scoreTextArea.setEditable(false);
         scoreTextArea.setLineWrap(true);
         scoreTextArea.setWrapStyleWord(true);
@@ -113,19 +103,14 @@ public class ConceptMapScorerFrame extends JFrame {
         var scoreScrollPane = new JScrollPane();
         scoreScrollPane.setViewportView(scoreTextArea);
 
-        var studentBrowseButton = new JButton();
-        studentBrowseButton.setText(translations.get("browse"));
+        var studentBrowseButton = new JButton(translations.get("browse"));
         studentBrowseButton.addActionListener(e -> browseButtonActionPerformed(studentTextField));
 
-        var teacherBrowseButton = new JButton();
-        teacherBrowseButton.setText(translations.get("browse"));
+        var teacherBrowseButton = new JButton(translations.get("browse"));
         teacherBrowseButton.addActionListener(e -> browseButtonActionPerformed(teacherTextField));
 
-        var studentLabel = new JLabel();
-        studentLabel.setText(translations.get("select-student-concept-map"));
-
-        var teacherLabel = new JLabel();
-        teacherLabel.setText(translations.get("select-teacher-concept-map"));
+        var studentLabel = new JLabel(translations.get("select-student-concept-map"));
+        var teacherLabel = new JLabel(translations.get("select-teacher-concept-map"));
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
