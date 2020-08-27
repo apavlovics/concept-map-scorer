@@ -31,7 +31,7 @@ class ConceptMapScorerFrameTest {
     }
 
     @Test
-    void sanityCheck() {
+    void happyPath() {
         frameFixture.requireTitle("Concept Map Scorer N/A");
 
         var scoreButton = frameFixture.button("scoreButton");
@@ -49,15 +49,16 @@ class ConceptMapScorerFrameTest {
 
         studentTextField
                 .setText("src/test/resources/samples/similar-map-1.xml")
-                .pressAndReleaseKey(ENTER);
+                .pressAndReleaseKey(ENTER); // Trigger key listener event
         teacherTextField
                 .setText("src/test/resources/samples/similar-map-2.xml")
-                .pressAndReleaseKey(ENTER);
+                .pressAndReleaseKey(ENTER); // Trigger key listener event
         scoreButton
                 .requireEnabled()
                 .click();
         scoreTextArea
-                .requireEnabled();
+                .requireEnabled()
+                .requireNotEditable();
 
         var scoreTextAfter = scoreTextArea.text();
         assertNotEquals(scoreTextBefore, scoreTextAfter);

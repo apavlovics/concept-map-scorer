@@ -52,10 +52,12 @@ public class ConceptMapScorerFrame extends JFrame {
 
         var keyAdapter = new KeyAdapter() {
 
+            @Override
             public void keyPressed(KeyEvent evt) {
                 textFieldChanged();
             }
 
+            @Override
             public void keyReleased(KeyEvent evt) {
                 textFieldChanged();
             }
