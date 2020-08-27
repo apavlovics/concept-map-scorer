@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
-public class ScorerFrame extends JFrame {
+public class ConceptMapScorerFrame extends JFrame {
 
     // Width and height of score scroll pane ultimately determine window size
     private static final int SCORE_SCROLL_PANE_WIDTH = 780;
@@ -41,7 +41,7 @@ public class ScorerFrame extends JFrame {
     private final JCheckBox errorAnalysisCheckBox;
     private final Set<JCheckBox> checkBoxes;
 
-    public ScorerFrame(Translations translations) {
+    public ConceptMapScorerFrame(Translations translations) {
         this.translations = translations;
         this.conceptMapParser = new ConceptMapParser();
         this.conceptMapFormatter = new ConceptMapFormatter(translations);

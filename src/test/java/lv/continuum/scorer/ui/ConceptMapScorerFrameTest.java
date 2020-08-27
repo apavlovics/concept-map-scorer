@@ -7,7 +7,7 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.junit.jupiter.api.*;
 
 @Tag("integration")
-class ScorerFrameTest {
+class ConceptMapScorerFrameTest {
 
     private FrameFixture frameFixture;
 
@@ -18,8 +18,8 @@ class ScorerFrameTest {
 
     @BeforeEach
     void beforeEach() {
-        ScorerFrame scorerFrame = GuiActionRunner.execute(() -> new ScorerFrame(new Translations()));
-        frameFixture = new FrameFixture(scorerFrame);
+        var conceptMapScorerFrame = GuiActionRunner.execute(() -> new ConceptMapScorerFrame(new Translations()));
+        frameFixture = new FrameFixture(conceptMapScorerFrame);
         frameFixture.show();
     }
 
