@@ -62,15 +62,18 @@ public class ConceptMapScorerFrame extends JFrame {
         };
 
         studentTextField = new JTextField();
+        studentTextField.setName("studentTextField");
         studentTextField.addKeyListener(keyAdapter);
 
         teacherTextField = new JTextField();
+        teacherTextField.setName("teacherTextField");
         teacherTextField.addKeyListener(keyAdapter);
 
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
         fileChooser.setFileFilter(new XmlFileFilter());
 
         scoreButton = new JButton(translations.get("score"));
+        scoreButton.setName("scoreButton");
         scoreButton.setEnabled(false);
         scoreButton.addActionListener(e -> scoreButtonActionPerformed());
 
@@ -95,6 +98,7 @@ public class ConceptMapScorerFrame extends JFrame {
         });
 
         scoreTextArea = new JTextArea(translations.get("score-text-default"));
+        scoreTextArea.setName("scoreTextArea");
         scoreTextArea.setEditable(false);
         scoreTextArea.setLineWrap(true);
         scoreTextArea.setWrapStyleWord(true);
