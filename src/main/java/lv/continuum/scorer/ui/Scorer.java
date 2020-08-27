@@ -25,7 +25,7 @@ import java.util.Set;
 @Slf4j
 public class Scorer extends JFrame {
 
-    // Width and height of score scroll pane ultimately determines window size
+    // Width and height of score scroll pane ultimately determine window size
     private static final int SCORE_SCROLL_PANE_WIDTH = 780;
     private static final int SCORE_SCROLL_PANE_HEIGHT = 260;
 
