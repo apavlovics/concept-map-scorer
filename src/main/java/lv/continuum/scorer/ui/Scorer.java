@@ -25,6 +25,10 @@ import java.util.Set;
 @Slf4j
 public class Scorer extends JFrame {
 
+    // Width and height of score scroll pane ultimately determines window size
+    private static final int SCORE_SCROLL_PANE_WIDTH = 780;
+    private static final int SCORE_SCROLL_PANE_HEIGHT = 260;
+
     private final Translations translations;
     private final ConceptMapParser conceptMapParser;
     private final ConceptMapFormatter conceptMapFormatter;
@@ -177,7 +181,7 @@ public class Scorer extends JFrame {
                 .addComponent(teacherLabel)
                 .addGroup(teacherTextFieldHorizontalGroup)
                 .addGroup(scoreButtonAndCheckBoxesHorizontalGroup)
-                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE)
+                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, SCORE_SCROLL_PANE_WIDTH, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addComponent(studentLabel)
@@ -190,7 +194,7 @@ public class Scorer extends JFrame {
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(scoreButtonAndCheckBoxesVerticalGroup)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                .addComponent(scoreScrollPane, GroupLayout.DEFAULT_SIZE, SCORE_SCROLL_PANE_HEIGHT, Short.MAX_VALUE)
         );
         pack();
         setLocationRelativeTo(null); // Center window on screen
