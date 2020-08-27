@@ -3,7 +3,6 @@ package lv.continuum.scorer.ui;
 import lombok.extern.slf4j.Slf4j;
 import lv.continuum.scorer.common.InvalidDataException;
 import lv.continuum.scorer.common.InvalidDataException.ErrorCode;
-import lv.continuum.scorer.common.TranslationException;
 import lv.continuum.scorer.common.Translations;
 import lv.continuum.scorer.common.VersionUtils;
 import lv.continuum.scorer.domain.ConceptMap;
@@ -12,18 +11,14 @@ import lv.continuum.scorer.logic.ConceptMapFormatter;
 import lv.continuum.scorer.logic.ConceptMapParser;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * The main class is named {@code Scorer} because Swing uses it as the application name.
- */
 @Slf4j
-public class Scorer extends JFrame {
+public class ScorerFrame extends JFrame {
 
     // Width and height of score scroll pane ultimately determine window size
     private static final int SCORE_SCROLL_PANE_WIDTH = 780;
@@ -46,7 +41,7 @@ public class Scorer extends JFrame {
     private final JCheckBox errorAnalysisCheckBox;
     private final Set<JCheckBox> checkBoxes;
 
-    public Scorer(Translations translations) {
+    public ScorerFrame(Translations translations) {
         this.translations = translations;
         this.conceptMapParser = new ConceptMapParser();
         this.conceptMapFormatter = new ConceptMapFormatter(translations);
@@ -306,22 +301,5 @@ public class Scorer extends JFrame {
             });
         }
         scoreButton.setEnabled(!studentText.isBlank() && checkBoxes.stream().anyMatch(JCheckBox::isSelected));
-    }
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            try {
-                new Scorer(new Translations());
-                log.debug("Created main application window");
-            } catch (TranslationException e) {
-                log.error("Issue while creating main application window", e);
-                JOptionPane.showMessageDialog(
-                        null,
-                        e.getMessage() + ".",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
-        });
     }
 }

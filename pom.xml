@@ -73,7 +73,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>lv.continuum.scorer.ui.Scorer</mainClass>
+                                    <mainClass>lv.continuum.scorer.Scorer</mainClass>
                                     <!-- Required for VersionUtils to work -->
                                     <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                 </manifest>
