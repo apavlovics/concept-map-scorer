@@ -11,8 +11,7 @@ import java.awt.event.KeyEvent;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@Tag("integration")
-class ConceptMapScorerFrameTest {
+class ConceptMapScorerFrameIT {
 
     private static final KeyPressInfo ENTER = KeyPressInfo.keyCode(KeyEvent.VK_ENTER);
 

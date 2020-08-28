@@ -13,11 +13,21 @@ The application is tested to work with:
 * Java 11
 * Maven 3.6
 
-## Building & Running
+## Testing
 
-To build the application, go to its root folder and execute:
+To run unit tests, go to the project’s root folder and execute:
+
+    mvn test
+
+To run both unit and integration tests, go to the project’s root and execute:
+
+    mvn verify
+
+## Packaging & Running
+
+To package the application, go to its root folder and execute:
 
     mvn package
 
-Once built, the application can be run via the generated executable JAR file. It is typically named
+Once packaged, the application can be run via the generated executable JAR file. It is typically named
 *concept-map-scorer-{version}.jar* and located in the *target* folder.
