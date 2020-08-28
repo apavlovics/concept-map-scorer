@@ -19,7 +19,7 @@ To run unit tests, go to the project’s root folder and execute:
 
     mvn test
 
-To run both unit and integration tests, go to the project’s root and execute:
+To run both unit and integration tests, go to the project’s root folder and execute:
 
     mvn verify
 
