@@ -8,7 +8,7 @@ website](https://continuum.lv/#thesis) for more information and the entire thesi
 
 ## System Requirements
 
-The application is tested to work with:
+The application uses:
 
 * Java 11
 * Maven 3.6
