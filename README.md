@@ -20,4 +20,4 @@ To package the application, go to its root folder and execute:
 
     mvn package
 
-Once packaged, the application can be run via the generated executable JAR file. It is named *concept-map-scorer-{{version}}.jar* and located in the *target* folder. The application requires Java 11.
+Once packaged, the application can be run via the generated executable JAR file. It is named *concept-map-scorer-{{version}}.jar* and located in the *target* folder. The application requires Java 11 to start.
