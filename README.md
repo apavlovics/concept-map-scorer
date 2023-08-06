@@ -4,13 +4,6 @@ This application allows scoring [concept maps](https://en.wikipedia.org/wiki/Con
 
 The application has been developed as part of a master’s thesis. Check [author’s personal website](https://continuum.lv/#thesis) for more information and the entire thesis in Latvian.
 
-## System Requirements
-
-The application uses:
-
-* Java 11
-* Maven 3.6
-
 ## Testing
 
 To run unit tests, go to the project’s root folder and execute:
@@ -27,4 +20,4 @@ To package the application, go to its root folder and execute:
 
     mvn package
 
-Once packaged, the application can be run via the generated executable JAR file. It is named *concept-map-scorer-{{version}}.jar* and located in the *target* folder.
+Once packaged, the application can be run via the generated executable JAR file. It is named *concept-map-scorer-{{version}}.jar* and located in the *target* folder. The application requires Java 11.
